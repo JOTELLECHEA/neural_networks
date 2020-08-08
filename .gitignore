@@ -1,0 +1,7 @@
+*.root
+Dockerfile
+read*
+test*
+Test*
+*.png
+.ipynb_checkpoints/
