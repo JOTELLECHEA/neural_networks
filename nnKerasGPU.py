@@ -19,18 +19,18 @@ from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils import class_weight
 sc = StandardScaler()
-# Variables.\n",
+# Variables
 seed = 42
 tree = 'OutputTree'
 ###########################################################################################################################
 # Branches names of high/low level variables aka: features.
-branches = ['numjet','numlep']
+# branches = ['numjet','numlep']
 # branches = ['numlep','numjet','lep1pT','lep1eta','lep1phi','lep1m','lep2pT','lep2eta','lep2phi','lep2m','lep3pT',
 #'lep3eta','lep3phi','lep3m','mt1','mt2','mt3','dr1','dr2','dr3','btag','cent','srap','m_bb','h_b']
 # branches = ['numlep','numjet','lep1pT','lep1eta','lep1phi','lep1m','lep2pT','lep2eta','lep2phi','lep2m','lep3pT'
 # 'lep3eta','lep3phi','lep3m']
 # branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','mt2','mt3']
-# branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','mt2','mt3','dr1','dr2','dr3']
+branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1']
 numofbranches = len(branches)
 ###########################################################################################################################
 # Data read from file.
@@ -51,18 +51,19 @@ X = sc.fit_transform(X)
 y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
 
 # Shuffle full data and split into train/test and validation set.
-X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.1, random_state=seed)
-X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev, test_size = 0.5,random_state=seed)
+X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.5, random_state=seed)
+X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev, test_size = 0.1,random_state=seed)
 
 fix_imbal = class_weight.compute_class_weight('balanced',np.unique(y_train),y_train)
 fix_imbal = dict(enumerate(fix_imbal))
 # NN model defined as a function.
 def build_model():
     model = Sequential()
+    opt = keras.optimizers.Adam(learning_rate=0.01)
     model.add(Dense(10, input_dim=numofbranches, activation='relu'))
     model.add(Dense(10 , activation='relu')) #hidden layer
-    model.add(Dense(1 ,activation='sigmoid'))#output layer
-    model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
+    model.add(Dense(1 , activation='sigmoid'))#output layer
+    model.compile(loss='binary_crossentropy',optimizer=opt,metrics=['accuracy'])
     return  model
 def plotROC(x,y,ROC):
     plt.plot(x,y, lw=1, label='ROC (area = %0.6f)'%(roc_auc))
@@ -79,7 +80,7 @@ def plotROC(x,y,ROC):
 
 # Using model and setting parameters. 
 keras_model = build_model()
-history = keras_model.fit(X_train, y_train,class_weight=fix_imbal,epochs=10, batch_size=570,validation_data=(X_dev, y_dev),verbose=1)
+history = keras_model.fit(X_train, y_train,class_weight=fix_imbal,epochs=150, batch_size=570,validation_data=(X_dev, y_dev),verbose=1)
 # history = keras_model.fit(X_train, y_train,epochs=50, batch_size=570,validation_data=(X_dev, y_dev), verbose=0)
 
 # Prediction, fpr,tpr and threshold values for ROC.
@@ -96,18 +97,3 @@ plt.gca().set_ylim(0,1)
 # plt.show()
 plt.savefig('plotLossAccuracy.png')
 
-# plt.plot(history.history['acc'])
-# plt.plot(history.history['val_acc'])
-# plt.title('Model accuracy')
-# plt.ylabel('Accuracy')
-# plt.xlabel('Epoch')
-# plt.legend(['Train', 'Test'], loc='upper left')
-# plt.show()
-
-# plt.plot(history.history['loss'])
-# plt.plot(history.history['val_loss']) 
-# plt.title('Model loss') 
-# plt.ylabel('Loss') 
-# plt.xlabel('Epoch') 
-# plt.legend(['Train', 'Test'], loc='upper left') 
-# plt.show()
