@@ -2,6 +2,7 @@
 Dockerfile
 read*
 *.png
+*.ipynb
 .ipynb_checkpoints/
 mlenv/
 
