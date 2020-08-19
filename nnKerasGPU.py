@@ -6,7 +6,10 @@
 import uproot
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
+import tkinter as tk
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt 
 import pandas as pd
 from tensorflow import keras
 from tensorflow.keras import metrics
@@ -75,8 +78,8 @@ def plotROC(x,y,ROC):
     plt.title('Receiver operating characteristic')
     plt.legend(loc="lower right")
     plt.grid()
-    plt.savefig('plotRocCurve.png')
-    # plt.show()
+    # plt.savefig('plotRocCurve.png')
+    plt.show()
 
 # Using model and setting parameters. 
 keras_model = build_model()
@@ -94,6 +97,6 @@ plotROC(fpr_keras, tpr_keras,roc_auc)
 pd.DataFrame(history.history).plot(figsize=(8,5))
 plt.grid(True)
 plt.gca().set_ylim(0,1)
-# plt.show()
-plt.savefig('plotLossAccuracy.png')
+plt.show()
+# plt.savefig('plotLossAccuracy.png')
 
