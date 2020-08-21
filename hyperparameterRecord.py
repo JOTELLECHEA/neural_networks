@@ -14,4 +14,5 @@ data = pd.DataFrame(np.array([[9,150,570,'Default',0.5,0.1,0.858928],
 	# [9,150,570,0.01,0.5,0.1,0.849799],
 
 	]),columns=col)
+print('\n Using an NN Architecture of 10-10-1\n')
 print(data.head())

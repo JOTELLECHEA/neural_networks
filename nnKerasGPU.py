@@ -3,6 +3,7 @@
 # Research   : Using a neural network to maximize the significance of tttHH production.
 # Reference  :http://cdsweb.cern.ch/record/2220969/files/ATL-PHYS-PUB-2016-023.pdf
 ###########################################################################################################################
+import csv,sys
 import uproot
 import numpy as np
 import tensorflow as tf
@@ -25,6 +26,7 @@ sc = StandardScaler()
 # Variables
 seed = 42
 tree = 'OutputTree'
+name = 'rocDataNN.csv'  
 ###########################################################################################################################
 # Branches names of high/low level variables aka: features.
 # branches = ['numjet','numlep']
@@ -78,13 +80,12 @@ def plotROC(x,y,ROC):
     plt.title('Receiver operating characteristic')
     plt.legend(loc="lower right")
     plt.grid()
-    # plt.savefig('plotRocCurve.png')
     plt.show()
+    # plt.savefig('plotRocCurve.png')
 
 # Using model and setting parameters. 
 keras_model = build_model()
 history = keras_model.fit(X_train, y_train,class_weight=fix_imbal,epochs=150, batch_size=570,validation_data=(X_dev, y_dev),verbose=1)
-# history = keras_model.fit(X_train, y_train,epochs=50, batch_size=570,validation_data=(X_dev, y_dev), verbose=0)
 
 # Prediction, fpr,tpr and threshold values for ROC.
 y_pred_keras = keras_model.predict(X_test).ravel()
@@ -92,6 +93,19 @@ fpr_keras, tpr_keras, thresholds_keras = roc_curve(y_test, y_pred_keras)
 
 # AUC
 roc_auc = auc(fpr_keras, tpr_keras)
+r0  = ['name','var']
+r1  = ['fpr',fpr_keras]
+r2  = ['tpr',tpr_keras]
+r3  = ['thresholds',thresholds_keras]
+with open(name, 'a') as csvFile:
+        writer = csv.writer(csvFile)
+        writer.writerow(r0)
+        writer.writerow(r1)
+        writer.writerow(r2)
+        writer.writerow(r3)
+
+    csvFile.close()
+
 plotROC(fpr_keras, tpr_keras,roc_auc)
 
 pd.DataFrame(history.history).plot(figsize=(8,5))
