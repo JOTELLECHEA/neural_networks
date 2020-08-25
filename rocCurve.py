@@ -1,11 +1,11 @@
-import sklearn 
+# import sklearn 
 
-if sklearn.__version__ == '0.20.4':
-    from sklearn.model_selection import train_test_split
-else :
-    from sklearn.cross_validation import train_test_split
+# if sklearn.__version__ == '0.20.4':
+#     from sklearn.model_selection import train_test_split
+# else :
+#     from sklearn.cross_validation import train_test_split
     
-import matplotlib.mlab as mlab
+# import matplotlib.mlab as mlab
 import csv
 import itertools
 import math
@@ -14,14 +14,13 @@ import argparse
 import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
-#from ROOT import*
+# matplotlib.use('TkAgg')
 from numpy import array
-#from root_numpy import root2array, rec2array
-from sklearn import datasets
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.metrics import classification_report, roc_auc_score, roc_curve, auc
-from sklearn.preprocessing import StandardScaler
+# from sklearn import datasets
+# from sklearn.tree import DecisionTreeClassifier
+# from sklearn.ensemble import AdaBoostClassifier
+# from sklearn.metrics import classification_report, roc_auc_score, roc_curve, auc
+# from sklearn.preprocessing import StandardScaler
 ################################################################################
 from scipy.interpolate import *
 from scipy.stats import *
@@ -34,17 +33,12 @@ file = str(args.file)
 df = pd.read_csv(file)
 ##################################################################################
 def data(x):
- return np.array([float(i) for i in df['var'][x][1:-1].split()])
+    return np.array([float(i) for i in df['var'][x][1:-1].split()])
 
-d0  = data(0)
-d1  = data(1)
-d2  = data(2)
-d3  = data(3)
-fpr = data(4)
-tpr = data(5)
-low_high = data(6)
-thresholds = data(7)
-# low_high = np.array([float(i) for i in str(df['var'][6])[1:-1].split(",")])
+# d0         = data(0)
+fpr        = data(0)
+tpr        = data(1)
+thresholds = data(2)
 
 r = 0.00606061
 g = 0.0000677966
@@ -119,7 +113,7 @@ if scanROC:
     maxbdt=2
     maxs=0
     maxb=0
-    for d0i,d1i,d2i,d3i,f,t,bdtscore in itertools.izip(d0,d1,d2,d3,fpr,tpr,thresholds):
+    for f,t,bdtscore in zip(fpr,tpr,thresholds):
         s=nSig*t
         b=nBG*f
         n=s+b
@@ -131,8 +125,8 @@ if scanROC:
             maxbdt=bdtscore
             maxs=s
             maxb=b
-        #print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
-    print "BDT Threshold for Max Signif = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb)
+        # print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
+    print("BDT Threshold for Max BDT = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
 
 drawPlots=False
 if drawPlots:

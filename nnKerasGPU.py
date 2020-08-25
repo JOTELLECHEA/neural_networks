@@ -6,6 +6,7 @@
 import csv,sys
 import uproot
 import numpy as np
+np.set_printoptions(threshold=np.inf)
 import tensorflow as tf
 import tkinter as tk
 import matplotlib
@@ -23,7 +24,7 @@ from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils import class_weight
 sc = StandardScaler()
-# Variables
+# Variables.
 seed = 42
 tree = 'OutputTree'
 name = 'rocDataNN.csv'  
@@ -46,9 +47,8 @@ df_background  = background.pandas.df(branches)
 alldata        = uproot.open('data/full.root')[tree]
 df_alldata     = alldata.pandas.df(branches) 
 shuffleBackground = shuffle(df_background,random_state=seed)
-# signal and limited shuffle background data to counter inbalanced data problem.
 
-# X = pd.concat([df_signal,shuffleBackground[0:5709]])
+# signal and limited shuffle background data to counter inbalanced data problem.
 X = pd.concat([df_signal,shuffleBackground])
 X = sc.fit_transform(X)
 
@@ -59,29 +59,32 @@ y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
 X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.5, random_state=seed)
 X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev, test_size = 0.1,random_state=seed)
 
+# Fix data imbalance.
 fix_imbal = class_weight.compute_class_weight('balanced',np.unique(y_train),y_train)
 fix_imbal = dict(enumerate(fix_imbal))
+
 # NN model defined as a function.
 def build_model():
     model = Sequential()
     opt = keras.optimizers.Adam(learning_rate=0.01)
-    model.add(Dense(10, input_dim=numofbranches, activation='relu'))
-    model.add(Dense(10 , activation='relu')) #hidden layer
-    model.add(Dense(1 , activation='sigmoid'))#output layer
-    model.compile(loss='binary_crossentropy',optimizer=opt,metrics=['accuracy'])
+    model.add(Dense(10, input_dim = numofbranches, activation='relu'))
+    model.add(Dense(10 , activation = 'relu'))   #hidden layer.
+    model.add(Dense(10 , activation = 'relu'))   #hidden layer.
+    model.add(Dense(1 , activation  = 'sigmoid')) #output layer.
+    model.compile(loss = 'binary_crossentropy', optimizer = opt, metrics = ['accuracy'])
     return  model
+
 def plotROC(x,y,ROC):
-    plt.plot(x,y, lw=1, label='ROC (area = %0.6f)'%(roc_auc))
-    plt.plot([0, 1], [0, 1], '--', color=(0.6, 0.6, 0.6), label='Luck')
+    plt.plot(x,y, lw = 1, label = 'ROC (area = %0.6f)'%(roc_auc))
+    plt.plot([0, 1], [0, 1], '--', color = (0.6, 0.6, 0.6), label = 'Luck')
     plt.xlim([-0.05, 1.05])
     plt.ylim([-0.05, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
     plt.title('Receiver operating characteristic')
-    plt.legend(loc="lower right")
+    plt.legend(loc = 'lower right')
     plt.grid()
     plt.show()
-    # plt.savefig('plotRocCurve.png')
 
 # Using model and setting parameters. 
 keras_model = build_model()
@@ -104,7 +107,7 @@ with open(name, 'a') as csvFile:
         writer.writerow(r2)
         writer.writerow(r3)
 
-    csvFile.close()
+csvFile.close()
 
 plotROC(fpr_keras, tpr_keras,roc_auc)
 
