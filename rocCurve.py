@@ -1,11 +1,8 @@
-# import sklearn 
-
-# if sklearn.__version__ == '0.20.4':
-#     from sklearn.model_selection import train_test_split
-# else :
-#     from sklearn.cross_validation import train_test_split
-    
-# import matplotlib.mlab as mlab
+# Written By : Jonathan O. Tellechea and Mike Hance 
+# Adviser    : Mike Hance, Phd
+# Research   : To find the significance from a BDT/NN/DN.
+#
+###########################################################################################################################
 import csv
 import itertools
 import math
@@ -14,18 +11,9 @@ import argparse
 import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
-# matplotlib.use('TkAgg')
 from numpy import array
-# from sklearn import datasets
-# from sklearn.tree import DecisionTreeClassifier
-# from sklearn.ensemble import AdaBoostClassifier
-# from sklearn.metrics import classification_report, roc_auc_score, roc_curve, auc
-# from sklearn.preprocessing import StandardScaler
-################################################################################
-from scipy.interpolate import *
-from scipy.stats import *
 #################################################################################
-parser = argparse.ArgumentParser(description= 'ROC curve plot from BDT')
+parser = argparse.ArgumentParser(description= 'sigf of BDT/NN/DN')
 parser.add_argument("--file", type=str, help= "Use '--file=' followed by a *.csv file")
 parser.add_argument("--syst", action='store', default=0.0)
 args = parser.parse_args()
@@ -35,7 +23,6 @@ df = pd.read_csv(file)
 def data(x):
     return np.array([float(i) for i in df['var'][x][1:-1].split()])
 
-# d0         = data(0)
 fpr        = data(0)
 tpr        = data(1)
 thresholds = data(2)
@@ -126,7 +113,7 @@ if scanROC:
             maxs=s
             maxb=b
         # print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
-    print("BDT Threshold for Max BDT = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
+    print("BDT Threshold for Max BDT????? = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
 
 drawPlots=False
 if drawPlots:
@@ -150,7 +137,6 @@ if drawPlots:
     plt.ylabel('True Positive Rate')
     plt.grid()
     plt.legend(loc="lower right")
-    #plt.savefig('battery.png', format='png', dpi=300)
     plt.subplot(212)
     plt.hist(d0,color='r', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', density=True,label='S (train)')
     plt.hist(d1,color='b', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', density=True,label='B (train)')

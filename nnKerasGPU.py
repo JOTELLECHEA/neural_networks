@@ -6,6 +6,7 @@
 import csv,sys
 import uproot
 import numpy as np
+from numpy import array
 np.set_printoptions(threshold=np.inf)
 import tensorflow as tf
 import tkinter as tk
@@ -62,7 +63,7 @@ X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev, test_size = 0.1,
 # Fix data imbalance.
 fix_imbal = class_weight.compute_class_weight('balanced',np.unique(y_train),y_train)
 fix_imbal = dict(enumerate(fix_imbal))
-
+##########################################################################################################
 # NN model defined as a function.
 def build_model():
     model = Sequential()
@@ -74,8 +75,10 @@ def build_model():
     model.compile(loss = 'binary_crossentropy', optimizer = opt, metrics = ['accuracy'])
     return  model
 
-def plotROC(x,y,ROC):
-    plt.plot(x,y, lw = 1, label = 'ROC (area = %0.6f)'%(roc_auc))
+# Plot ROC.
+def plotROC(x,y,AUC):
+    plt.subplot(211)
+    plt.plot(x,y, lw = 1, label = 'ROC (area = %0.6f)'%(AUC))
     plt.plot([0, 1], [0, 1], '--', color = (0.6, 0.6, 0.6), label = 'Luck')
     plt.xlim([-0.05, 1.05])
     plt.ylim([-0.05, 1.05])
@@ -84,22 +87,56 @@ def plotROC(x,y,ROC):
     plt.title('Receiver operating characteristic')
     plt.legend(loc = 'lower right')
     plt.grid()
-    plt.show()
+# 
+def compare_train_test(kModel, X_train, y_train, X_test, y_test, bins=30):
+    decisions = []
+    for X,y in ((X_train, y_train), (X_test, y_test)):
+        d1 = neuralNet.predict(X[y>0.5]).ravel()
+        d2 = neuralNet.predict(X[y<0.5]).ravel()
+        decisions += [d1, d2]
+    low = min(np.min(d) for d in decisions)
+    high = max(np.max(d) for d in decisions)
+    low_high = array([low,high])
+    
+    plt.subplot(212)
+    plt.hist(decisions[0],color='r', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', density=True,label='S (train)')
+    plt.hist(decisions[1],color='b', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', density=True,label='B (train)')
 
+    hist, bins = np.histogram(decisions[2],bins=bins, range=low_high, density=True)
+    scale = len(decisions[2]) / sum(hist)
+    err = np.sqrt(hist * scale) / scale
+
+    width = (bins[1] - bins[0])
+    center = (bins[:-1] + bins[1:]) / 2
+    plt.errorbar(center, hist, yerr=err, fmt='o', c='r', label='S (test)')
+
+    hist, bins = np.histogram(decisions[3],bins=bins, range=low_high, density=True)
+    scale = len(decisions[2]) / sum(hist)
+    err = np.sqrt(hist * scale) / scale
+
+    plt.errorbar(center, hist, yerr=err, fmt='o', c='b', label='B (test)')
+
+##########################################################################################################
 # Using model and setting parameters. 
-keras_model = build_model()
-history = keras_model.fit(X_train, y_train,class_weight=fix_imbal,epochs=150, batch_size=570,validation_data=(X_dev, y_dev),verbose=1)
+neuralNet = build_model()
+kModel = neuralNet.fit(X_train, y_train,class_weight=fix_imbal,epochs=3, batch_size=570,validation_data=(X_dev, y_dev),verbose=1)
 
 # Prediction, fpr,tpr and threshold values for ROC.
-y_pred_keras = keras_model.predict(X_test).ravel()
-fpr_keras, tpr_keras, thresholds_keras = roc_curve(y_test, y_pred_keras)
+y_predicted = neuralNet.predict(X_test).ravel()
+fpr, tpr, thresholds = roc_curve(y_test, y_predicted)
+
 
 # AUC
-roc_auc = auc(fpr_keras, tpr_keras)
+auc = auc(fpr, tpr)
+print('Area under ROC curve: %.4f'%(auc))
+plotROC(fpr, tpr, auc)
+compare_train_test(kModel, X_train, y_train, X_test, y_test)
+
 r0  = ['name','var']
-r1  = ['fpr',fpr_keras]
-r2  = ['tpr',tpr_keras]
-r3  = ['thresholds',thresholds_keras]
+r1  = ['fpr',fpr]
+r2  = ['tpr',tpr]
+r3  = ['thresholds',thresholds]
+
 with open(name, 'a') as csvFile:
         writer = csv.writer(csvFile)
         writer.writerow(r0)
@@ -109,11 +146,11 @@ with open(name, 'a') as csvFile:
 
 csvFile.close()
 
-plotROC(fpr_keras, tpr_keras,roc_auc)
 
-pd.DataFrame(history.history).plot(figsize=(8,5))
+
+pd.DataFrame(kModel.history).plot(figsize=(8,5))
 plt.grid(True)
 plt.gca().set_ylim(0,1)
 plt.show()
-# plt.savefig('plotLossAccuracy.png')
+
 
