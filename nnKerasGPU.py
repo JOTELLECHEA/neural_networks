@@ -28,17 +28,24 @@ sc = StandardScaler()
 # Variables.
 seed = 42
 tree = 'OutputTree'
-name = 'rocDataNN.csv'  
+name = 'rocDataNN.csv'
 ###########################################################################################################################
 # Branches names of high/low level variables aka: features.
-# branches = ['numjet','numlep']
+branches = ['numjet']
 # branches = ['numlep','numjet','lep1pT','lep1eta','lep1phi','lep1m','lep2pT','lep2eta','lep2phi','lep2m','lep3pT',
 #'lep3eta','lep3phi','lep3m','mt1','mt2','mt3','dr1','dr2','dr3','btag','cent','srap','m_bb','h_b']
 # branches = ['numlep','numjet','lep1pT','lep1eta','lep1phi','lep1m','lep2pT','lep2eta','lep2phi','lep2m','lep3pT'
 # 'lep3eta','lep3phi','lep3m']
 # branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','mt2','mt3']
 branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1']
-numofbranches = len(branches)
+numBranches = len(branches)
+network     = [10,10,10,1]
+learnRate   = 0.01
+batchSize   = 570
+numLayers   = len(network)
+numNeurons  = sum(network)
+numEpochs   = 3
+areaUnderCurve = 0 
 ###########################################################################################################################
 # Data read from file.
 signal         = uproot.open('data/new_signal_tthh.root')[tree]
@@ -48,7 +55,6 @@ df_background  = background.pandas.df(branches)
 alldata        = uproot.open('data/full.root')[tree]
 df_alldata     = alldata.pandas.df(branches) 
 shuffleBackground = shuffle(df_background,random_state=seed)
-
 # signal and limited shuffle background data to counter inbalanced data problem.
 X = pd.concat([df_signal,shuffleBackground])
 X = sc.fit_transform(X)
@@ -67,11 +73,11 @@ fix_imbal = dict(enumerate(fix_imbal))
 # NN model defined as a function.
 def build_model():
     model = Sequential()
-    opt = keras.optimizers.Adam(learning_rate=0.01)
-    model.add(Dense(10, input_dim = numofbranches, activation='relu'))
-    model.add(Dense(10 , activation = 'relu'))   #hidden layer.
-    model.add(Dense(10 , activation = 'relu'))   #hidden layer.
-    model.add(Dense(1 , activation  = 'sigmoid')) #output layer.
+    opt = keras.optimizers.Adam(learning_rate=learnRate)
+    model.add(Dense(network[0], input_dim = numBranches, activation='relu'))
+    model.add(Dense(network[1] , activation = 'relu'))   #hidden layer.
+    model.add(Dense(network[2] , activation = 'relu'))   #hidden layer.
+    model.add(Dense(network[3] , activation  = 'sigmoid')) #output layer.
     model.compile(loss = 'binary_crossentropy', optimizer = opt, metrics = ['accuracy'])
     return  model
 
@@ -119,7 +125,7 @@ def compare_train_test(kModel, X_train, y_train, X_test, y_test, bins=30):
 ##########################################################################################################
 # Using model and setting parameters. 
 neuralNet = build_model()
-kModel = neuralNet.fit(X_train, y_train,class_weight=fix_imbal,epochs=3, batch_size=570,validation_data=(X_dev, y_dev),verbose=1)
+kModel = neuralNet.fit(X_train, y_train,class_weight=fix_imbal,epochs=numEpochs, batch_size=batchSize,validation_data=(X_dev, y_dev),verbose=1)
 
 # Prediction, fpr,tpr and threshold values for ROC.
 y_predicted = neuralNet.predict(X_test).ravel()
@@ -127,30 +133,41 @@ fpr, tpr, thresholds = roc_curve(y_test, y_predicted)
 
 
 # AUC
-auc = auc(fpr, tpr)
-print('Area under ROC curve: %.4f'%(auc))
-plotROC(fpr, tpr, auc)
+areaUnderCurve = auc = auc(fpr, tpr)
+modelParam  = ['Number of Branches','Learning Rate','Batch Size','Number of Layers','Number of Neurons','NN Architecture','Numer of Epochs','AUC']
+df = pd.DataFrame(np.array([[numBranches,learnRate,batchSize,numLayers,numNeurons,network,numEpochs,areaUnderCurve]]),columns=modelParam)
+df.to_csv('hyperparameterRecord.csv', mode='a', header=False, index=False)
+# print(df.to_string(columns=modelParam, index=False))
+# print('Area under ROC curve: %.4f'%(auc))
 compare_train_test(kModel, X_train, y_train, X_test, y_test)
-
-r0  = ['name','var']
-r1  = ['fpr',fpr]
-r2  = ['tpr',tpr]
-r3  = ['thresholds',thresholds]
-
-with open(name, 'a') as csvFile:
-        writer = csv.writer(csvFile)
-        writer.writerow(r0)
-        writer.writerow(r1)
-        writer.writerow(r2)
-        writer.writerow(r3)
-
-csvFile.close()
+score = neuralNet.predict(X).ravel()
 
 
+# r0  = ['name','var']
+# r1  = ['fpr',fpr]
+# r2  = ['tpr',tpr]
+# r3  = ['thresholds',thresholds]
+# r4  = ['score',score]
 
+
+saveDataCol = ['fpr','tpr','thresholds','score']
+saveData = pd.DataFrame(np.array([[fpr,tpr,thresholds,score]]),columns=saveDataCol)
+saveData.to_csv(name, mode='a', header=False, index=False)
+print('Saved Scores')
+# with open(name, 'a') as csvFile:
+#         writer = csv.writer(csvFile)
+#         writer.writerow(r0)
+#         writer.writerow(r1)
+#         writer.writerow(r2)
+#         writer.writerow(r3)
+#         writer.writerow(r4)
+
+# csvFile.close()
+
+plotROC(fpr, tpr, auc)
 pd.DataFrame(kModel.history).plot(figsize=(8,5))
 plt.grid(True)
 plt.gca().set_ylim(0,1)
 plt.show()
 
-
+print(df.to_string(columns=modelParam, index=False))
