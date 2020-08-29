@@ -96,7 +96,7 @@ if scanROC:
     signifs2={}
     syst=float(args.syst)
     stat=0.0
-    maxsignif=0
+    maxsignif=0.0
     maxbdt=2
     maxs=0
     maxb=0
@@ -113,7 +113,7 @@ if scanROC:
             maxs=s
             maxb=b
         # print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
-    print("BDT Threshold for Max BDT????? = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
+    print("Score Threshold for Max Sigf. = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
 
 drawPlots=False
 if drawPlots:

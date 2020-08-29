@@ -7,7 +7,8 @@ import csv,sys
 import uproot
 import numpy as np
 from numpy import array
-np.set_printoptions(threshold=np.inf)
+np.set_printoptions(threshold=sys.maxsize)
+# np.set_printoptions(threshold=np.inf)
 import tensorflow as tf
 import tkinter as tk
 import matplotlib
@@ -31,7 +32,7 @@ tree = 'OutputTree'
 name = 'rocDataNN.csv'
 ###########################################################################################################################
 # Branches names of high/low level variables aka: features.
-branches = ['numjet']
+# branches = ['numjet']
 # branches = ['numlep','numjet','lep1pT','lep1eta','lep1phi','lep1m','lep2pT','lep2eta','lep2phi','lep2m','lep3pT',
 #'lep3eta','lep3phi','lep3m','mt1','mt2','mt3','dr1','dr2','dr3','btag','cent','srap','m_bb','h_b']
 # branches = ['numlep','numjet','lep1pT','lep1eta','lep1phi','lep1m','lep2pT','lep2eta','lep2phi','lep2m','lep3pT'
@@ -97,8 +98,8 @@ def plotROC(x,y,AUC):
 def compare_train_test(kModel, X_train, y_train, X_test, y_test, bins=30):
     decisions = []
     for X,y in ((X_train, y_train), (X_test, y_test)):
-        d1 = neuralNet.predict(X[y>0.5]).ravel()
-        d2 = neuralNet.predict(X[y<0.5]).ravel()
+        d1 = neuralNet.predict(X[y>0.5]).ravel()# signal 
+        d2 = neuralNet.predict(X[y<0.5]).ravel()# background
         decisions += [d1, d2]
     low = min(np.min(d) for d in decisions)
     high = max(np.max(d) for d in decisions)
@@ -137,23 +138,30 @@ areaUnderCurve = auc = auc(fpr, tpr)
 modelParam  = ['Number of Branches','Learning Rate','Batch Size','Number of Layers','Number of Neurons','NN Architecture','Numer of Epochs','AUC']
 df = pd.DataFrame(np.array([[numBranches,learnRate,batchSize,numLayers,numNeurons,network,numEpochs,areaUnderCurve]]),columns=modelParam)
 df.to_csv('hyperparameterRecord.csv', mode='a', header=False, index=False)
-# print(df.to_string(columns=modelParam, index=False))
-# print('Area under ROC curve: %.4f'%(auc))
+
 compare_train_test(kModel, X_train, y_train, X_test, y_test)
-score = neuralNet.predict(X).ravel()
+neuralNet.save('test.h5')
+# score = neuralNet.predict(X).ravel()
 
 
+# saveDataCol = ['fpr','tpr','thresholds','score']
+# saveData = pd.DataFrame(np.array([[fpr,tpr,thresholds,score]]),columns=saveDataCol)
+
+print(df.to_string(columns=modelParam, index=False))
+# plotROC(fpr, tpr, auc)
+# pd.DataFrame(kModel.history).plot(figsize=(8,5))
+# plt.grid(True)
+# plt.gca().set_ylim(0,1)
+# plt.show()
+
+
+#############################
+#############################
 # r0  = ['name','var']
 # r1  = ['fpr',fpr]
 # r2  = ['tpr',tpr]
 # r3  = ['thresholds',thresholds]
 # r4  = ['score',score]
-
-
-saveDataCol = ['fpr','tpr','thresholds','score']
-saveData = pd.DataFrame(np.array([[fpr,tpr,thresholds,score]]),columns=saveDataCol)
-saveData.to_csv(name, mode='a', header=False, index=False)
-print('Saved Scores')
 # with open(name, 'a') as csvFile:
 #         writer = csv.writer(csvFile)
 #         writer.writerow(r0)
@@ -161,13 +169,5 @@ print('Saved Scores')
 #         writer.writerow(r2)
 #         writer.writerow(r3)
 #         writer.writerow(r4)
-
 # csvFile.close()
 
-plotROC(fpr, tpr, auc)
-pd.DataFrame(kModel.history).plot(figsize=(8,5))
-plt.grid(True)
-plt.gca().set_ylim(0,1)
-plt.show()
-
-print(df.to_string(columns=modelParam, index=False))

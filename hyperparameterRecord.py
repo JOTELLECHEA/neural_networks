@@ -28,7 +28,16 @@ import numpy as np
 #     ]),columns=col)
 
 # print('\n Using an NN Architecture of 10-10-10-1\n')
-# print(data_10_10_10_1.head(10)) 
-modelParam  = ['Number of Branches','Learning Rate','Batch Size','Number of Layers','Number of Neurons','NN Architecture','Numer of Epochs','AUC']
-data = pd.read_csv('hyperparameterRecord.csv')
-print(data.to_string(columns=modelParam, index=False))
+# # print(data_10_10_10_1.head(10)) 
+# modelParam  = ['Number of Branches','Learning Rate','Batch Size','Number of Layers','Number of Neurons','NN Architecture','Numer of Epochs','AUC']
+# data = pd.read_csv('hyperparameterRecord.csv')
+# print(data.to_string(columns=modelParam, index=False))
+
+name = 'rocDataNN.csv'
+saveDataCol = ['fpr','tpr','thresholds','score']
+# saveData = pd.DataFrame(np.array([[fpr,tpr,thresholds,score]]),columns=saveDataCol)
+# saveData.to_csv(name, mode='a', header=False, index=False)
+# print('Saved Scores')
+
+data = pd.read_csv(name)
+print(data.head())
