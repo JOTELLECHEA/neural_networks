@@ -1,9 +1,8 @@
 *.root
 Dockerfile
 read*
-test*
-Test*
 *.png
+*.ipynb
 .ipynb_checkpoints/
 mlenv/
 
