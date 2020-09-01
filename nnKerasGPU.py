@@ -140,20 +140,23 @@ df = pd.DataFrame(np.array([[numBranches,learnRate,batchSize,numLayers,numNeuron
 df.to_csv('hyperparameterRecord.csv', mode='a', header=False, index=False)
 
 compare_train_test(kModel, X_train, y_train, X_test, y_test)
-neuralNet.save('test.h5')
-# score = neuralNet.predict(X).ravel()
 
 
-# saveDataCol = ['fpr','tpr','thresholds','score']
-# saveData = pd.DataFrame(np.array([[fpr,tpr,thresholds,score]]),columns=saveDataCol)
+saveDataCol = ['fpr','tpr','thresholds']
+saveData = pd.DataFrame(np.array([[fpr,tpr,thresholds]]),columns=saveDataCol)
+saveData.to_csv(name, mode = 'a', header=False, index=False)
 
 print(df.to_string(columns=modelParam, index=False))
-# plotROC(fpr, tpr, auc)
-# pd.DataFrame(kModel.history).plot(figsize=(8,5))
-# plt.grid(True)
-# plt.gca().set_ylim(0,1)
-# plt.show()
+plotROC(fpr, tpr, auc)
+pd.DataFrame(kModel.history).plot(figsize=(8,5))
+plt.grid(True)
+plt.gca().set_ylim(0,1)
+plt.show()
 
+print('Do you want to save this Model?')
+
+answer = input('Enter Yes or No: ')
+# neuralNet.save('test.h5')
 
 #############################
 #############################
