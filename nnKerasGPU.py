@@ -18,9 +18,9 @@ import math
 from math import log,sqrt
 from tensorflow import keras
 from tensorflow.keras import metrics
-from tensorflow.keras.models import Sequential,model_from_json,load_model
+from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Activation
-from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import EarlyStopping,ModelCheckpoint
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_curve,auc,roc_auc_score
 from sklearn.utils import shuffle
@@ -33,20 +33,14 @@ seed = 42
 tree = 'OutputTree'
 ###########################################################################################################################
 # Branches names of high/low level variables aka: features.
-# branches = ['numjet']
-# branches = ['numlep','numjet','lep1pT','lep1eta','lep1phi','lep1m','lep2pT','lep2eta','lep2phi','lep2m','lep3pT',
-#'lep3eta','lep3phi','lep3m','mt1','mt2','mt3','dr1','dr2','dr3','btag','cent','srap','m_bb','h_b']
-# branches = ['numlep','numjet','lep1pT','lep1eta','lep1phi','lep1m','lep2pT','lep2eta','lep2phi','lep2m','lep3pT'
-# 'lep3eta','lep3phi','lep3m']
-# branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','mt2','mt3']
 branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1']
 numBranches = len(branches)
-network     = [10,10,10,1]
+network     = [50,50,50,1]
 learnRate   = 0.01
 batchSize   = 570
 numLayers   = len(network)
 numNeurons  = sum(network)
-numEpochs   = 3
+numEpochs   = 150
 areaUnderCurve = 0 
 ###########################################################################################################################
 # Data read from file.
@@ -127,7 +121,15 @@ def compare_train_test(kModel, X_train, y_train, X_test, y_test, bins=30):
 ##########################################################################################################
 # Using model and setting parameters. 
 neuralNet = build_model()
-kModel = neuralNet.fit(X_train, y_train,class_weight=fix_imbal,epochs=numEpochs, batch_size=batchSize,validation_data=(X_dev, y_dev),verbose=1)
+
+checkPointsCallBack = ModelCheckpoint('temp.h5',save_best_only=True)
+earlyStopCallBack = EarlyStopping(patience=10, restore_best_weights=True)
+kModel = neuralNet.fit(X_train, y_train,class_weight=fix_imbal
+    ,epochs=numEpochs
+    ,batch_size=batchSize
+    ,validation_data=(X_dev, y_dev)
+    ,verbose=1
+    ,callbacks=[earlyStopCallBack,])
 
 # Prediction, fpr,tpr and threshold values for ROC.
 y_predicted = neuralNet.predict(X_test).ravel()
