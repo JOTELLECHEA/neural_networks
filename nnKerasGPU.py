@@ -8,7 +8,6 @@ import uproot
 import numpy as np
 from numpy import array
 np.set_printoptions(threshold=sys.maxsize)
-# np.set_printoptions(threshold=np.inf)
 import tensorflow as tf
 import tkinter as tk
 import matplotlib
@@ -141,36 +140,31 @@ df.to_csv('hyperparameterRecord.csv', mode='a', header=False, index=False)
 
 compare_train_test(kModel, X_train, y_train, X_test, y_test)
 
-
-saveDataCol = ['fpr','tpr','thresholds']
-saveData = pd.DataFrame(np.array([[fpr,tpr,thresholds]]),columns=saveDataCol)
-saveData.to_csv(name, mode = 'a', header=False, index=False)
-
 print(df.to_string(columns=modelParam, index=False))
 plotROC(fpr, tpr, auc)
 pd.DataFrame(kModel.history).plot(figsize=(8,5))
 plt.grid(True)
 plt.gca().set_ylim(0,1)
 plt.show()
-
+#############################
+r0  = ['name','var']
+r1  = ['fpr',fpr]
+r2  = ['tpr',tpr]
+r3  = ['thresholds',thresholds]
+with open(name, 'a') as csvFile:
+        writer = csv.writer(csvFile)
+        writer.writerow(r0)
+        writer.writerow(r1)
+        writer.writerow(r2)
+        writer.writerow(r3)
+csvFile.close()
+#############################
 print('Do you want to save this Model?')
 
-answer = input('Enter Yes or No: ')
-# neuralNet.save('test.h5')
-
-#############################
-#############################
-# r0  = ['name','var']
-# r1  = ['fpr',fpr]
-# r2  = ['tpr',tpr]
-# r3  = ['thresholds',thresholds]
-# r4  = ['score',score]
-# with open(name, 'a') as csvFile:
-#         writer = csv.writer(csvFile)
-#         writer.writerow(r0)
-#         writer.writerow(r1)
-#         writer.writerow(r2)
-#         writer.writerow(r3)
-#         writer.writerow(r4)
-# csvFile.close()
-
+answer = input('Enter y or n: ')
+print(answer)
+if (answer == 'Y' or answer == 'y'):
+    print('Saving.....')
+    neuralNet.save('test.h5')
+else:
+    print('DONE')

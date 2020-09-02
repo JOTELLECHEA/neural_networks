@@ -59,7 +59,7 @@ NNbdr1    = []
 
 
 for i in range(len(signal)):
-    if score[i] < 0.3: 
+    if score[i] >= 1: 
         NNsnumjet.append(X['numjet'].values[i])
         NNsnumlep.append(X['numlep'].values[i])
         NNsbtag.append(X['btag'].values[i])
