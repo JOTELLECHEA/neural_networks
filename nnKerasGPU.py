@@ -14,6 +14,8 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt 
 import pandas as pd
+import math
+from math import log,sqrt
 from tensorflow import keras
 from tensorflow.keras import metrics
 from tensorflow.keras.models import Sequential,model_from_json,load_model
@@ -24,11 +26,11 @@ from sklearn.metrics import roc_curve,auc,roc_auc_score
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils import class_weight
+import time
 sc = StandardScaler()
 # Variables.
 seed = 42
 tree = 'OutputTree'
-name = 'rocDataNN.csv'
 ###########################################################################################################################
 # Branches names of high/low level variables aka: features.
 # branches = ['numjet']
@@ -134,37 +136,114 @@ fpr, tpr, thresholds = roc_curve(y_test, y_predicted)
 
 # AUC
 areaUnderCurve = auc = auc(fpr, tpr)
-modelParam  = ['Number of Branches','Learning Rate','Batch Size','Number of Layers','Number of Neurons','NN Architecture','Numer of Epochs','AUC']
-df = pd.DataFrame(np.array([[numBranches,learnRate,batchSize,numLayers,numNeurons,network,numEpochs,areaUnderCurve]]),columns=modelParam)
-df.to_csv('hyperparameterRecord.csv', mode='a', header=False, index=False)
 
 compare_train_test(kModel, X_train, y_train, X_test, y_test)
 
-print(df.to_string(columns=modelParam, index=False))
 plotROC(fpr, tpr, auc)
 pd.DataFrame(kModel.history).plot(figsize=(8,5))
 plt.grid(True)
 plt.gca().set_ylim(0,1)
 plt.show()
+
+nSig=(5709./20000.)*990
+nBG=((320752+3332932+158645)/(610000.+270000.+5900000.))*(5.85e6+612000.+269000)
+def getZPoisson(s, b, stat, syst):
+    """
+    The significance for optimisation.
+
+    s: total number of signal events
+    b: total number of background events
+    stat: relative MC stat uncertainty for the total bkg. 
+    syst: relative syst uncertainty on background
+
+    Note that the function already accounts for the sqrt(b) 
+    uncertainty from the data, so we only need to pass in additional
+    stat and syst terms.  e.g. the stat term above is really only
+    characterizing the uncertainty due to limited MC statistics used
+    to estimate the background yield.
+    """
+    n = s+b
+
+    # this is a relative uncertainty
+    sigma = math.sqrt(stat**2+syst**2)
+
+    # turn into the total uncertainty
+    sigma=sigma*b
+
+    if s <= 0 or b <= 0:
+        return 0
+
+    factor1=0
+    factor2=0
+    
+    if (sigma < 0.01):
+        #In the limit where the total BG uncertainty is zero, 
+        #this reduces to approximately s/sqrt(b)
+        factor1 = n*log((n/b))
+        factor2 = (n-b)
+    else:
+        factor1 = n*log( (n*(b+sigma**2))/((b**2)+n*sigma**2) )
+        factor2 = ((b**2)/(sigma**2))*log( 1 + ((sigma**2)*(n-b))/(b*(b+sigma**2)) )
+    
+    signif=0
+    try:
+        signif=math.sqrt( 2 * (factor1 - factor2))
+    except ValueError:
+        signif=0
+        
+    return signif
+signifs=np.array([])
+signifs2={}
+syst=0.0
+stat=0.0
+maxsignif=0.0
+maxbdt=2
+maxs=0
+maxb=0
+for f,t,bdtscore in zip(fpr,tpr,thresholds):
+    s=nSig*t
+    b=nBG*f
+    n=s+b
+    signif = getZPoisson(s,b,stat,syst)
+    np.append(signifs,signif)
+    signifs2[f]=signif
+    if signif>maxsignif:
+        maxsignif=signif
+        maxbdt=bdtscore
+        maxs=s
+        maxb=b
+    # print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
+print("Score Threshold for Max Sigf. = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
+pre = time.strftime('%Y_%m_%d_')
+suf = time.strftime('_%H.%M.%S')
+name = 'data/'+pre + 'rocDataNN' + suf +'.csv'
+modelName = 'data/'+pre + 'neuralNet' + suf +'.h5'
+modelParam  = ['NN Archi.','#Branch.','LearnRate','BatchSize','#Layers','#Neurons','#Epochs','AUC','MaxSigif.','File']
+df = pd.DataFrame(np.array([[network,numBranches,learnRate,batchSize,numLayers,numNeurons,numEpochs,areaUnderCurve,maxsignif,name[5:]]]),columns=modelParam)
+df.to_csv('hyperparameterRecord.csv', mode='a', header=True, index=False)
+print(df.to_string(justify='left',columns=modelParam, index=False))
 #############################
 r0  = ['name','var']
 r1  = ['fpr',fpr]
 r2  = ['tpr',tpr]
 r3  = ['thresholds',thresholds]
+r4  = ['Max Signif',maxsignif ]
 with open(name, 'a') as csvFile:
         writer = csv.writer(csvFile)
         writer.writerow(r0)
         writer.writerow(r1)
         writer.writerow(r2)
         writer.writerow(r3)
+        writer.writerow(r4)
 csvFile.close()
 #############################
 print('Do you want to save this Model?')
 
-answer = input('Enter y or n: ')
+answer = input('Enter S to save: ')
 print(answer)
-if (answer == 'Y' or answer == 'y'):
+if (answer == 'S' or answer == 's'):
     print('Saving.....')
-    neuralNet.save('test.h5')
+    neuralNet.save(modelName)
+    print('Modeled saved')
 else:
-    print('DONE')
+    print('Model Not Saved')

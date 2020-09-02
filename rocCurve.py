@@ -92,29 +92,30 @@ def getZPoisson(s, b, stat, syst):
 
 scanROC=True
 if scanROC:
-    signifs=np.array([])
-    signifs2={}
-    syst=float(args.syst)
-    stat=0.0
-    maxsignif=0.0
-    maxbdt=2
-    maxs=0
-    maxb=0
-    for f,t,bdtscore in zip(fpr,tpr,thresholds):
-        s=nSig*t
-        b=nBG*f
-        n=s+b
-        signif = getZPoisson(s,b,stat,syst)
-        np.append(signifs,signif)
-        signifs2[f]=signif
-        if signif>maxsignif:
-            maxsignif=signif
-            maxbdt=bdtscore
-            maxs=s
-            maxb=b
-        # print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
-    print("Score Threshold for Max Sigf. = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
-
+    def scanner(fpr, tpr,thresholds):
+        signifs=np.array([])
+        signifs2={}
+        syst=float(args.syst)
+        stat=0.0
+        maxsignif=0.0
+        maxbdt=2
+        maxs=0
+        maxb=0
+        for f,t,bdtscore in zip(fpr,tpr,thresholds):
+            s=nSig*t
+            b=nBG*f
+            n=s+b
+            signif = getZPoisson(s,b,stat,syst)
+            np.append(signifs,signif)
+            signifs2[f]=signif
+            if signif>maxsignif:
+                maxsignif=signif
+                maxbdt=bdtscore
+                maxs=s
+                maxb=b
+            # print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
+        print("Score Threshold for Max Sigf. = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
+    scanner(fpr,tpr,thresholds)
 drawPlots=False
 if drawPlots:
     bins =30

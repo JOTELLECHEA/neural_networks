@@ -4,6 +4,7 @@
 # Reference  :http://cdsweb.cern.ch/record/2220969/files/ATL-PHYS-PUB-2016-023.pdf
 ###########################################################################################################################\
 import uproot
+import argparse
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -22,6 +23,11 @@ tree = 'OutputTree'
 branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1']
 numBranches = len(branches)
 ###########################################################################################################################
+parser = argparse.ArgumentParser(description= 'sigf of BDT/NN/DN')
+parser.add_argument("--file", type=str, help= "Use '--file=' followed by a *.h5 file")
+args = parser.parse_args()
+file = str(args.file)
+###########################################################################################################################
 # Data read from file.
 signal         = uproot.open('data/new_signal_tthh.root')[tree]
 df_signal      = signal.pandas.df(branches)
@@ -34,7 +40,7 @@ shuffleBackground = shuffle(df_background,random_state=seed)
 X = pd.concat([df_signal,shuffleBackground])
 z = sc.fit_transform(X)
 
-neuralNet = keras.models.load_model('data.h5')
+neuralNet = keras.models.load_model(file)
 
 score = neuralNet.predict(z).ravel()
 
