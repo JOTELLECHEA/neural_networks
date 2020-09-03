@@ -23,7 +23,7 @@ tree = 'OutputTree'
 branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1']
 numBranches = len(branches)
 ###########################################################################################################################
-parser = argparse.ArgumentParser(description= 'sigf of BDT/NN/DN')
+parser = argparse.ArgumentParser(description= 'Plot 1D plots of sig/bac')
 parser.add_argument("--file", type=str, help= "Use '--file=' followed by a *.h5 file")
 args = parser.parse_args()
 file = str(args.file)
@@ -33,8 +33,6 @@ signal         = uproot.open('data/new_signal_tthh.root')[tree]
 df_signal      = signal.pandas.df(branches)
 background     = uproot.open('data/background.root')[tree]
 df_background  = background.pandas.df(branches)
-# alldata        = uproot.open('data/full.root')[tree]
-# df_alldata     = alldata.pandas.df(branches) 
 shuffleBackground = shuffle(df_background,random_state=seed)
 #signal and limited shuffle background data to counter inbalanced data problem.
 X = pd.concat([df_signal,shuffleBackground])
@@ -63,28 +61,31 @@ NNbh_b    = []
 NNbmt1    = []
 NNbdr1    = []
 
+ScoreForMaxSignif = 0.806
 
-for i in range(len(signal)):
-    if score[i] >= 1: 
-        NNsnumjet.append(X['numjet'].values[i])
-        NNsnumlep.append(X['numlep'].values[i])
-        NNsbtag.append(X['btag'].values[i])
-        NNssrap.append(X['srap'].values[i])
-        NNscent.append(X['cent'].values[i])
-        NNsm_bb.append(X['m_bb'].values[i])
-        NNsh_b.append(X['h_b'].values[i])
-        NNsmt1.append(X['mt1'].values[i])
-        NNsdr1.append(X['dr1'].values[i])
-    # elif score[i] < 0.5:
-        NNbnumjet.append(X['numjet'].values[i])
-        NNbnumlep.append(X['numlep'].values[i])
-        NNbbtag.append(X['btag'].values[i])
-        NNbsrap.append(X['srap'].values[i])
-        NNbcent.append(X['cent'].values[i])
-        NNbm_bb.append(X['m_bb'].values[i])
-        NNbh_b.append(X['h_b'].values[i])
-        NNbmt1.append(X['mt1'].values[i])
-        NNbdr1.append(X['dr1'].values[i])
+for i in range(len(X)):
+    if i<len(signal):
+        if score[i]>ScoreForMaxSignif: 
+            NNsnumjet.append(X['numjet'].values[i])
+            NNsnumlep.append(X['numlep'].values[i])
+            NNsbtag.append(X['btag'].values[i])
+            NNssrap.append(X['srap'].values[i])
+            NNscent.append(X['cent'].values[i])
+            NNsm_bb.append(X['m_bb'].values[i])
+            NNsh_b.append(X['h_b'].values[i])
+            NNsmt1.append(X['mt1'].values[i])
+            NNsdr1.append(X['dr1'].values[i])
+    else:
+        if score[i]>ScoreForMaxSignif:
+            NNbnumjet.append(X['numjet'].values[i])
+            NNbnumlep.append(X['numlep'].values[i])
+            NNbbtag.append(X['btag'].values[i])
+            NNbsrap.append(X['srap'].values[i])
+            NNbcent.append(X['cent'].values[i])
+            NNbm_bb.append(X['m_bb'].values[i])
+            NNbh_b.append(X['h_b'].values[i])
+            NNbmt1.append(X['mt1'].values[i])
+            NNbdr1.append(X['dr1'].values[i])
 
 snumlep = df_signal['numlep'].values
 bnumlep = df_background['numlep'].values
@@ -118,36 +119,41 @@ def hPlot(x,y,nx,ny,s,e,Name):
     plt.hist(x, bins=bins,histtype='step',label='signal',linestyle='solid',color='firebrick')
     plt.hist(ny, bins=bins,histtype='step',label='NN-background',linestyle='dashed',color='steelblue')
     plt.hist(nx, bins=bins,histtype='step',label='NN-signal',linestyle='dashed',color='firebrick')
-    plt.legend()
+    plt.legend(loc='upper right')
     plt.xlabel(Name)
     plt.ylabel('Events')
     plt.yscale('log')
 
-plot1 = plt.figure(1)
+
+fig1 = plt.figure()
+
+ax1 = fig1.add_subplot(221)
 hPlot(snumjet,bnumjet,NNsnumjet,NNbnumjet,1,16,branches[0])
 
-plot2 = plt.figure(2)
+ax2 = fig1.add_subplot(222)
 hPlot(snumlep,bnumlep,NNsnumlep,NNbnumlep,1,3,branches[1])
 
-plot3 = plt.figure(3)
-hPlot(sbtag,bbtag,NNsbtag,NNbbtag,0,16,branches[2])
+ax3 = fig1.add_subplot(223)
+hPlot(sbtag,bbtag,NNsbtag,NNbbtag,0,10,branches[2])
 
-plot4 = plt.figure(4)
+ax4 = fig1.add_subplot(224)
 hPlot(ssrap,bsrap,NNssrap,NNbsrap,0,10,branches[3])
 
-plot5 = plt.figure(5)
-hPlot(scent,bcent,NNscent,NNbcent,0,10,branches[4])
+fig2 = plt.figure(2)
 
-plot6 = plt.figure(6)
+ax1 = fig2.add_subplot(221)
+hPlot(scent,bcent,NNscent,NNbcent,0,2,branches[4])
+
+ax2 = fig2.add_subplot(222)
 hPlot(sm_bb,bm_bb,NNsm_bb,NNbm_bb,0,250,branches[5])
 
-plot7 = plt.figure(7)
+ax3 = fig2.add_subplot(223)
 hPlot(sh_b,bh_b,NNsh_b,NNbh_b,0,1500,branches[6])
 
-plot8 = plt.figure(8)
+ax4 = fig2.add_subplot(224)
 hPlot(smt1,bmt1,NNsmt1,NNbmt1,0,16,branches[7])
 
-plot9 = plt.figure(9)
+plot3 = plt.figure(3)
 hPlot(sdr1,bdr1,NNsdr1,NNbdr1,0,8,branches[8])
 
 plt.show()

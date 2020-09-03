@@ -1,10 +1,6 @@
-NN Archi.,#Branch.,LearnRate,BatchSize,#Layers,#Neurons,#Epochs,AUC,MaxSigif.,File
-"[10, 10, 10, 1]",9,0.01,570,4,31,3,0.8459293822305018,0.2871659892556694,2020_09_01_rocDataNN_21.43.57.csv
-NN Archi.,#Branch.,LearnRate,BatchSize,#Layers,#Neurons,#Epochs,AUC,MaxSigif.,File
-"[50, 50, 50, 1]",9,0.01,570,4,151,150,0.5,0.1452578783480433,2020_09_01_rocDataNN_22.23.19.csv
-NN Archi.,#Branch.,LearnRate,BatchSize,#Layers,#Neurons,#Epochs,AUC,MaxSigif.,File
-"[50, 50, 50, 1]",9,0.01,570,4,151,150,0.8244003935879876,0.34605758970636497,2020_09_02_rocDataNN_15.18.05.csv
-NN Archi.,#Branch.,LearnRate,BatchSize,#Layers,#Neurons,#Epochs,AUC,MaxSigif.,File
-"[50, 50, 50, 1]",9,0.01,570,4,151,5,0.8367779369101391,0.2868897662342565,2020_09_02_rocDataNN_17.00.50.csv
-NN Archi.,#Branch.,LearnRate,BatchSize,#Layers,#Neurons,#Epochs,AUC,MaxSigif.,File
-"[50, 50, 50, 1]",9,0.01,570,4,151,5,0.8540269000877942,0.31675346675437555,2020_09_02_rocDataNN_17.13.02.csv
+NN Archi.,#Br.,LR,Batch,#Layers,#Neurons,#Epochs,#EpochsRan,AUC,Sigif.,File
+"[50, 50, 50, 1]",9,0.01,570,4,151,5,5,0.854585,0.331,2020_09_02_rocDataNN_22.20.35.csv
+"[150, 100, 50, 1]",9,0.01,570,4,301,150,22,0.829371,0.338,2020_09_02_rocDataNN_22.54.17.csv
+"[10, 10, 1]",9,0.01,570,3,21,150,24,0.854716,0.361,2020_09_02_rocDataNN_23.07.23.csv
+"[10, 10, 5, 5, 3, 2, 1]",9,0.001,570,7,36,150,15,0.855001,0.262,2020_09_03_rocDataNN_02.01.20.csv
+"[25, 20, 15, 10, 5, 2, 1]",9,0.001,570,7,78,150,20,0.852983,0.280,2020_09_03_rocDataNN_11.08.32.csv

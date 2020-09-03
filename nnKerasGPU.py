@@ -36,12 +36,12 @@ tree = 'OutputTree'
 # Branches names of high/low level variables aka: features.
 branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1']
 numBranches = len(branches)
-network     = [50,50,50,1]
-learnRate   = 0.01
+network     = [25,20,15,10,5,2,1]#[10,10,1]
+learnRate   = 0.001
 batchSize   = 570
 numLayers   = len(network)
 numNeurons  = sum(network)
-numEpochs   = 5
+numEpochs   = 150
 areaUnderCurve = 0 
 ###########################################################################################################################
 # Data read from file.
@@ -57,7 +57,7 @@ X = pd.concat([df_signal,shuffleBackground])
 X = sc.fit_transform(X)
 
 # Labeling data with 1's and 0's to distinguish. 
-y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
+y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))));
 
 # Shuffle full data and split into train/test and validation set.
 X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.5, random_state=seed)
@@ -74,7 +74,10 @@ def build_model():
     model.add(Dense(network[0], input_dim = numBranches, activation='relu'))
     model.add(Dense(network[1] , activation = 'relu'))   #hidden layer.
     model.add(Dense(network[2] , activation = 'relu'))   #hidden layer.
-    model.add(Dense(network[3] , activation  = 'sigmoid')) #output layer.
+    model.add(Dense(network[3] , activation = 'relu'))   #hidden layer.
+    model.add(Dense(network[4] , activation = 'relu'))   #hidden layer.
+    model.add(Dense(network[5] , activation = 'relu'))   #hidden layer.
+    model.add(Dense(network[6] , activation  = 'sigmoid')) #output layer.
     model.compile(loss = 'binary_crossentropy', optimizer = opt, metrics = ['accuracy'])
     return  model
 
@@ -222,14 +225,17 @@ for f,t,bdtscore in zip(fpr,tpr,thresholds):
         maxs=s
         maxb=b
     # print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
-print("Score Threshold for Max Sigf. = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
+print("Score Threshold for Max Signif. = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
+EpochsRan = len(kModel.history['loss']) 
 pre = time.strftime('%Y_%m_%d_')
 suf = time.strftime('_%H.%M.%S')
 name = 'data/'+pre + 'rocDataNN' + suf +'.csv'
 modelName = 'data/'+pre + 'neuralNet' + suf +'.h5'
-modelParam  = ['NN Archi.','#Branch.','LearnRate','BatchSize','#Layers','#Neurons','#Epochs','AUC','MaxSigif.','File']
-df = pd.DataFrame(np.array([[network,numBranches,learnRate,batchSize,numLayers,numNeurons,numEpochs,areaUnderCurve,maxsignif,name[5:]]]),columns=modelParam)
-df.to_csv('hyperparameterRecord.csv', mode='a', header=True, index=False)
+areaUnderCurve = "{:.6f}".format(areaUnderCurve)
+maxsignif = "{:.3f}".format(maxsignif)
+modelParam  = ['NN Archi.','#Br.','LR','Batch','#Layers','#Neurons','#Epochs','#EpochsRan','AUC','Sigif.','File']
+df = pd.DataFrame(np.array([[network,numBranches,learnRate,batchSize,numLayers,numNeurons,numEpochs,EpochsRan,areaUnderCurve,maxsignif,name[5:]]]),columns=modelParam)
+df.to_csv('hyperparameterRecord.csv', mode='a', header=False, index=False)
 print(df.to_string(justify='left',columns=modelParam, index=False))
 #############################
 r0  = ['name','var']
