@@ -4,3 +4,7 @@ NN Archi.,#Branch.,LearnRate,BatchSize,#Layers,#Neurons,#Epochs,AUC,MaxSigif.,Fi
 "[50, 50, 50, 1]",9,0.01,570,4,151,150,0.5,0.1452578783480433,2020_09_01_rocDataNN_22.23.19.csv
 NN Archi.,#Branch.,LearnRate,BatchSize,#Layers,#Neurons,#Epochs,AUC,MaxSigif.,File
 "[50, 50, 50, 1]",9,0.01,570,4,151,150,0.8244003935879876,0.34605758970636497,2020_09_02_rocDataNN_15.18.05.csv
+NN Archi.,#Branch.,LearnRate,BatchSize,#Layers,#Neurons,#Epochs,AUC,MaxSigif.,File
+"[50, 50, 50, 1]",9,0.01,570,4,151,5,0.8367779369101391,0.2868897662342565,2020_09_02_rocDataNN_17.00.50.csv
+NN Archi.,#Branch.,LearnRate,BatchSize,#Layers,#Neurons,#Epochs,AUC,MaxSigif.,File
+"[50, 50, 50, 1]",9,0.01,570,4,151,5,0.8540269000877942,0.31675346675437555,2020_09_02_rocDataNN_17.13.02.csv

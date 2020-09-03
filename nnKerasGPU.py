@@ -6,6 +6,7 @@
 import csv,sys
 import uproot
 import numpy as np
+import shap
 from numpy import array
 np.set_printoptions(threshold=sys.maxsize)
 import tensorflow as tf
@@ -40,7 +41,7 @@ learnRate   = 0.01
 batchSize   = 570
 numLayers   = len(network)
 numNeurons  = sum(network)
-numEpochs   = 150
+numEpochs   = 5
 areaUnderCurve = 0 
 ###########################################################################################################################
 # Data read from file.
@@ -135,13 +136,19 @@ kModel = neuralNet.fit(X_train, y_train,class_weight=fix_imbal
 y_predicted = neuralNet.predict(X_test).ravel()
 fpr, tpr, thresholds = roc_curve(y_test, y_predicted)
 
-
 # AUC
 areaUnderCurve = auc = auc(fpr, tpr)
 
-compare_train_test(kModel, X_train, y_train, X_test, y_test)
-
+plot1 = plt.figure(1)
 plotROC(fpr, tpr, auc)
+compare_train_test(kModel, X_train, y_train, X_test, y_test)
+##########################################################################
+plot2 = plt.figure(2)
+background = X_train[np.random.choice(X_train.shape[0], 100, replace=False)]
+explainer = shap.DeepExplainer(neuralNet, background)
+shap_values = explainer.shap_values(X_test)
+shap.summary_plot(shap_values, X_train, plot_type="bar")
+###################################################################
 pd.DataFrame(kModel.history).plot(figsize=(8,5))
 plt.grid(True)
 plt.gca().set_ylim(0,1)
