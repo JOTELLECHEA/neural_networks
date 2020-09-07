@@ -246,11 +246,18 @@ def augment_rootfile(filepath):
             mt1[0]     = -999
             dr1[0]     = -999
         # event.jetpT[k],event.jeteta[k],event.jetphi[k]
-        jet1pT  = event.jetpT[0]
-        jet1eta = event.jeteta[0]
-        jet1phi = event.jetphi[0]
-        jet1b   = event.jetbhadron[0]
-        jet1c   = event.jetchadron[0]
+        if event.njet[0] == 1: 
+            jet1pT  = event.jetpT[0]
+            jet1eta = event.jeteta[0]
+            jet1phi = event.jetphi[0]
+            jet1b   = event.jetbhadron[0]
+            jet1c   = event.jetchadron[0]
+        else:
+            jet1pT  = -999
+            jet1eta = -9
+            jet1phi = -9
+            jet1b   = -9
+            jet1c   = -9
 
 
         # fill new branches
