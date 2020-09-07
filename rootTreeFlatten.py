@@ -466,7 +466,7 @@ def augment_rootfile(filepath):
                     jet3phi = event.jetphi[2]
                     jet3b   = event.jetbhadron[2]
                     jet3c   = event.jetchadron[2]
-                    if jet > 3 
+                    if jet > 3: 
                         jet4pT  = event.jetpT[3]
                         jet4eta = event.jeteta[3]
                         jet4phi = event.jetphi[3]
@@ -502,7 +502,7 @@ def augment_rootfile(filepath):
                                             jet9phi = event.jetphi[8]
                                             jet9b   = event.jetbhadron[8]
                                             jet9c   = event.jetchadron[8]
-                                            if jet > 9 
+                                            if jet > 9 :
                                                 jet10pT  = event.jetpT[9]
                                                 jet10eta = event.jeteta[9]
                                                 jet10phi = event.jetphi[9]
