@@ -1,9 +1,5 @@
 #!/usr/bin/env python2
 
-'''
-script to add sfs to ntuples
-'''
-# from __future__ import division
 import os, time, sys, argparse,math
 
 import numpy as np
@@ -28,15 +24,12 @@ def augment_rootfile(filepath):
     lep1pT  = array( 'f', [ 0 ] )
     lep1eta = array( 'f', [ 0 ] )
     lep1phi = array( 'f', [ 0 ] )
-    lep1m   = array( 'f', [ 0 ] )
     lep2pT  = array( 'f', [ 0 ] )
     lep2eta = array( 'f', [ 0 ] )
     lep2phi = array( 'f', [ 0 ] )
-    lep2m   = array( 'f', [ 0 ] )
     lep3pT  = array( 'f', [ 0 ] )
     lep3eta = array( 'f', [ 0 ] )
     lep3phi = array( 'f', [ 0 ] )
-    lep3m   = array( 'f', [ 0 ] )
     mt1     = array( 'f', [ 0 ] )
     mt2     = array( 'f', [ 0 ] )
     mt3     = array( 'f', [ 0 ] )
@@ -49,24 +42,23 @@ def augment_rootfile(filepath):
     m_bb    = array( 'f', [ 0 ] )
     h_b     = array( 'f', [ 0 ] )
     chi     = array( 'f', [ 0 ] )
-
-
-
+    jet1pT  = array( 'f', [ 0 ] )
+    jet1eta = array( 'f', [ 0 ] )
+    jet1phi = array( 'f', [ 0 ] )
+    jet1b   = array( 'f', [ 0 ] )
+    jet1c   = array( 'f', [ 0 ] )
 
     br_numlep  = tree.Branch( 'numlep' , numlep , 'numlep/F'  )
     br_numjet  = tree.Branch( 'numjet' , numjet , 'numjet/F'  )
     br_lep1pT  = tree.Branch( 'lep1pT' , lep1pT , 'lep1pT/F'  )
     br_lep1eta = tree.Branch( 'lep1eta', lep1eta, 'lep1eta/F' )
     br_lep1phi = tree.Branch( 'lep1phi', lep1phi, 'lep1phi/F' )
-    br_lep1m   = tree.Branch( 'lep1m'  , lep1m  , 'lep1m/F'   )
     br_lep2pT  = tree.Branch( 'lep2pT' , lep2pT , 'lep2pT/F'  )
     br_lep2eta = tree.Branch( 'lep2eta', lep2eta, 'lep2eta/F' )
     br_lep2phi = tree.Branch( 'lep2phi', lep2phi, 'lep2phi/F' )
-    br_lep2m   = tree.Branch( 'lep2m'  , lep2m  , 'lep2m/F'   )
     br_lep3pT  = tree.Branch( 'lep3pT' , lep3pT , 'lep3pT/F'  )
     br_lep3eta = tree.Branch( 'lep3eta', lep3eta, 'lep3eta/F' )
     br_lep3phi = tree.Branch( 'lep3phi', lep3phi, 'lep3phi/F' )
-    br_lep3m   = tree.Branch( 'lep3m'  , lep3m  , 'lep3m/F'   )
     br_mt1     = tree.Branch( 'mt1'    , mt1    , 'mt1/F'     )
     br_mt2     = tree.Branch( 'mt2'    , mt2    , 'mt2/F'     )
     br_mt3     = tree.Branch( 'mt3'    , mt3    , 'mt3/F'     )
@@ -79,6 +71,11 @@ def augment_rootfile(filepath):
     br_m_bb    = tree.Branch( 'm_bb'   , m_bb   , 'm_bb/F'    )
     br_h_b     = tree.Branch( 'h_b'    , h_b    , 'h_b/F'     )
     br_chi     = tree.Branch( 'chi'    , chi    , 'chi/F'     )
+    br_jet1pT  = tree.Branch( 'jet1pT' , jet1pT , 'jet1pT/F'  )
+    br_jet1eta = tree.Branch( 'jet1eta', jet1eta, 'jet1eta/F' )
+    br_jet1phi = tree.Branch( 'jet1phi', jet1phi, 'jet1phi/F' )
+    br_jet1b   = tree.Branch( 'jet1b'  , jet1b  , 'jet1b/F'   )
+    br_jet1c   = tree.Branch( 'jet1c'  , jet1c  , 'jet1c/F'   )
 
     # track the time
     start_time = time.clock()
@@ -213,21 +210,18 @@ def augment_rootfile(filepath):
                 chi[0] = -999
     ######################################################################################
         if lep >0:
-            lep1m[0]   = 0.0
             lep1pT[0]  = event.leppT[0]
             lep1eta[0] = event.lepeta[0]
             lep1phi[0] = event.lepphi[0]
             mt1[0]     = missingPT(0)
             if len(dR1) > 0 : dr1[0]  = min(dR1)
             if lep > 1:
-                lep2m[0]   = 0.0
                 lep2pT[0]  = event.leppT[1]
                 lep2eta[0] = event.lepeta[1]
                 lep2phi[0] = event.lepphi[1]
                 mt2[0] = missingPT(1)
                 if len(dR2) > 0 : dr2[0]  = min(dR2)
                 if lep > 2:
-                    lep3m[0]   = 0.0
                     lep3pT[0]  = event.leppT[2]
                     lep3eta[0] = event.lepeta[2]
                     lep3phi[0] = event.lepphi[2]
@@ -237,25 +231,26 @@ def augment_rootfile(filepath):
                     lep3pT[0]  = -999
                     lep3eta[0] = -9
                     lep3phi[0] = -9
-                    lep3m[0]   = -999
                     mt3[0]     = -999
                     dr3[0]     = -999
             else:
                 lep2pT[0]  = -999
                 lep2eta[0] = -9
                 lep2phi[0] = -9
-                lep2m[0]   = -999
                 mt2[0]     = -999
                 dr2[0]     = -999
         else:
             lep1pT[0]  = -999
             lep1eta[0] = -9
             lep1phi[0] = -9
-            lep1m[0]   = -999
             mt1[0]     = -999
             dr1[0]     = -999
-
-
+        # event.jetpT[k],event.jeteta[k],event.jetphi[k]
+        jet1pT  = event.jetpT[0]
+        jet1eta = event.jeteta[0]
+        jet1phi = event.jetphi[0]
+        jet1b   = event.jetbhadron[0]
+        jet1c   = event.jetchadron[0]
 
 
         # fill new branches
@@ -264,15 +259,12 @@ def augment_rootfile(filepath):
         br_lep1pT.Fill()
         br_lep1eta.Fill()
         br_lep1phi.Fill()
-        br_lep1m.Fill()
         br_lep2pT.Fill()
         br_lep2eta.Fill()
         br_lep2phi.Fill()
-        br_lep2m.Fill()
         br_lep3pT.Fill()
         br_lep3eta.Fill()
         br_lep3phi.Fill()
-        br_lep3m.Fill()
         br_mt1.Fill()
         br_mt2.Fill()
         br_mt3.Fill()
@@ -285,6 +277,11 @@ def augment_rootfile(filepath):
         br_m_bb.Fill()
         br_h_b.Fill()
         br_chi.Fill()
+        br_jet1pT.Fill()
+        br_jet1eta.Fill()
+        br_jet1phi.Fill()
+        br_jet1b.Fill()
+        br_jet1c.Fill()
         i += 1
 
     # write augmented tree to original file

@@ -34,9 +34,12 @@ seed = 42
 tree = 'OutputTree'
 ###########################################################################################################################
 # Branches names of high/low level variables aka: features.
-branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1']
+# branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1']
+# branches = ['numjet','numlep','lep1pT','lep1eta','lep1phi','lep2pT','lep2eta','lep2phi','lep3pT','lep3eta','lep3phi']
+branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1','lep1pT','lep1eta','lep1phi'
+,'lep2pT','lep2eta','lep2phi','lep3pT','lep3eta','lep3phi']
 numBranches = len(branches)
-network     = [25,20,15,10,5,2,1]#[10,10,1]
+network     = [10,10,1]#[50,40,30,20,10,5,1]#[10,10,1]
 learnRate   = 0.001
 batchSize   = 570
 numLayers   = len(network)
@@ -73,11 +76,11 @@ def build_model():
     opt = keras.optimizers.Adam(learning_rate=learnRate)
     model.add(Dense(network[0], input_dim = numBranches, activation='relu'))
     model.add(Dense(network[1] , activation = 'relu'))   #hidden layer.
-    model.add(Dense(network[2] , activation = 'relu'))   #hidden layer.
-    model.add(Dense(network[3] , activation = 'relu'))   #hidden layer.
-    model.add(Dense(network[4] , activation = 'relu'))   #hidden layer.
-    model.add(Dense(network[5] , activation = 'relu'))   #hidden layer.
-    model.add(Dense(network[6] , activation  = 'sigmoid')) #output layer.
+    # model.add(Dense(network[2] , activation = 'relu'))   #hidden layer.
+    # model.add(Dense(network[3] , activation = 'relu'))   #hidden layer.
+    # model.add(Dense(network[4] , activation = 'relu'))   #hidden layer.
+    # model.add(Dense(network[5] , activation = 'relu'))   #hidden layer.
+    model.add(Dense(network[2] , activation  = 'sigmoid')) #output layer.
     model.compile(loss = 'binary_crossentropy', optimizer = opt, metrics = ['accuracy'])
     return  model
 
@@ -133,7 +136,7 @@ kModel = neuralNet.fit(X_train, y_train,class_weight=fix_imbal
     ,batch_size=batchSize
     ,validation_data=(X_dev, y_dev)
     ,verbose=1
-    ,callbacks=[earlyStopCallBack,])
+    ,callbacks=[earlyStopCallBack,checkPointsCallBack])
 
 # Prediction, fpr,tpr and threshold values for ROC.
 y_predicted = neuralNet.predict(X_test).ravel()

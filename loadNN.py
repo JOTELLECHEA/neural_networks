@@ -61,7 +61,7 @@ NNbh_b    = []
 NNbmt1    = []
 NNbdr1    = []
 
-ScoreForMaxSignif = 0.806
+ScoreForMaxSignif = 0.930
 
 for i in range(len(X)):
     if i<len(signal):
