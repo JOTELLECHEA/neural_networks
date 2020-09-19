@@ -6,6 +6,7 @@ import numpy as np
 from array import array
 import shutil
 import random
+import itertools
 
 
 import ROOT
@@ -21,61 +22,68 @@ def augment_rootfile(filepath):
     # define branches
     numlep  = array( 'f', [ 0 ] )
     numjet  = array( 'f', [ 0 ] )
-    lep1pT  = array( 'f', [ 0 ] )
-    lep1eta = array( 'f', [ 0 ] )
-    lep1phi = array( 'f', [ 0 ] )
-    lep2pT  = array( 'f', [ 0 ] )
-    lep2eta = array( 'f', [ 0 ] )
-    lep2phi = array( 'f', [ 0 ] )
-    lep3pT  = array( 'f', [ 0 ] )
-    lep3eta = array( 'f', [ 0 ] )
-    lep3phi = array( 'f', [ 0 ] )
-    mt1     = array( 'f', [ 0 ] )
-    mt2     = array( 'f', [ 0 ] )
-    mt3     = array( 'f', [ 0 ] )
-    dr1     = array( 'f', [ 0 ] )
-    dr2     = array( 'f', [ 0 ] )
-    dr3     = array( 'f', [ 0 ] )
     btag    = array( 'f', [ 0 ] )
     srap    = array( 'f', [ 0 ] )
     cent    = array( 'f', [ 0 ] )
     m_bb    = array( 'f', [ 0 ] )
     h_b     = array( 'f', [ 0 ] )
     chi     = array( 'f', [ 0 ] )
-    jet1pT  = array( 'f', [ 0 ] )
-    jet1eta = array( 'f', [ 0 ] )
-    jet1phi = array( 'f', [ 0 ] )
-    jet1b   = array( 'f', [ 0 ] )
-    jet1c   = array( 'f', [ 0 ] )
-
+    leptonpT={}
+    leptoneta={}
+    leptonphi={}
+    mt={}
+    dr={}
+    maxlepton=4
+    for i in range(1,maxlepton):
+        leptonpT[i]  = array( 'f', [ 0 ] )
+        leptoneta[i] = array( 'f', [ 0 ] )
+        leptonphi[i] = array( 'f', [ 0 ] )
+        mt[i]        = array( 'f', [ 0 ] )
+        dr[i]        = array( 'f', [ 0 ] )
+    br_leptonpT={}
+    br_leptoneta={}
+    br_leptonphi={}
+    br_mt={}
+    br_dr={}
+    for i in range(1,maxlepton):
+        br_leptonpT[i]  = tree.Branch('lepton%dpT'%i  , leptonpT[i] , 'lepton%dpT/F'%i)
+        br_leptoneta[i] = tree.Branch('lepton%deta'%i , leptoneta[i] , 'lepton%deta/F'%i)
+        br_leptonphi[i] = tree.Branch('lepton%dphi'%i , leptonphi[i] , 'lepton%dphi/F'%i)
+        br_mt[i]        = tree.Branch('mt%d'%i , mt[i] , 'mt%d/F'%i)
+        br_dr[i]        = tree.Branch('dr%d'%i , dr[i] , 'dr%d/F'%i)
+    jetpT={}
+    jeteta={}
+    jetphi={}
+    jetb={}
+    jetc={}
+    maxjets=22
+    for i in range(1,maxjets):
+        jetpT[i]  = array( 'f', [ 0 ] )
+        jeteta[i] = array( 'f', [ 0 ] )
+        jetphi[i] = array( 'f', [ 0 ] )
+        jetb[i]   = array( 'f', [ 0 ] )
+        jetc[i]   = array( 'f', [ 0 ] )
+    br_jetpT={}
+    br_jeteta={}
+    br_jetphi={}
+    br_jetc={}
+    br_jetb={}
+    for i in range(1,maxjets):
+        br_jetpT[i]  = tree.Branch('jet%dpT'%i , jetpT[i] , 'jet%dpT/F'%i)
+        br_jeteta[i] = tree.Branch('jet%deta'%i , jeteta[i] , 'jet%deta/F'%i)
+        br_jetphi[i] = tree.Branch('jet%dphi'%i , jetphi[i] , 'jet%dphi/F'%i)
+        br_jetb[i]   = tree.Branch('jet%db'%i , jetb[i] , 'jet%db/F'%i)
+        br_jetc[i]   = tree.Branch('jet%dc'%i , jetc[i] , 'jet%dc/F'%i)
     br_numlep  = tree.Branch( 'numlep' , numlep , 'numlep/F'  )
     br_numjet  = tree.Branch( 'numjet' , numjet , 'numjet/F'  )
-    br_lep1pT  = tree.Branch( 'lep1pT' , lep1pT , 'lep1pT/F'  )
-    br_lep1eta = tree.Branch( 'lep1eta', lep1eta, 'lep1eta/F' )
-    br_lep1phi = tree.Branch( 'lep1phi', lep1phi, 'lep1phi/F' )
-    br_lep2pT  = tree.Branch( 'lep2pT' , lep2pT , 'lep2pT/F'  )
-    br_lep2eta = tree.Branch( 'lep2eta', lep2eta, 'lep2eta/F' )
-    br_lep2phi = tree.Branch( 'lep2phi', lep2phi, 'lep2phi/F' )
-    br_lep3pT  = tree.Branch( 'lep3pT' , lep3pT , 'lep3pT/F'  )
-    br_lep3eta = tree.Branch( 'lep3eta', lep3eta, 'lep3eta/F' )
-    br_lep3phi = tree.Branch( 'lep3phi', lep3phi, 'lep3phi/F' )
-    br_mt1     = tree.Branch( 'mt1'    , mt1    , 'mt1/F'     )
-    br_mt2     = tree.Branch( 'mt2'    , mt2    , 'mt2/F'     )
-    br_mt3     = tree.Branch( 'mt3'    , mt3    , 'mt3/F'     )
-    br_dr1     = tree.Branch( 'dr1'    , dr1    , 'dr1/F'     )
-    br_dr2     = tree.Branch( 'dr2'    , dr2    , 'dr2/F'     )
-    br_dr3     = tree.Branch( 'dr3'    , dr3    , 'dr3/F'     )
     br_btag    = tree.Branch( 'btag'   , btag   , 'btag/F'    )
     br_cent    = tree.Branch( 'cent'   , cent   , 'cent/F'    )
     br_srap    = tree.Branch( 'srap'   , srap   , 'srap/F'    )
     br_m_bb    = tree.Branch( 'm_bb'   , m_bb   , 'm_bb/F'    )
     br_h_b     = tree.Branch( 'h_b'    , h_b    , 'h_b/F'     )
     br_chi     = tree.Branch( 'chi'    , chi    , 'chi/F'     )
-    br_jet1pT  = tree.Branch( 'jet1pT' , jet1pT , 'jet1pT/F'  )
-    br_jet1eta = tree.Branch( 'jet1eta', jet1eta, 'jet1eta/F' )
-    br_jet1phi = tree.Branch( 'jet1phi', jet1phi, 'jet1phi/F' )
-    br_jet1b   = tree.Branch( 'jet1b'  , jet1b  , 'jet1b/F'   )
-    br_jet1c   = tree.Branch( 'jet1c'  , jet1c  , 'jet1c/F'   )
+
+
 
     # track the time
     start_time = time.clock()
@@ -209,86 +217,61 @@ def augment_rootfile(filepath):
             else:
                 chi[0] = -999
     ######################################################################################
-        if lep >0:
-            lep1pT[0]  = event.leppT[0]
-            lep1eta[0] = event.lepeta[0]
-            lep1phi[0] = event.lepphi[0]
-            mt1[0]     = missingPT(0)
-            if len(dR1) > 0 : dr1[0]  = min(dR1)
-            if lep > 1:
-                lep2pT[0]  = event.leppT[1]
-                lep2eta[0] = event.lepeta[1]
-                lep2phi[0] = event.lepphi[1]
-                mt2[0] = missingPT(1)
-                if len(dR2) > 0 : dr2[0]  = min(dR2)
-                if lep > 2:
-                    lep3pT[0]  = event.leppT[2]
-                    lep3eta[0] = event.lepeta[2]
-                    lep3phi[0] = event.lepphi[2]
-                    mt3[0] = missingPT(2)
-                    if len(dR3) > 0 : dr3[0]  = min(dR3)
+        delta_r = [dR1,dR2,dR3]
+        lloop=range(1,maxlepton)
+        for n in lloop:
+            if n <= lep:
+                leptonpT[n]  = event.leppT[n-1]
+                leptoneta[n] = event.lepeta[n-1]
+                leptonphi[n] = event.lepphi[n-1]
+                mt[n]        = missingPT(n-1)
+                if len(delta_r[n-1]) == 0: 
+                    dr[n] = -999
                 else:
-                    lep3pT[0]  = -999
-                    lep3eta[0] = -9
-                    lep3phi[0] = -9
-                    mt3[0]     = -999
-                    dr3[0]     = -999
+                    dr[n] = min(delta_r[n-1])
             else:
-                lep2pT[0]  = -999
-                lep2eta[0] = -9
-                lep2phi[0] = -9
-                mt2[0]     = -999
-                dr2[0]     = -999
-        else:
-            lep1pT[0]  = -999
-            lep1eta[0] = -9
-            lep1phi[0] = -9
-            mt1[0]     = -999
-            dr1[0]     = -999
-        # event.jetpT[k],event.jeteta[k],event.jetphi[k]
-        if event.njet[0] == 1: 
-            jet1pT  = event.jetpT[0]
-            jet1eta = event.jeteta[0]
-            jet1phi = event.jetphi[0]
-            jet1b   = event.jetbhadron[0]
-            jet1c   = event.jetchadron[0]
-        else:
-            jet1pT  = -999
-            jet1eta = -9
-            jet1phi = -9
-            jet1b   = -9
-            jet1c   = -9
+                leptonpT[n]  = -999
+                leptoneta[n] = -9
+                leptonphi[n] = -9
+                mt[n]        = -999
+        for n in lloop:
+            br_leptonpT[n].Fill()
+            br_leptoneta[n].Fill()
+            br_leptonphi[n].Fill()
+            br_mt[n].Fill()
+            br_dr[n].Fill()
 
+        jloop=range(1,maxjets)
+        for n in jloop:
+            if n <= jet:
+                jetpT[n] = event.jetpT[n-1]
+                jeteta[n] = event.jeteta[n-1]
+                jetphi[n] = event.jetphi[n-1]
+                jetb[n] = event.jetbhadron[n-1]
+                jetc[n] = event.jetchadron[n-1]
+            else:
+                jetpT[n]  = -999
+                jeteta[n] = -9
+                jetphi[n] = -9
+                jetb[n]   = -9
+                jetc[n]   = -9
+        for n in jloop:
+            br_jetpT[n].Fill()
+            br_jeteta[n].Fill()
+            br_jetphi[n].Fill()
+            br_jetb[n].Fill()
+            br_jetc[n].Fill() 
 
         # fill new branches
         br_numjet.Fill()
         br_numlep.Fill()
-        br_lep1pT.Fill()
-        br_lep1eta.Fill()
-        br_lep1phi.Fill()
-        br_lep2pT.Fill()
-        br_lep2eta.Fill()
-        br_lep2phi.Fill()
-        br_lep3pT.Fill()
-        br_lep3eta.Fill()
-        br_lep3phi.Fill()
-        br_mt1.Fill()
-        br_mt2.Fill()
-        br_mt3.Fill()
-        br_dr1.Fill()
-        br_dr2.Fill()
-        br_dr3.Fill()
         br_btag.Fill()
         br_cent.Fill() 
         br_srap.Fill()
         br_m_bb.Fill()
         br_h_b.Fill()
         br_chi.Fill()
-        br_jet1pT.Fill()
-        br_jet1eta.Fill()
-        br_jet1phi.Fill()
-        br_jet1b.Fill()
-        br_jet1c.Fill()
+      
         i += 1
 
     # write augmented tree to original file
