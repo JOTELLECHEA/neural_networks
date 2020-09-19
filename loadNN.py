@@ -20,7 +20,19 @@ from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
 seed = 42
 tree = 'OutputTree'
-branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1']
+# branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1']
+branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1','lep1pT','lep1eta','lep1phi',
+'lep2pT','lep2eta','lep2phi','lep3pT','lep3eta','lep3phi','jet1pT','jet1eta','jet1phi','jet1b','jet1c',
+'jet2pT','jet2eta','jet2phi','jet2b','jet2c','jet3pT','jet3eta','jet3phi','jet3b','jet3c',
+'jet4pT','jet4eta','jet4phi','jet4b','jet4c','jet5pT','jet5eta','jet5phi','jet5b','jet5c',
+'jet6pT','jet6eta','jet6phi','jet6b','jet6c','jet7pT','jet7eta','jet7phi','jet7b','jet7c',
+'jet8pT','jet8eta','jet8phi','jet8b','jet8c','jet9pT','jet9eta','jet9phi','jet9b','jet9c',
+'jet10pT','jet10eta','jet10phi','jet10b','jet10c','jet11pT','jet11eta','jet11phi','jet11b','jet11c',
+'jet12pT','jet12eta','jet12phi','jet12b','jet12c','jet13pT','jet13eta','jet13phi','jet13b','jet13c',
+'jet14pT','jet14eta','jet14phi','jet14b','jet14c','jet15pT','jet15eta','jet15phi','jet15b','jet15c',
+'jet16pT','jet16eta','jet16phi','jet16b','jet16c','jet17pT','jet17eta','jet17phi','jet17b','jet17c',
+'jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c',
+'jet20pT','jet20eta','jet20phi','jet20b','jet20c','jet21pT','jet21eta','jet21phi','jet21b','jet21c']
 numBranches = len(branches)
 ###########################################################################################################################
 parser = argparse.ArgumentParser(description= 'Plot 1D plots of sig/bac')
@@ -61,7 +73,7 @@ NNbh_b    = []
 NNbmt1    = []
 NNbdr1    = []
 
-ScoreForMaxSignif = 0.930
+ScoreForMaxSignif = 0.997
 
 for i in range(len(X)):
     if i<len(signal):
@@ -113,13 +125,13 @@ bmt1 = df_background['mt1'].values
 
 sdr1 = df_signal['dr1'].values
 bdr1 = df_background['dr1'].values
-def hPlot(x,y,nx,ny,s,e,Name):
-    bins = np.linspace(s,e,e)
+def hPlot(x,y,nx,ny,a,b,c,Name):
+    bins = np.linspace(a,b,c)
     plt.hist(y, bins=bins,histtype='step',label='background',linestyle='solid',color='steelblue')
     plt.hist(x, bins=bins,histtype='step',label='signal',linestyle='solid',color='firebrick')
     plt.hist(ny, bins=bins,histtype='step',label='NN-background',linestyle='dashed',color='steelblue')
     plt.hist(nx, bins=bins,histtype='step',label='NN-signal',linestyle='dashed',color='firebrick')
-    plt.legend(loc='upper right')
+    plt.legend(loc=1)
     plt.xlabel(Name)
     plt.ylabel('Events')
     plt.yscale('log')
@@ -128,32 +140,32 @@ def hPlot(x,y,nx,ny,s,e,Name):
 fig1 = plt.figure()
 
 ax1 = fig1.add_subplot(221)
-hPlot(snumjet,bnumjet,NNsnumjet,NNbnumjet,1,16,branches[0])
+hPlot(snumjet,bnumjet,NNsnumjet,NNbnumjet,1,21,21,branches[0])
 
 ax2 = fig1.add_subplot(222)
-hPlot(snumlep,bnumlep,NNsnumlep,NNbnumlep,1,3,branches[1])
+hPlot(snumlep,bnumlep,NNsnumlep,NNbnumlep,1,3,3,branches[1])
 
 ax3 = fig1.add_subplot(223)
-hPlot(sbtag,bbtag,NNsbtag,NNbbtag,0,10,branches[2])
+hPlot(sbtag,bbtag,NNsbtag,NNbbtag,0,10,10,branches[2])
 
 ax4 = fig1.add_subplot(224)
-hPlot(ssrap,bsrap,NNssrap,NNbsrap,0,10,branches[3])
+hPlot(ssrap,bsrap,NNssrap,NNbsrap,0,10,10,branches[3])
 
 fig2 = plt.figure(2)
 
 ax1 = fig2.add_subplot(221)
-hPlot(scent,bcent,NNscent,NNbcent,0,2,branches[4])
+hPlot(scent,bcent,NNscent,NNbcent,0,1,10,branches[4])
 
 ax2 = fig2.add_subplot(222)
-hPlot(sm_bb,bm_bb,NNsm_bb,NNbm_bb,0,250,branches[5])
+hPlot(sm_bb,bm_bb,NNsm_bb,NNbm_bb,0,250,10,branches[5])
 
 ax3 = fig2.add_subplot(223)
-hPlot(sh_b,bh_b,NNsh_b,NNbh_b,0,1500,branches[6])
+hPlot(sh_b,bh_b,NNsh_b,NNbh_b,0,1500,10,branches[6])
 
 ax4 = fig2.add_subplot(224)
-hPlot(smt1,bmt1,NNsmt1,NNbmt1,0,16,branches[7])
+hPlot(smt1,bmt1,NNsmt1,NNbmt1,0,300,100,branches[7])
 
 plot3 = plt.figure(3)
-hPlot(sdr1,bdr1,NNsdr1,NNbdr1,0,8,branches[8])
+hPlot(sdr1,bdr1,NNsdr1,NNbdr1,0,7,100,branches[8])
 
 plt.show()
