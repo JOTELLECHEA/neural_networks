@@ -45,15 +45,15 @@ LeptonVar = ['lepton1pT','lepton1eta','lepton1phi','lepton1flav','lepton2pT','le
 Constants = ['Hmass','Electronmass','Zmass','Muonmass','Wmass','Taumass','Umass','Dmass','Cmass','Smass','Tmass','Bmass','speedLight']
 JetVar    = ['jet1pT','jet1eta','jet1phi','jet1b','jet1c','jet2pT','jet2eta','jet2phi','jet2b','jet2c','jet3pT','jet3eta','jet3phi','jet3b','jet3c','jet4pT','jet4eta',
 'jet4phi','jet4b','jet4c','jet5pT','jet5eta','jet5phi','jet5b','jet5c','jet6pT','jet6eta','jet6phi','jet6b','jet6c','jet7pT','jet7eta','jet7phi','jet7b','jet7c',
-'jet8pT','jet8eta','jet8phi','jet8b','jet8c','jet9pT','jet9eta','jet9phi','jet9b','jet9c','jet10pT','jet10eta','jet10phi','jet10b','jet10c']#,'jet11pT','jet11eta',
-# 'jet11phi','jet11b','jet11c','jet12pT','jet12eta','jet12phi','jet12b','jet12c','jet13pT','jet13eta','jet13phi','jet13b','jet13c','jet14pT','jet14eta','jet14phi',
-# 'jet14b','jet14c','jet15pT','jet15eta','jet15phi','jet15b','jet15c','jet16pT','jet16eta','jet16phi','jet16b','jet16c','jet17pT','jet17eta','jet17phi','jet17b',
-# 'jet17c','jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c','jet20pT','jet20eta','jet20phi','jet20b','jet20c',
-# 'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
+'jet8pT','jet8eta','jet8phi','jet8b','jet8c','jet9pT','jet9eta','jet9phi','jet9b','jet9c','jet10pT','jet10eta','jet10phi','jet10b','jet10c','jet11pT','jet11eta',
+'jet11phi','jet11b','jet11c','jet12pT','jet12eta','jet12phi','jet12b','jet12c','jet13pT','jet13eta','jet13phi','jet13b','jet13c','jet14pT','jet14eta','jet14phi',
+'jet14b','jet14c','jet15pT','jet15eta','jet15phi','jet15b','jet15c','jet16pT','jet16eta','jet16phi','jet16b','jet16c','jet17pT','jet17eta','jet17phi','jet17b',
+'jet17c','jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c','jet20pT','jet20eta','jet20phi','jet20b','jet20c',
+'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
 branches = JetVar + LeptonVar + HighLevel #+ Constants
 numBranches = len(branches)
 numBranches = len(branches)
-network     = [10,10,1]#[150,150,150,150,150,150,1]#[10,10,1]
+network     = [150,150,1]#[150,150,150,150,150,150,1]#[10,10,1]
 learnRate   = 0.0001
 batchSize   = pow(2,9)# 5:32 6:64 7:128 8:256 9:512 10: 1024 
 numLayers   = len(network)
@@ -86,37 +86,21 @@ X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev, test_size = 0.1,
 # fix_imbal = dict(enumerate(fix_imbal))
 ##########################################################################################################
 # NN model defined as a function.
-# def build_model():
-#     model = Sequential()
-#     opt = keras.optimizers.Adam(learning_rate=learnRate)
-#     # act = 'LeakyReLU'
-#     act = 'relu'
-#     model.add(Dense(network[0], input_dim = numBranches))#, activation=act))
-#     model.add(Dense(network[1] , activation = act))   #hidden layer.
-#     model.add(Dense(network[2] , activation = act))   #hidden layer.
-#     model.add(Dense(network[3] , activation = act))   #hidden layer.
-#     model.add(Dense(network[4] , activation = act))   #hidden layer.
-#     model.add(Dense(network[5] , activation = act))   #hidden layer.
-#     # model.add(LeakyReLU(alpha=0.1))
-#     model.add(Dense(network[6] , activation  = 'sigmoid')) #output layer.
-#     model.compile(loss = 'binary_crossentropy', optimizer = opt, metrics = ['accuracy','AUC'])
-#     return  model
 areaunderROC = tf.keras.metrics.AUC()
 precision = tf.keras.metrics.Precision()
 recall = tf.keras.metrics.Recall()
-metrics = [areaunderROC]
-
+metrics = [precision]
 def build_model():
     model = Sequential()
     opt = keras.optimizers.Nadam(learning_rate=learnRate)
-    
-    model.add(Dense(network[0], input_dim = numBranches))
-    model.add(Dense(network[1] ))  #hidden layer.
-    # model.add(Dense(network[2] ))  #hidden layer.
-    # model.add(Dense(network[3] ))   #hidden layer.
-    # model.add(Dense(network[4] ))  #hidden layer.
-    # model.add(Dense(network[5] ))   #hidden layer.
-    model.add(LeakyReLU(alpha=0.1))
+    act = 'relu'
+    model.add(Dense(network[0], input_dim = numBranches))#, activation=act))
+    model.add(Dense(network[1] , activation = act))   #hidden layer.
+    # model.add(Dense(network[2] , activation = act))   #hidden layer.
+    # model.add(Dense(network[3] , activation = act))   #hidden layer.
+    # model.add(Dense(network[4] , activation = act))   #hidden layer.
+    # model.add(Dense(network[5] , activation = act))   #hidden layer.
+    # model.add(LeakyReLU(alpha=0.1))
     model.add(Dense(network[2] , activation  = 'sigmoid')) #output layer.
     model.compile(loss = 'binary_crossentropy', optimizer = opt, metrics = metrics)
     return  model
@@ -178,7 +162,7 @@ def compare_train_test(kModel, X_train, y_train, X_test, y_test, bins=30):
 neuralNet = build_model()
 
 checkPointsCallBack = ModelCheckpoint('temp.h5',save_best_only=True)
-earlyStopCallBack = EarlyStopping(patience=1, restore_best_weights=True)
+earlyStopCallBack = EarlyStopping(min_delta=0.001,patience=10, restore_best_weights=True)
 kModel = neuralNet.fit(X_train, y_train#, class_weight=fix_imbal
     ,epochs=numEpochs
     ,batch_size=batchSize
@@ -211,7 +195,7 @@ plt.grid(True)
 plt.gca().set_ylim(0,1)
 plt.show()
 
-nSig=(5709./20000.)*990
+nSig = len(signal)*(990/(930000/0.609))
 nBG=((320752+3332932+158645)/(610000.+270000.+5900000.))*(5.85e6+612000.+269000)
 def getZPoisson(s, b, stat, syst):
     """
@@ -280,7 +264,6 @@ for f,t,bdtscore in zip(fpr,tpr,thresholds):
         maxb=b
     # print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
 print("Score Threshold for Max Signif. = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
-EpochsRan = len(kModel.history['loss'])
 pre = time.strftime('%Y_%m_%d_')
 suf = time.strftime('_%H.%M.%S')
 name = 'data/'+pre + 'rocDataNN' + suf +'.csv'
@@ -293,7 +276,7 @@ avgPer='{0:0.2f}'.format(average_precision)
 modelParam  = ['NN Archi.','#Br.','LR','Batch','#Layers','AUC','Sigif.','Avg. Precision','Y/M/D @ H:M']
 df = pd.DataFrame(np.array([[network,numBranches,learnRate,batchSize,numLayers,areaUnderCurve,maxsignif,avgPer,dateTime]]),columns=modelParam)
 df.to_csv('hyperparameterRecord_v2.csv', mode='a', header=False, index=False)
-print(df.to_string(justify='left',columns=modelParam, index=False))
+print(df.to_string(justify='left',columns=modelParam, header=True, index=False))
 # disp = plot_precision_recall_curve(neuralNet, X_test, y_test)
 # disp.ax_.set_title('2-class Precision-Recall curve: AP={0:0.2f}'.format(average_precision))
 # print(classification_report(y_test,y_predicted))
