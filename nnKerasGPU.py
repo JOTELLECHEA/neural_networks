@@ -10,10 +10,10 @@ import shap
 from numpy import array
 np.set_printoptions(threshold=sys.maxsize)
 import tensorflow as tf
-import tkinter as tk
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
+#import tkinter as tk
+#import matplotlib
+#matplotlib.use('TkAgg')
+#import matplotlib.pyplot as plt
 import pandas as pd
 import math
 from math import log,sqrt
@@ -30,7 +30,7 @@ from imblearn.tensorflow import balanced_batch_generator
 from imblearn.under_sampling import NearMiss
 from sklearn.metrics import confusion_matrix
 import time
-import slug 
+import slug
 sc = StandardScaler()
 # Variables.
 seed = 42
@@ -51,8 +51,8 @@ def main(LAYER):
     branches = JetVar + LeptonVar + HighLevel
     numBranches = len(branches)
     learnRate   = 0.0001
-    batchSize   = pow(2,9)# 5:32 6:64 7:128 8:256 9:512 10: 1024 
-    numEpochs   = 2
+    batchSize   = pow(2,5)# 5:32 6:64 7:128 8:256 9:512 10: 1024 
+    numEpochs   = 150
     # areaUnderCurve = 0
     network = []
     numLayers  = LAYER
@@ -90,11 +90,11 @@ def main(LAYER):
         model = Sequential()
         opt = keras.optimizers.Nadam(learning_rate=learnRate)
         act = 'relu'
-        model.add(BatchNormalization())
+        # model.add(BatchNormalization())
         model.add(Dense(network[0], input_dim = numBranches))#, activation=act))
         for i in  range(1,numLayers-2):
             model.add(Dense(network[i] , activation = act))   #hidden layer.
-            model.add(BatchNormalization())
+            # model.add(BatchNormalization())
         model.add(Dense(network[-1] , activation  = 'sigmoid')) #output layer.
         model.compile(loss = 'binary_crossentropy', optimizer = opt, metrics = tf.keras.metrics.Precision())
         return  model
@@ -209,7 +209,7 @@ def main(LAYER):
     cm = confusion_matrix(y_test, y_predicted_round)
     modelParam  = ['NN Archi.','#Br.','LR','Batch','AUC','Avg.P','Y/M/D @ H:M','ConfusionMatrix [TP FP] [FN TN]','Score','Max Signif','nsig','nbkg']
     df = pd.DataFrame(np.array([[network,numBranches,learnRate,batchSize,areaUnderCurve,avgPer,dateTime,cm,maxbdt,maxsignif,maxs,maxb]]),columns=modelParam)
-    df.to_csv('testing.csv', mode='a', header=False, index=False)
+    df.to_csv('hyperparameterRecord_v3.csv', mode='a', header=False, index=False)
     print(df.to_string(justify='left',columns=modelParam, header=True, index=False))
     # print('Do you want to save this Model?')
     # answer = input('Enter S to save: ')

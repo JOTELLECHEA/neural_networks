@@ -5,4 +5,5 @@ read*
 *.ipynb
 .ipynb_checkpoints/
 mlenv/
-
+data/
+temp.h5
