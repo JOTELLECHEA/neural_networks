@@ -15,6 +15,8 @@ Research on  ttHH production via NN/Keras
      >Uses ROOT to produce histogram plots of jet four vectors.
    - rocCurve.py
      >Uses a csv file to recreate roc and maxs signif.
+2. Files required
+   - requirements.txt
 <!--2. Programs Parser Variables/ Outputs
   - lepvec_Pt.py
      >`--x=i` where  i = 1-4: ttHH,ttbb,ttH,ttZ.-->
