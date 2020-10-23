@@ -15,25 +15,25 @@ Research on  ttHH production via NN/Keras
      >Uses ROOT to produce histogram plots of jet four vectors.
    - rocCurve.py
      >Uses a csv file to recreate roc and maxs signif.
-#2. Programs Parser Variables/ Outputs
- #  - lepvec_Pt.py
-#     >`--x=i` where  i = 1-4: ttHH,ttbb,ttH,ttZ.
+<!--2. Programs Parser Variables/ Outputs
+  - lepvec_Pt.py
+     >`--x=i` where  i = 1-4: ttHH,ttbb,ttH,ttZ.-->
      
-  #   >`--help` brings up help.
+ <!-- #   >`--help` brings up help.
   # - chisquare.py
  #    >N/A
   # - MVA.py
   #   >`--branch=i` where i = phase1-4
      
- #    >Output file is `ROC_data_file.csv'.
+<!-- #    >Output file is `ROC_data_file.csv'.
  #  - RocCurve.py
   #   >`--file=i` where  i = ROC_data_phase1-4.csv.
 
-  #   >Output is tmp and can be save in format that is needed.
+<!-- #   >Output is tmp and can be save in format that is needed.
 #   - add_SF_branches.py
  #    >`--file='****.root'`.
      
-   #  >`--help` brings up help.
+<!--   #  >`--help` brings up help.
      
-  #   >Creates new ROOT file as `new_****.root`.
+ <!-- #   >Creates new ROOT file as `new_****.root`.-->
   
