@@ -17,6 +17,7 @@ Research on  ttHH production via NN/Keras
      >Uses a csv file to recreate roc and maxs signif.
 2. Files required
    - requirements.txt
+      > required progrmas needed to run scripts. 
 <!--2. Programs Parser Variables/ Outputs
   - lepvec_Pt.py
      >`--x=i` where  i = 1-4: ttHH,ttbb,ttH,ttZ.-->
