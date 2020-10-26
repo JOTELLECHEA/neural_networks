@@ -1,5 +1,7 @@
 import nnKerasGPU as nn
 
-for i in range(10,15):
-    for j in range(1,4):
-        nn.main(i)
+for i in range(5):
+    nn.main(5,256)
+    nn.main(5,128)
+    nn.main(5,64)
+    nn.main(5,32)

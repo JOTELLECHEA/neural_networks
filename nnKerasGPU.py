@@ -20,7 +20,7 @@ from math import log,sqrt
 from tensorflow import keras
 from tensorflow.keras import metrics
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Activation,BatchNormalization
+from tensorflow.keras.layers import Dense,Dropout,Activation
 from tensorflow.keras.callbacks import EarlyStopping,ModelCheckpoint
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle,class_weight
@@ -30,11 +30,13 @@ from imblearn.tensorflow import balanced_batch_generator
 from imblearn.under_sampling import NearMiss
 from sklearn.metrics import confusion_matrix
 import time
+from datetime import datetime
 import slug
 sc = StandardScaler()
 # Variables.
 seed = 42
 tree = 'OutputTree'
+startTime = datetime.now()
 ###########################################################################################################################
 # Branches names of high/low level variables aka: features.
 HighLevel = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','mt2','mt3','dr1','dr2','dr3']
@@ -47,11 +49,11 @@ JetVar    = ['jet1pT','jet1eta','jet1phi','jet1b','jet1c','jet2pT','jet2eta','je
 # 'jet14b','jet14c','jet15pT','jet15eta','jet15phi','jet15b','jet15c','jet16pT','jet16eta','jet16phi','jet16b','jet16c','jet17pT','jet17eta','jet17phi','jet17b',
 # 'jet17c','jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c','jet20pT','jet20eta','jet20phi','jet20b','jet20c',
 # 'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
-def main(LAYER):
+def main(LAYER,BATCH):
     branches = JetVar + LeptonVar + HighLevel
     numBranches = len(branches)
     learnRate   = 0.0001
-    batchSize   = pow(2,5)# 5:32 6:64 7:128 8:256 9:512 10: 1024 
+    batchSize   = BATCH#pow(2,9)# 5:32 6:64 7:128 8:256 9:512 10: 1024 
     numEpochs   = 150
     # areaUnderCurve = 0
     network = []
@@ -90,10 +92,10 @@ def main(LAYER):
         model = Sequential()
         opt = keras.optimizers.Nadam(learning_rate=learnRate)
         act = 'relu'
-        # model.add(BatchNormalization())
         model.add(Dense(network[0], input_dim = numBranches))#, activation=act))
         for i in  range(1,numLayers-2):
             model.add(Dense(network[i] , activation = act))   #hidden layer.
+            model.add(Dropout(0.50))
             # model.add(BatchNormalization())
         model.add(Dense(network[-1] , activation  = 'sigmoid')) #output layer.
         model.compile(loss = 'binary_crossentropy', optimizer = opt, metrics = tf.keras.metrics.Precision())
@@ -194,11 +196,12 @@ def main(LAYER):
             maxb=b
         # print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
     print("Score Threshold for Max Signif. = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
+    runTime = datetime.now() - startTime
     pre = time.strftime('%Y_%m_%d_')
     suf = time.strftime('_%H.%M.%S')
     name = 'data/'+pre + 'rocDataNN' + suf +'.csv'
     modelName = 'data/'+pre + 'neuralNet' + suf +'.h5'
-    dateTime = pre + '@' + suf
+    # dateTime = pre + '@' + suf
     areaUnderCurve = "{:.4f}".format(aucroc)
     maxsignif = "{:5.2f}".format(maxsignif)
     average_precision = average_precision_score(y_test, y_predicted)
@@ -207,9 +210,9 @@ def main(LAYER):
     maxs='%10d'%(maxs)
     maxb='%10d'%(maxb)
     cm = confusion_matrix(y_test, y_predicted_round)
-    modelParam  = ['NN Archi.','#Br.','LR','Batch','AUC','Avg.P','Y/M/D @ H:M','ConfusionMatrix [TP FP] [FN TN]','Score','Max Signif','nsig','nbkg']
-    df = pd.DataFrame(np.array([[network,numBranches,learnRate,batchSize,areaUnderCurve,avgPer,dateTime,cm,maxbdt,maxsignif,maxs,maxb]]),columns=modelParam)
-    df.to_csv('hyperparameterRecord_v3.csv', mode='a', header=False, index=False)
+    modelParam  = ['NN Archi.','#Br.','LR','Batch','AUC','Avg.P','Run Time','ConfusionMatrix [TP FP] [FN TN]','Score','Max Signif','nsig','nbkg']
+    df = pd.DataFrame(np.array([[network,numBranches,learnRate,batchSize,areaUnderCurve,avgPer,runTime,cm,maxbdt,maxsignif,maxs,maxb]]),columns=modelParam)
+    df.to_csv('fiveLayerDropout.csv', mode='a', header=False, index=False)
     print(df.to_string(justify='left',columns=modelParam, header=True, index=False))
     # print('Do you want to save this Model?')
     # answer = input('Enter S to save: ')
