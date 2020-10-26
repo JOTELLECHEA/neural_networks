@@ -48,7 +48,7 @@ name = 'data/'+pre + 'rocDataNN' + suf +'.csv'
 modelName = 'data/'+pre + 'neuralNet' + suf +'.h5' 
 
 # filename for plots 
-figname = 'data/' + pre + 'plots' + suf  
+figname = 'data/' + 'plots' + pre + 'at' + suf  
 ###########################################################################################################################
 # Branches names of high/low level variables aka: features.
 HighLevel = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','mt2','mt3','dr1','dr2','dr3']
@@ -160,7 +160,6 @@ def main(LAYER,BATCH):
     y_predicted_round = [1 * (x[0]>=0.5) for x in y_predicted]
 
     # Prediction, fpr,tpr and threshold values for ROC.
-
     fpr, tpr, thresholds = roc_curve(y_test, y_predicted)
     precision, recall, thresRecall = precision_recall_curve(y_test, y_predicted)
 
@@ -171,6 +170,7 @@ def main(LAYER,BATCH):
     # slug.plotPR(precision,recall,thresRecall)
     # compare_train_test(kModel, X_train, y_train, X_test, y_test)
     ##########################################################################
+    
     flag = 0
     if flag == 1:
         plot2 = plt.figure(2)
@@ -179,12 +179,12 @@ def main(LAYER,BATCH):
         shap_values = explainer.shap_values(X_test)
         shap.summary_plot(shap_values, X_train, plot_type="bar")
     ###################################################################
-    # pd.DataFrame(kModel.history).plot(figsize=(8,5))
-    # plt.grid(True)
-    # plt.gca().set_ylim(0,1)
-    # plt.show()
-    plt.savefig('.png')
-
+    pd.DataFrame(kModel.history).plot(figsize=(8,5))
+    plt.grid(True)
+    plt.gca().set_ylim(0,1)
+    plt.savefig(figname + 'modelSummary.png')
+    ###################################################################
+    # computes max signif
     nSig = (426908)*(990/(930000/0.609))
     nBG=((320752+3332932+158645)/(610000.+270000.+5900000.))*(5.85e6+612000.+269000)
     signifs=np.array([])
