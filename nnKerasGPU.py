@@ -37,6 +37,18 @@ sc = StandardScaler()
 seed = 42
 tree = 'OutputTree'
 startTime = datetime.now()
+#####################################################
+pre = time.strftime('%Y_%m_%d_')
+suf = time.strftime('_%H.%M.%S')
+
+# filename for maxsignif
+name = 'data/'+pre + 'rocDataNN' + suf +'.csv'
+
+# filename for keras model 
+modelName = 'data/'+pre + 'neuralNet' + suf +'.h5' 
+
+# filename for plots 
+figname = 'data/' + pre + 'plots' + suf  
 ###########################################################################################################################
 # Branches names of high/low level variables aka: features.
 HighLevel = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','mt2','mt3','dr1','dr2','dr3']
@@ -171,6 +183,7 @@ def main(LAYER,BATCH):
     # plt.grid(True)
     # plt.gca().set_ylim(0,1)
     # plt.show()
+    plt.savefig('.png')
 
     nSig = (426908)*(990/(930000/0.609))
     nBG=((320752+3332932+158645)/(610000.+270000.+5900000.))*(5.85e6+612000.+269000)
@@ -197,11 +210,6 @@ def main(LAYER,BATCH):
         # print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
     print("Score Threshold for Max Signif. = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
     runTime = datetime.now() - startTime
-    pre = time.strftime('%Y_%m_%d_')
-    suf = time.strftime('_%H.%M.%S')
-    name = 'data/'+pre + 'rocDataNN' + suf +'.csv'
-    modelName = 'data/'+pre + 'neuralNet' + suf +'.h5'
-    # dateTime = pre + '@' + suf
     areaUnderCurve = "{:.4f}".format(aucroc)
     maxsignif = "{:5.2f}".format(maxsignif)
     average_precision = average_precision_score(y_test, y_predicted)
@@ -214,27 +222,21 @@ def main(LAYER,BATCH):
     df = pd.DataFrame(np.array([[network,numBranches,learnRate,batchSize,areaUnderCurve,avgPer,runTime,cm,maxbdt,maxsignif,maxs,maxb]]),columns=modelParam)
     df.to_csv('fiveLayerDropout.csv', mode='a', header=False, index=False)
     print(df.to_string(justify='left',columns=modelParam, header=True, index=False))
-    # print('Do you want to save this Model?')
-    # answer = input('Enter S to save: ')
-    # answer = 'S'
-    # if (answer == 'S' or answer == 's'):
-    #     print('Saving.....')
-    #     neuralNet.save(modelName)
-    #     #############################
-    #     r0  = ['name','var']
-    #     r1  = ['fpr',fpr]
-    #     r2  = ['tpr',tpr]
-    #     r3  = ['thresholds',thresholds]
-    #     r4  = ['Max Signif',maxsignif ]
-    #     with open(name, 'a') as csvFile:
-    #             writer = csv.writer(csvFile)
-    #             writer.writerow(r0)
-    #             writer.writerow(r1)
-    #             writer.writerow(r2)
-    #             writer.writerow(r3)
-    #             writer.writerow(r4)
-    #     csvFile.close()
-    #     #############################
-    #     print('Modeled saved')
-    # else:
-    #     print('Model Not Saved') 
+    print('Saving model.....')
+    neuralNet.save(modelName) # Save Model as a HDF5 filein Data folder
+    print('Model Saved')
+    print('Saving maxsignif.....')
+    r0  = ['name','var']
+    r1  = ['fpr',fpr]
+    r2  = ['tpr',tpr]
+    r3  = ['thresholds',thresholds]
+    r4  = ['Max Signif',maxsignif ]
+    with open(name, 'a') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerow(r0)
+            writer.writerow(r1)
+            writer.writerow(r2)
+            writer.writerow(r3)
+            writer.writerow(r4)
+    csvFile.close()
+    print('Maxsignif Saved')
