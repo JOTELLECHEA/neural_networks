@@ -7,3 +7,4 @@ read*
 mlenv/
 data/
 temp.h5
+__pycache__/
