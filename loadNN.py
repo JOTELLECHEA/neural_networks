@@ -11,7 +11,7 @@ import tensorflow as tf
 from tensorflow import keras
 import tkinter as tk
 import matplotlib
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt 
 import seaborn as sns
 from tensorflow.keras.models import load_model
@@ -20,19 +20,19 @@ from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
 seed = 42
 tree = 'OutputTree'
-# branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1']
-branches = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','dr1'],#'lep1pT','lep1eta','lep1phi',
-# 'lep2pT','lep2eta','lep2phi','lep3pT','lep3eta','lep3phi','jet1pT','jet1eta','jet1phi','jet1b','jet1c',
-# 'jet2pT','jet2eta','jet2phi','jet2b','jet2c','jet3pT','jet3eta','jet3phi','jet3b','jet3c',
-# 'jet4pT','jet4eta','jet4phi','jet4b','jet4c','jet5pT','jet5eta','jet5phi','jet5b','jet5c',
-# 'jet6pT','jet6eta','jet6phi','jet6b','jet6c','jet7pT','jet7eta','jet7phi','jet7b','jet7c',
-# 'jet8pT','jet8eta','jet8phi','jet8b','jet8c','jet9pT','jet9eta','jet9phi','jet9b','jet9c',
-# 'jet10pT','jet10eta','jet10phi','jet10b','jet10c','jet11pT','jet11eta','jet11phi','jet11b','jet11c',
-# 'jet12pT','jet12eta','jet12phi','jet12b','jet12c','jet13pT','jet13eta','jet13phi','jet13b','jet13c',
-# 'jet14pT','jet14eta','jet14phi','jet14b','jet14c','jet15pT','jet15eta','jet15phi','jet15b','jet15c',
-# 'jet16pT','jet16eta','jet16phi','jet16b','jet16c','jet17pT','jet17eta','jet17phi','jet17b','jet17c',
-# 'jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c',
-# 'jet20pT','jet20eta','jet20phi','jet20b','jet20c','jet21pT','jet21eta','jet21phi','jet21b','jet21c']
+#######################################################
+# Branches names of high/low level variables aka: features.
+HighLevel = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','mt2','mt3','dr1','dr2','dr3']
+LeptonVar = ['lepton1pT','lepton1eta','lepton1phi','lepton1flav','lepton2pT','lepton2eta','lepton2phi','lepton2flav','lepton3pT','lepton3eta','lepton3phi','lepton3flav']
+# Constants = ['Hmass','Electronmass','Zmass','Muonmass','Wmass','Taumass','Umass','Dmass','Cmass','Smass','Tmass','Bmass','speedLight']
+JetVar    = ['jet1pT','jet1eta','jet1phi','jet1b','jet1c','jet2pT','jet2eta','jet2phi','jet2b','jet2c','jet3pT','jet3eta','jet3phi','jet3b','jet3c','jet4pT','jet4eta',
+'jet4phi','jet4b','jet4c','jet5pT','jet5eta','jet5phi','jet5b','jet5c','jet6pT','jet6eta','jet6phi','jet6b','jet6c','jet7pT','jet7eta','jet7phi','jet7b','jet7c',
+'jet8pT','jet8eta','jet8phi','jet8b','jet8c','jet9pT','jet9eta','jet9phi','jet9b','jet9c','jet10pT','jet10eta','jet10phi','jet10b','jet10c']#,'jet11pT','jet11eta',
+# 'jet11phi','jet11b','jet11c','jet12pT','jet12eta','jet12phi','jet12b','jet12c','jet13pT','jet13eta','jet13phi','jet13b','jet13c','jet14pT','jet14eta','jet14phi',
+# 'jet14b','jet14c','jet15pT','jet15eta','jet15phi','jet15b','jet15c','jet16pT','jet16eta','jet16phi','jet16b','jet16c','jet17pT','jet17eta','jet17phi','jet17b',
+# 'jet17c','jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c','jet20pT','jet20eta','jet20phi','jet20b','jet20c',
+# 'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
+branches = HighLevel + JetVar + LeptonVar
 numBranches = len(branches)
 ###########################################################################################################################
 parser = argparse.ArgumentParser(description= 'Plot 1D plots of sig/bac')
@@ -41,9 +41,9 @@ args = parser.parse_args()
 file = str(args.file)
 ###########################################################################################################################
 # Data read from file.
-signal         = uproot.open('data/new_signal_tthh.root')[tree]
+signal         = uproot.open('data/new_signal_v2.root')[tree]
 df_signal      = signal.pandas.df(branches)
-background     = uproot.open('data/background.root')[tree]
+background     = uproot.open('data/new_background.root')[tree]
 df_background  = background.pandas.df(branches)
 shuffleBackground = shuffle(df_background,random_state=seed)
 #signal and limited shuffle background data to counter inbalanced data problem.
@@ -73,7 +73,7 @@ NNbh_b    = []
 NNbmt1    = []
 NNbdr1    = []
 
-ScoreForMaxSignif = 0.997
+ScoreForMaxSignif = 1.000
 
 for i in range(len(X)):
     if i<len(signal):
@@ -137,7 +137,7 @@ def hPlot(x,y,nx,ny,a,b,c,Name):
     plt.yscale('log')
 
 
-fig1 = plt.figure()
+# fig1 = plt.figure(1)
 
 ax1 = fig1.add_subplot(221)
 hPlot(snumjet,bnumjet,NNsnumjet,NNbnumjet,1,21,21,branches[0])
@@ -168,4 +168,5 @@ hPlot(smt1,bmt1,NNsmt1,NNbmt1,0,300,100,branches[7])
 plot3 = plt.figure(3)
 hPlot(sdr1,bdr1,NNsdr1,NNbdr1,0,7,100,branches[8])
 
-plt.show()
+# plt.show()
+plt.savefig('test.png')
