@@ -10,9 +10,9 @@ import shap
 from numpy import array
 np.set_printoptions(threshold=sys.maxsize)
 import tensorflow as tf
-import tkinter as tk
+# import tkinter as tk
 import matplotlib
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import pandas as pd
 import math
@@ -36,21 +36,7 @@ sc = StandardScaler()
 # Variables.
 seed = 42
 tree = 'OutputTree'
-startTime = datetime.now()
-#####################################################
-pre = time.strftime('%Y_%m_%d')
-suf = time.strftime('%H.%M.%S')
-
-# filename for maxsignif
-name = 'data/'+pre + '-rocDataNN-' + suf +'.csv'
-
-
-# filename for keras model 
-modelName = 'data/'+ pre + '-neuralNet-' + suf +'.h5' 
-
-# filename for plots 
-figname = 'data/' +  pre + '-plots-' + suf  
-###########################################################################################################################
+#######################################################
 # Branches names of high/low level variables aka: features.
 HighLevel = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','mt2','mt3','dr1','dr2','dr3']
 LeptonVar = ['lepton1pT','lepton1eta','lepton1phi','lepton1flav','lepton2pT','lepton2eta','lepton2phi','lepton2flav','lepton3pT','lepton3eta','lepton3phi','lepton3flav']
@@ -77,6 +63,20 @@ def main(LAYER,BATCH):
     network.append(1)
     print(network)
     numNeurons  = sum(network)
+    #####################################################
+    startTime = datetime.now()
+    pre = time.strftime('%Y_%m_%d')
+    suf = time.strftime('%H.%M.%S')
+
+    # filename for maxsignif
+    name = 'data/'+pre + '-rocDataNN-' + suf +'.csv'
+
+
+    # filename for keras model 
+    modelName = 'data/'+ pre + '-neuralNet-' + suf +'.h5' 
+
+    # filename for plots 
+    figname = 'data/' +  pre + '-plots-' + suf  
     ###########################################################################################################################
     # Data read from file.
     # signal         = uproot.open('data/new_signal_tthh.root')[tree]
@@ -108,7 +108,7 @@ def main(LAYER,BATCH):
         model.add(Dense(network[0], input_dim = numBranches))#, activation=act))
         for i in  range(1,numLayers-2):
             model.add(Dense(network[i] , activation = act))   #hidden layer.
-            # model.add(Dropout(0.50))
+            model.add(Dropout(0.01))
             # model.add(BatchNormalization())
         model.add(Dense(network[-1] , activation  = 'sigmoid')) #output layer.
         model.compile(loss = 'binary_crossentropy', optimizer = opt, metrics = tf.keras.metrics.Precision())
@@ -180,10 +180,10 @@ def main(LAYER,BATCH):
         shap_values = explainer.shap_values(X_test)
         shap.summary_plot(shap_values, X_train, plot_type="bar")
     ###################################################################
-    pd.DataFrame(kModel.history).plot(figsize=(8,5))
-    plt.grid(True)
-    plt.gca().set_ylim(0,1)
-    plt.savefig(figname + 'modelSummary.png')
+    # pd.DataFrame(kModel.history).plot(figsize=(8,5))
+    # plt.grid(True)
+    # plt.gca().set_ylim(0,1)
+    # plt.savefig(figname + 'modelSummary.png')
     ###################################################################
     # computes max signif
     nSig = (426908)*(990/(930000/0.609))
