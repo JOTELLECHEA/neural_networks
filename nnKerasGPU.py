@@ -152,7 +152,7 @@ def main(LAYER,BATCH):
     kModel = neuralNet.fit(X_train, y_train
         ,epochs=numEpochs
         ,batch_size=batchSize
-        ,validation_data=(X_dev, y_dev)
+        ,validation_data=(X_test, y_test)
         ,verbose=1
         ,callbacks=[earlyStopCallBack,checkPointsCallBack])
     ##########################################################################################################
