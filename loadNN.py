@@ -14,9 +14,11 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt 
 import seaborn as sns
+from numpy import array
 from tensorflow.keras.models import load_model
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
 sc = StandardScaler()
 seed = 42
 tree = 'OutputTree'
@@ -48,15 +50,53 @@ df_background  = background.pandas.df(branches)
 shuffleBackground = shuffle(df_background,random_state=seed)
 #signal and limited shuffle background data to counter inbalanced data problem.
 X = pd.concat([df_signal,shuffleBackground])
-z = sc.fit_transform(X)
+X = sc.fit_transform(X)
+
+# Labeling data with 1's and 0's to distinguish.
+y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
+
+
 
 neuralNet = keras.models.load_model(file)
 
-score = neuralNet.predict(z).ravel()
+numbins = 10
 
-flag == 0 
+sigScore = neuralNet.predict(X[y>0.5]).ravel()
+bkgScore = neuralNet.predict(X[y<0.5]).ravel()
+sigSUM = len(sigScore)
+bkgSUM = len(bkgScore)
+
+xlimit = (0,1)
+tp = []
+fp = []
+hist,bins = np.histogram(sigScore,bins=numbins,range=xlimit,density=False)
+count = 0 
+for i in range(numbins-1,0,-1):
+    count += hist[i]/sigSUM
+    tp.append(count)
+hist,bins = np.histogram(bkgScore,bins=numbins,range=xlimit,density=False)
+count = 0 
+for j in range(numbins-1,0,-1):
+    count += hist[j]/bkgSUM
+    fp.append(count)
+plt.subplot(211)
+plt.hist(sigScore,color='r', alpha=0.5, range=xlimit, bins=numbins,histtype='stepfilled', density=False,label='Signal Distribution')
+plt.hist(bkgScore,color='b', alpha=0.5, range=xlimit, bins=numbins,histtype='stepfilled', density=False,label='Background Distribution')
+plt.subplot(212)
+plt.plot(tp,fp, 'ro', label = 'ROC')
+plt.plot([0, 1], [0, 1], '--', color = (0.6, 0.6, 0.6), label = 'Luck')
+plt.xlim([-0.05, 1.05])
+plt.ylim([-0.05, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver operating characteristic')
+plt.legend(loc = 'lower right')
+plt.grid()
+plt.show()
+
+flag = 0 
 if flag == 1:
-        
+
     NNsnumjet = []
     NNsnumlep = []
     NNsbtag   = []
