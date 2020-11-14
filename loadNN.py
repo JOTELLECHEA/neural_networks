@@ -50,49 +50,59 @@ df_background  = background.pandas.df(branches)
 shuffleBackground = shuffle(df_background,random_state=seed)
 #signal and limited shuffle background data to counter inbalanced data problem.
 X = pd.concat([df_signal,shuffleBackground])
+print('1st X term', X['jet1eta'])
 X = sc.fit_transform(X)
-
+print('1st X',X[1])
 # Labeling data with 1's and 0's to distinguish.
 y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
+
+# Shuffle full data and split into train/test and validation set.
+X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.001, random_state=seed)
+X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev, test_size = 0.2,random_state=seed)
 
 
 
 neuralNet = keras.models.load_model(file)
 
-numbins = 10
+y_predicted = neuralNet.predict(X_test)
 
-sigScore = neuralNet.predict(X[y>0.5]).ravel()
-bkgScore = neuralNet.predict(X[y<0.5]).ravel()
-sigSUM = len(sigScore)
-bkgSUM = len(bkgScore)
+flag2 =0
+if flag2 ==1:
+    numbins = 1000
 
-xlimit = (0,1)
-tp = []
-fp = []
-hist,bins = np.histogram(sigScore,bins=numbins,range=xlimit,density=False)
-count = 0 
-for i in range(numbins-1,0,-1):
-    count += hist[i]/sigSUM
-    tp.append(count)
-hist,bins = np.histogram(bkgScore,bins=numbins,range=xlimit,density=False)
-count = 0 
-for j in range(numbins-1,0,-1):
-    count += hist[j]/bkgSUM
-    fp.append(count)
-plt.subplot(211)
-plt.hist(sigScore,color='r', alpha=0.5, range=xlimit, bins=numbins,histtype='stepfilled', density=False,label='Signal Distribution')
-plt.hist(bkgScore,color='b', alpha=0.5, range=xlimit, bins=numbins,histtype='stepfilled', density=False,label='Background Distribution')
-plt.subplot(212)
-plt.plot(tp,fp, 'ro', label = 'ROC')
-plt.plot([0, 1], [0, 1], '--', color = (0.6, 0.6, 0.6), label = 'Luck')
-plt.xlim([-0.05, 1.05])
-plt.ylim([-0.05, 1.05])
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('Receiver operating characteristic')
-plt.legend(loc = 'lower right')
-plt.grid()
-plt.show()
+    sigScore = neuralNet.predict(X[y>0.5]).ravel()
+    bkgScore = neuralNet.predict(X[y<0.5]).ravel()
+    sigSUM = len(sigScore)
+    bkgSUM = len(bkgScore)
+
+    xlimit = (0,1)
+    tp = []
+    fp = []
+    hist,bins = np.histogram(sigScore,bins=numbins,range=xlimit,density=False)
+    count = 0 
+    for i in range(numbins-1,0,-1):
+        count += hist[i]/sigSUM
+        tp.append(count)
+    hist,bins = np.histogram(bkgScore,bins=numbins,range=xlimit,density=False)
+    count = 0 
+    for j in range(numbins-1,0,-1):
+        count += hist[j]/bkgSUM
+        fp.append(count)
+    plt.subplot(211)
+    plt.hist(sigScore,color='r', alpha=0.5, range=xlimit, bins=numbins,histtype='bar', density=True,label='Signal Distribution')
+    plt.hist(bkgScore,color='b', alpha=0.5, range=xlimit, bins=numbins,histtype='bar', density=True,label='Background Distribution')
+    plt.yscale('log')
+    plt.subplot(212)
+    plt.plot(fp,tp, 'r-', label = 'ROC')
+    plt.plot([0, 1], [0, 1], '--', color = (0.6, 0.6, 0.6), label = 'Luck')
+    # plt.xlim([-0.05, 1.05])
+    # plt.ylim([-0.05, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristic')
+    plt.legend(loc = 'lower right')
+    plt.grid()
+    plt.show()
 
 flag = 0 
 if flag == 1:

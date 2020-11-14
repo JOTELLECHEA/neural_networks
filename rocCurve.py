@@ -11,6 +11,7 @@ import argparse
 import numpy as np
 import pandas as pd 
 import matplotlib.pyplot as plt
+from sklearn.metrics import auc
 from numpy import array
 #################################################################################
 parser = argparse.ArgumentParser(description= 'sigf of BDT/NN/DN')
@@ -33,15 +34,12 @@ b = 0.00147541
 m = 0.0001111
 t = 0.0000764706 
 
-# # predicted, inclusive cross section
-# nSig=990.
-
-# # 1-lepton filter
-# nBG=610000.+270000.+5900000.
 
 # with 1-lepton filtering from tthhAnalysis
 nSig = (426908)*(990/(930000/0.609))
 nBG=((3332932/5900000.)*5.85e6) + ((320752/610000.)*612000.) + ((158645/270000.)*269000)
+
+
 
 def getZPoisson(s, b, stat, syst):
     """
@@ -116,8 +114,7 @@ if scanROC:
         # print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
     print("Score Threshold for Max Sigf. = %6.7f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
     print("Score Threshold for Max Sigf. = %10.15f" % (maxbdt))
-
-drawPlots=False
+drawPlots=True
 if drawPlots:
     bins =30
 
@@ -139,23 +136,23 @@ if drawPlots:
     plt.ylabel('True Positive Rate')
     plt.grid()
     plt.legend(loc="lower right")
-    plt.subplot(212)
-    plt.hist(d0,color='r', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', density=True,label='S (train)')
-    plt.hist(d1,color='b', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', density=True,label='B (train)')
+    # plt.subplot(212)
+    # plt.hist(d0,color='r', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', density=True,label='S (train)')
+    # plt.hist(d1,color='b', alpha=0.5, range=low_high, bins=bins,histtype='stepfilled', density=True,label='B (train)')
 
-    hist, bins = np.histogram(d2,bins=bins, range=low_high, density=True)
-    scale = len(d2) / sum(hist)
-    err = np.sqrt(hist * scale) / scale
-    width = (bins[1] - bins[0])
-    center = (bins[:-1] + bins[1:]) / 2
-    plt.errorbar(center, hist, yerr=err, fmt='o', c='r', label='S (test)')
+    # hist, bins = np.histogram(d2,bins=bins, range=low_high, density=True)
+    # scale = len(d2) / sum(hist)
+    # err = np.sqrt(hist * scale) / scale
+    # width = (bins[1] - bins[0])
+    # center = (bins[:-1] + bins[1:]) / 2
+    # plt.errorbar(center, hist, yerr=err, fmt='o', c='r', label='S (test)')
 
-    hist, bins = np.histogram(d3,bins=bins, range=low_high, density=True)
-    scale = len(d2) / sum(hist)
-    err = np.sqrt(hist * scale) / scale
-    plt.errorbar(center, hist, yerr=err, fmt='o', c='b', label='B (test)')
-    plt.xlabel("BDT output")
-    plt.ylabel("Arbitrary units")
-    plt.legend(loc='upper left')
-    plt.yscale('log')
+    # hist, bins = np.histogram(d3,bins=bins, range=low_high, density=True)
+    # scale = len(d2) / sum(hist)
+    # err = np.sqrt(hist * scale) / scale
+    # plt.errorbar(center, hist, yerr=err, fmt='o', c='b', label='B (test)')
+    # plt.xlabel("BDT output")
+    # plt.ylabel("Arbitrary units")
+    # plt.legend(loc='upper left')
+    # plt.yscale('log')
     plt.show()

@@ -34,7 +34,6 @@ from datetime import datetime
 import slug
 sc = StandardScaler()
 # Variables.
-seed = 42
 tree = 'OutputTree'
 #######################################################
 # Branches names of high/low level variables aka: features.
@@ -49,11 +48,12 @@ JetVar    = ['jet1pT','jet1eta','jet1phi','jet1b','jet1c','jet2pT','jet2eta','je
 # 'jet17c','jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c','jet20pT','jet20eta','jet20phi','jet20b','jet20c',
 # 'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
 def main(LAYER,BATCH):
+    seed = 42
     branches = JetVar + LeptonVar + HighLevel
     numBranches = len(branches)
     learnRate   = 0.0001
     batchSize   = BATCH#pow(2,9)# 5:32 6:64 7:128 8:256 9:512 10: 1024 
-    numEpochs   = 150
+    numEpochs   = 2
     # areaUnderCurve = 0
     network = []
     numLayers  = LAYER
@@ -88,7 +88,10 @@ def main(LAYER,BATCH):
 
     # signal and limited shuffle background data to counter inbalanced data problem.
     X = pd.concat([df_signal,shuffleBackground])
+    print('1st X term', X['jet1eta'])
+
     X = sc.fit_transform(X)
+    print('1st X term', X[0])
 
     # Labeling data with 1's and 0's to distinguish.
     y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
