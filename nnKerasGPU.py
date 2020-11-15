@@ -5,38 +5,35 @@
 # Reference  :http://cdsweb.cern.ch/record/2220969/files/ATL-PHYS-PUB-2016-023.pdf
 ###########################################################################################################################
 import csv,sys
-import uproot
+import uproot # Allows loading/saving of ROOT files without ROOT.
+import pandas as pd # Dataframe to work with data from uproot.
 import numpy as np
-import shap
 from numpy import array
 np.set_printoptions(threshold=sys.maxsize)
-import tensorflow as tf
-# import tkinter as tk
+import shap # Allows a feature importances plot to be created for NN in Keras.
+import tensorflow as tf # Backend need to for Keras.
+import tkinter as tk # Used to view plots via ssh.
 import matplotlib
-# matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-import pandas as pd
+matplotlib.use('TkAgg') # Format used to view.
 import math
 from math import log,sqrt
-from tensorflow import keras
-from tensorflow.keras import metrics
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense,Dropout,Activation
+from tensorflow import keras 
+from tensorflow.keras import metrics 
+from tensorflow.keras.models import Sequential 
+from tensorflow.keras.layers import Dense,Dropout,Activation 
 from tensorflow.keras.callbacks import EarlyStopping,ModelCheckpoint
 from sklearn.model_selection import train_test_split
-from sklearn.utils import shuffle,class_weight
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import precision_recall_curve,plot_precision_recall_curve,average_precision_score,roc_curve,auc,roc_auc_score,precision_recall_curve
-from imblearn.tensorflow import balanced_batch_generator
-from imblearn.under_sampling import NearMiss
-from sklearn.metrics import confusion_matrix
-import time
-from datetime import datetime
-import slug
+from sklearn.utils import shuffle
+from sklearn.preprocessing import StandardScaler # Normalized data to range from (0,1)
 sc = StandardScaler()
+from sklearn.metrics import precision_recall_curve,plot_precision_recall_curve,average_precision_score,roc_curve,auc,roc_auc_score,precision_recall_curve
+from sklearn.metrics import confusion_matrix
+from datetime import datetime
+import slug # Library with common functions used in multiple scripts.
 # Variables.
-tree = 'OutputTree'
-seed = 42
+tree = 'OutputTree' 
+seed = 42 # Random seed number to reproduce results.
 #######################################################
 # Branches names of high/low level variables aka: features.
 HighLevel = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','mt2','mt3','dr1','dr2','dr3']
@@ -49,12 +46,11 @@ JetVar    = ['jet1pT','jet1eta','jet1phi','jet1b','jet1c','jet2pT','jet2eta','je
 # 'jet14b','jet14c','jet15pT','jet15eta','jet15phi','jet15b','jet15c','jet16pT','jet16eta','jet16phi','jet16b','jet16c','jet17pT','jet17eta','jet17phi','jet17b',
 # 'jet17c','jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c','jet20pT','jet20eta','jet20phi','jet20b','jet20c',
 # 'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
-
 branches = sorted(HighLevel + JetVar + LeptonVar)
 numBranches = len(branches)
 ###########################################################################################################################
 # Data read from file.
-# signal         = uproot.open('data/new_signal_tthh.root')[tree]
+# signal         = uproot.open('data/new_signal_tthh.root')[tree] #old data sample.
 signal         = uproot.open('data/new_signal_v2.root')[tree]
 df_signal      = signal.pandas.df(branches)
 background     = uproot.open('data/new_background.root')[tree]
