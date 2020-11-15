@@ -1,6 +1,7 @@
 # Written By : Jonathan O. Tellechea
 # Adviser    : Mike Hance, Phd
 # Research   : Using a neural network to maximize the significance of tttHH production.
+# Description: Script that trains and test a Keras NN.
 # Reference  :http://cdsweb.cern.ch/record/2220969/files/ATL-PHYS-PUB-2016-023.pdf
 ###########################################################################################################################
 import csv,sys
