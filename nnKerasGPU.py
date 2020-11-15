@@ -4,6 +4,7 @@
 # Description: Script that trains and test a Keras NN.
 # Reference  :http://cdsweb.cern.ch/record/2220969/files/ATL-PHYS-PUB-2016-023.pdf
 ###########################################################################################################################
+
 import csv,sys
 import uproot # Allows loading/saving of ROOT files without ROOT.
 import pandas as pd # Dataframe to work with data from uproot.
@@ -34,7 +35,9 @@ import slug # Library with common functions used in multiple scripts.
 # Variables.
 tree = 'OutputTree' 
 seed = 42 # Random seed number to reproduce results.
+
 #######################################################
+
 # Branches names of high/low level variables aka: features.
 HighLevel = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','mt2','mt3','dr1','dr2','dr3']
 LeptonVar = ['lepton1pT','lepton1eta','lepton1phi','lepton1flav','lepton2pT','lepton2eta','lepton2phi','lepton2flav','lepton3pT','lepton3eta','lepton3phi','lepton3flav']
@@ -48,27 +51,27 @@ JetVar    = ['jet1pT','jet1eta','jet1phi','jet1b','jet1c','jet2pT','jet2eta','je
 # 'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
 branches = sorted(HighLevel + JetVar + LeptonVar)
 numBranches = len(branches)
+
 ###########################################################################################################################
+
 # Data read from file.
 # signal         = uproot.open('data/new_signal_tthh.root')[tree] #old data sample.
 signal         = uproot.open('data/new_signal_v2.root')[tree]
-df_signal      = signal.pandas.df(branches)
+df_signal      = signal.pandas.df(branches) # Adding features(branches) to dataframe.
 background     = uproot.open('data/new_background.root')[tree]
-df_background  = background.pandas.df(branches)
+df_background  = background.pandas.df(branches) # Adding features(branches) to dataframe.
+
+# The 3 backgrounds are concatenated we shuffle to make sure they are not sorted. 
 shuffleBackground = shuffle(df_background,random_state=seed)
 
-# signal and limited shuffle background data to counter inbalanced data problem.
+# Signal and shuffle background data.
 X = pd.concat([df_signal,shuffleBackground])
-print('df_signal[jet1eta][0]',df_signal['jet1eta'][0])
-print('')
-print('df_background[jet1eta][0]',df_background['jet1eta'][0])
-print('')
-print('X first background values',X['jet1eta'][len(signal)+1])
-print('1st X term', X['jet1eta'])
-X = sc.fit_transform(X)
-print('1st X term', X[0])
 
-# Labeling data with 1's and 0's to distinguish.
+# Normalized the data with a Gaussian distrubuition with 0 mean and unit variance.
+X = sc.fit_transform(X)
+
+# Labeling data with 1's and 0's to distinguish.(1/positve/signal and 0/negative/background)
+# Truth Labels.
 y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
 
 
@@ -77,12 +80,15 @@ X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.001, random_st
 X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev, test_size = 0.2,random_state=seed)
 
 ##########################################################################################################
+
 def main(LAYER,BATCH):
     learnRate   = 0.0001
-    batchSize   = BATCH#pow(2,9)# 5:32 6:64 7:128 8:256 9:512 10: 1024 
+    batchSize   = BATCH
     numEpochs   = 2
-    # areaUnderCurve = 0
-    network = []
+    '''NN structure ex. [5,5,5,5,1] 4 layers with 5 neurons each and one output layer.
+    this method I made to quickly add layers to model. For loop an array with (n-1) layers
+    and lastly adds a 1 for the output. Look at build_model() to see how this array is applied.'''
+    network = []   
     numLayers  = LAYER
     neurons = numBranches
     for i in range(numLayers-1):
@@ -90,47 +96,22 @@ def main(LAYER,BATCH):
     network.append(1)
     print(network)
     numNeurons  = sum(network)
+
     #####################################################
+
     startTime = datetime.now()
     pre = time.strftime('%Y_%m_%d')
     suf = time.strftime('%H.%M.%S')
 
-    # filename for maxsignif
+    # filename for loadNN.py script
     name = 'data/'+pre + '-rocDataNN-' + suf +'.csv'
 
 
-    # filename for keras model 
+    # filename for keras model to be saved as. 
     modelName = 'data/'+ pre + '-neuralNet-' + suf +'.h5' 
 
-    # filename for plots 
+    # filename for plots to be identified by saved model. 
     figname = 'data/' +  pre + '-plots-' + suf  
-    # ###########################################################################################################################
-    # # Data read from file.
-    # # signal         = uproot.open('data/new_signal_tthh.root')[tree]
-    # signal         = uproot.open('data/new_signal_v2.root')[tree]
-    # df_signal      = signal.pandas.df(branches)
-    # background     = uproot.open('data/new_background.root')[tree]
-    # df_background  = background.pandas.df(branches)
-    # shuffleBackground = shuffle(df_background,random_state=seed)
-
-    # # signal and limited shuffle background data to counter inbalanced data problem.
-    # X = pd.concat([df_signal,shuffleBackground])
-    # print('df_signal[jet1eta][0]',df_signal['jet1eta'][0])
-    # print(df_background['jet1eta'][:5])
-    # print(X['jet1eta'][len(signal):5])
-
-    # print('1st X term', X['jet1eta'])
-
-    # X = sc.fit_transform(X)
-    # print('1st X term', X[0])
-
-    # # Labeling data with 1's and 0's to distinguish.
-    # y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
-
-
-    # # Shuffle full data and split into train/test and validation set.
-    # X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.001, random_state=seed)
-    # X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev, test_size = 0.2,random_state=seed)
 
     # ##########################################################################################################
     # NN model defined as a function.
