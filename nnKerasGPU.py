@@ -35,6 +35,7 @@ import slug
 sc = StandardScaler()
 # Variables.
 tree = 'OutputTree'
+seed = 42
 #######################################################
 # Branches names of high/low level variables aka: features.
 HighLevel = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','mt2','mt3','dr1','dr2','dr3']
@@ -47,10 +48,39 @@ JetVar    = ['jet1pT','jet1eta','jet1phi','jet1b','jet1c','jet2pT','jet2eta','je
 # 'jet14b','jet14c','jet15pT','jet15eta','jet15phi','jet15b','jet15c','jet16pT','jet16eta','jet16phi','jet16b','jet16c','jet17pT','jet17eta','jet17phi','jet17b',
 # 'jet17c','jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c','jet20pT','jet20eta','jet20phi','jet20b','jet20c',
 # 'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
+
+branches = sorted(HighLevel + JetVar + LeptonVar)
+numBranches = len(branches)
+###########################################################################################################################
+# Data read from file.
+# signal         = uproot.open('data/new_signal_tthh.root')[tree]
+signal         = uproot.open('data/new_signal_v2.root')[tree]
+df_signal      = signal.pandas.df(branches)
+background     = uproot.open('data/new_background.root')[tree]
+df_background  = background.pandas.df(branches)
+shuffleBackground = shuffle(df_background,random_state=seed)
+
+# signal and limited shuffle background data to counter inbalanced data problem.
+X = pd.concat([df_signal,shuffleBackground])
+print('df_signal[jet1eta][0]',df_signal['jet1eta'][0])
+print('')
+print('df_background[jet1eta][0]',df_background['jet1eta'][0])
+print('')
+print('X first background values',X['jet1eta'][len(signal)+1])
+print('1st X term', X['jet1eta'])
+X = sc.fit_transform(X)
+print('1st X term', X[0])
+
+# Labeling data with 1's and 0's to distinguish.
+y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
+
+
+# Shuffle full data and split into train/test and validation set.
+X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.001, random_state=seed)
+X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev, test_size = 0.2,random_state=seed)
+
+##########################################################################################################
 def main(LAYER,BATCH):
-    seed = 42
-    branches = JetVar + LeptonVar + HighLevel
-    numBranches = len(branches)
     learnRate   = 0.0001
     batchSize   = BATCH#pow(2,9)# 5:32 6:64 7:128 8:256 9:512 10: 1024 
     numEpochs   = 2
@@ -77,31 +107,35 @@ def main(LAYER,BATCH):
 
     # filename for plots 
     figname = 'data/' +  pre + '-plots-' + suf  
-    ###########################################################################################################################
-    # Data read from file.
-    # signal         = uproot.open('data/new_signal_tthh.root')[tree]
-    signal         = uproot.open('data/new_signal_v2.root')[tree]
-    df_signal      = signal.pandas.df(branches)
-    background     = uproot.open('data/new_background.root')[tree]
-    df_background  = background.pandas.df(branches)
-    shuffleBackground = shuffle(df_background,random_state=seed)
+    # ###########################################################################################################################
+    # # Data read from file.
+    # # signal         = uproot.open('data/new_signal_tthh.root')[tree]
+    # signal         = uproot.open('data/new_signal_v2.root')[tree]
+    # df_signal      = signal.pandas.df(branches)
+    # background     = uproot.open('data/new_background.root')[tree]
+    # df_background  = background.pandas.df(branches)
+    # shuffleBackground = shuffle(df_background,random_state=seed)
 
-    # signal and limited shuffle background data to counter inbalanced data problem.
-    X = pd.concat([df_signal,shuffleBackground])
-    print('1st X term', X['jet1eta'])
+    # # signal and limited shuffle background data to counter inbalanced data problem.
+    # X = pd.concat([df_signal,shuffleBackground])
+    # print('df_signal[jet1eta][0]',df_signal['jet1eta'][0])
+    # print(df_background['jet1eta'][:5])
+    # print(X['jet1eta'][len(signal):5])
 
-    X = sc.fit_transform(X)
-    print('1st X term', X[0])
+    # print('1st X term', X['jet1eta'])
 
-    # Labeling data with 1's and 0's to distinguish.
-    y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
+    # X = sc.fit_transform(X)
+    # print('1st X term', X[0])
+
+    # # Labeling data with 1's and 0's to distinguish.
+    # y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
 
 
-    # Shuffle full data and split into train/test and validation set.
-    X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.001, random_state=seed)
-    X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev, test_size = 0.2,random_state=seed)
+    # # Shuffle full data and split into train/test and validation set.
+    # X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.001, random_state=seed)
+    # X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev, test_size = 0.2,random_state=seed)
 
-    ##########################################################################################################
+    # ##########################################################################################################
     # NN model defined as a function.
 
     def build_model():

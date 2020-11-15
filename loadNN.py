@@ -34,7 +34,7 @@ JetVar    = ['jet1pT','jet1eta','jet1phi','jet1b','jet1c','jet2pT','jet2eta','je
 # 'jet14b','jet14c','jet15pT','jet15eta','jet15phi','jet15b','jet15c','jet16pT','jet16eta','jet16phi','jet16b','jet16c','jet17pT','jet17eta','jet17phi','jet17b',
 # 'jet17c','jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c','jet20pT','jet20eta','jet20phi','jet20b','jet20c',
 # 'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
-branches = HighLevel + JetVar + LeptonVar
+branches = sorted(HighLevel + JetVar + LeptonVar)
 numBranches = len(branches)
 ###########################################################################################################################
 parser = argparse.ArgumentParser(description= 'Plot 1D plots of sig/bac')
@@ -50,9 +50,9 @@ df_background  = background.pandas.df(branches)
 shuffleBackground = shuffle(df_background,random_state=seed)
 #signal and limited shuffle background data to counter inbalanced data problem.
 X = pd.concat([df_signal,shuffleBackground])
-print('1st X term', X['jet1eta'])
+
 X = sc.fit_transform(X)
-print('1st X',X[1])
+
 # Labeling data with 1's and 0's to distinguish.
 y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
 
