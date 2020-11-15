@@ -117,18 +117,29 @@ def main(LAYER,BATCH):
     # NN model defined as a function.
 
     def build_model():
-        model = Sequential()
-        opt = keras.optimizers.Nadam(learning_rate=learnRate)
-        act = 'relu'
-        model.add(Dense(network[0], input_dim = numBranches))#, activation=act))
+
+        #Create a NN model. 
+        model = Sequential() # barebones model no layers. 
+        opt = keras.optimizers.Nadam(learning_rate=learnRate) # Best option for most NN. 
+
+        # activation function other options possible.
+        act = 'relu' # 0 for negative values, linear for nonzero values. 
+
+        # model.add() adds one layer at a time, 1st layer needs input shape, So we pass the 1st element of network.
+        model.add(Dense(network[0], input_dim = numBranches)) #  Dense Layers are fully connected and most common.
+
+        # now we will loop and add layers (1,(n-1))
         for i in  range(1,numLayers-2):
-            model.add(Dense(network[i] , activation = act))   #hidden layer.
-            model.add(Dropout(0.01))
-            # model.add(BatchNormalization())
-        model.add(Dense(network[-1] , activation  = 'sigmoid')) #output layer.
+            model.add(Dense(network[i] , activation = act)) # Hidden layers. 
+            # Turning off nuerons of layer above in loop with probability = 1-r, so r = 0.25, then 75% of nerouns are kept.  
+            model.add(Dropout(0.01)) 
+
+        # Last layer needs to have one neuron for a binary classification(BC) which yields from 0 to 1. 
+        model.add(Dense(network[-1] , activation  = 'sigmoid')) # Output layer's activation function for BC needs to be sigmoid.
+
+        # Last step is compiling.
         model.compile(loss = 'binary_crossentropy', optimizer = opt, metrics = tf.keras.metrics.Precision())
         return  model
-
 
     def compare_train_test(kModel, X_train, y_train, X_test, y_test, bins=30):
         decisions = []
