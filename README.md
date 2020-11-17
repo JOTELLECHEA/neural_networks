@@ -21,6 +21,13 @@ Research on  ttHH production via NN/Keras
      >Uses ROOT to produce histogram plots of jet four vectors.
    - rocCurve.py
      >Uses a csv file to recreate roc and maxs signif.
+     ```bash
+     $ python rocCurve.py --file data/2020_11_14-rocDataNN-22.13.33.csv
+     Score = 0.8901054
+     Sign. = 0.88
+     nsig. = 56
+     nbkg. = 4074
+     ```
 2. Files required
    - requirements.txt
       > required progrmas needed to run scripts. 
