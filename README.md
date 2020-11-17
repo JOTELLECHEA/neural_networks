@@ -17,6 +17,16 @@ Research on  ttHH production via NN/Keras
      ```
    - hyperparameterRecord.py
      >Script that uses keeps a record on results.
+     ```bash
+     $ python hyperparameterRecord.py
+         NN Archi.             #Br.  LR      Batch  AUC     Avg.P  Run Time                ConfusionMatrix [TP FP] [FN TN]       Score  Max Signif  nsig  nbkg
+     0    [75, 75, 75, 75, 1]  75    0.0001   512   0.9454  0.7637  0 days 00:12:27.407433  [[752999   8610]\n [ 36923  48468]]  0.870   1.00        98   9640
+     1    [75, 75, 75, 75, 1]  75    0.0001   512   0.9485  0.7744  0 days 00:18:14.872631  [[754118   7491]\n [ 37182  48209]]  0.865   1.06        89   7116
+     2    [75, 75, 75, 75, 1]  75    0.0001   512   0.9474  0.7712  0 days 00:38:35.970770  [[754821   6788]\n [ 38098  47293]]  0.930   1.04        44   1828
+     3    [75, 75, 75, 75, 1]  75    0.0001   512   0.9475  0.7718  0 days 00:55:50.455564  [[755124   6485]\n [ 38431  46960]]  0.890   1.05        90   7444
+     4    [75, 75, 75, 75, 1]  75    0.0001   512   0.9454  0.7646  0 days 01:05:58.572270  [[753322   8287]\n [ 36996  48395]]  0.877   0.99        92   8567
+     5    [75, 75, 75, 75, 1]  75    0.0001   256   0.9484  0.7729  0 days 00:27:49.218513  [[754273   7336]\n [ 37228  48163]]  0.875   1.02        87   7310
+     ```
    - rootroot.py
      >Uses ROOT to produce histogram plots of jet four vectors.
    - rocCurve.py
