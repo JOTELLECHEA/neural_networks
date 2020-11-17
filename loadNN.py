@@ -67,7 +67,7 @@ neuralNet = keras.models.load_model(file)
 
 y_predicted = neuralNet.predict(X_test)
 
-flag2 =0
+flag2 = 1
 if flag2 ==1:
     numbins = 1000
 
