@@ -18,6 +18,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('TkAgg') # Format used to view.
 import math
+import time
 from math import log,sqrt
 from tensorflow import keras 
 from tensorflow.keras import metrics 
