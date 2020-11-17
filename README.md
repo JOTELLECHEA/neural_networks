@@ -1,10 +1,8 @@
 # neural_networks
 Research on  ttHH production via NN/Keras
 
-# Using
-```bash
-$ python -i nnKerasGPU.py
-```
+# TBD
+
 1. Programs Descriptions
    - nnKerasGPU.py
      > NN via Keras and tensorflow with GPU.
@@ -14,6 +12,9 @@ $ python -i nnKerasGPU.py
      >Script that computes max significance, ROC and PR plots.
    - loadNN.py
      >Script that creates cuts on signal & background based on score given by NN. 
+     ```bash
+      $ python -i loadNN.py --file filename.h5
+     ```
    - hyperparameterRecord.py
      >Script that uses keeps a record on results.
    - rootroot.py
