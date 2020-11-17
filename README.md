@@ -8,9 +8,7 @@ Research on  ttHH production via NN/Keras
      > NN via Keras and tensorflow with GPU.
      ```bash
      $ python -i nnKerasGPU.py
-     >>> main(5,512)
-      Script starting....
-      [75, 75, 75, 75, 1]
+     >>> main(5,512) 
      ```
    - multiNN.py
      > loops over nnKerasGPU.py to test NN. 
