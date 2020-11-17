@@ -6,6 +6,10 @@ Research on  ttHH production via NN/Keras
 1. Programs Descriptions
    - nnKerasGPU.py
      > NN via Keras and tensorflow with GPU.
+     ```bash
+     $ python -i nnKerasGPU.py
+     >>> main(5,512) 
+     ```
    - multiNN.py
      > loops over nnKerasGPU.py to test NN. 
    - slug.py
@@ -13,7 +17,7 @@ Research on  ttHH production via NN/Keras
    - loadNN.py
      >Script that creates cuts on signal & background based on score given by NN. 
      ```bash
-      $ python -i loadNN.py --file filename.h5
+     $ python -i loadNN.py --file filename.h5
      ```
    - hyperparameterRecord.py
      >Script that uses keeps a record on results.
