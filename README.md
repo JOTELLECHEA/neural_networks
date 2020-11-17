@@ -1,5 +1,10 @@
 # neural_networks
 Research on  ttHH production via NN/Keras
+
+# Using
+```bash
+$ python -i nnKerasGPU.py
+```
 1. Programs Descriptions
    - nnKerasGPU.py
      > NN via Keras and tensorflow with GPU.
