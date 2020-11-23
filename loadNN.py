@@ -21,11 +21,12 @@ from tensorflow.keras.models import load_model
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import auc
 
 sc = StandardScaler()
 seed = 42
 tree = "OutputTree"
-#######################################################
+
 # Branches names of high/low level variables aka: features.
 HighLevel = [
     "numjet",
@@ -108,6 +109,7 @@ JetVar = [
     "jet10phi",
     "jet10b",
     "jet10c",
+    "weights"
 ]  # ,'jet11pT','jet11eta',
 # 'jet11phi','jet11b','jet11c','jet12pT','jet12eta','jet12phi','jet12b','jet12c','jet13pT','jet13eta','jet13phi','jet13b','jet13c','jet14pT','jet14eta','jet14phi',
 # 'jet14b','jet14c','jet15pT','jet15eta','jet15phi','jet15b','jet15c','jet16pT','jet16eta','jet16phi','jet16b','jet16c','jet17pT','jet17eta','jet17phi','jet17b',
@@ -115,12 +117,12 @@ JetVar = [
 # 'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
 branches = sorted(HighLevel + JetVar + LeptonVar)
 numBranches = len(branches)
-###########################################################################################################################
+
 parser = argparse.ArgumentParser(description="Plot 1D plots of sig/bac")
 parser.add_argument("--file", type=str, help="Use '--file=' followed by a *.h5 file")
 args = parser.parse_args()
 file = str(args.file)
-###########################################################################################################################
+
 # Data read from file.
 signal = uproot.open("data/new_signal_v2.root")[tree]
 df_signal = signal.pandas.df(branches)
@@ -128,7 +130,9 @@ background = uproot.open("data/new_background.root")[tree]
 df_background = background.pandas.df(branches)
 shuffleBackground = shuffle(df_background, random_state=seed)
 # signal and limited shuffle background data to counter inbalanced data problem.
-X = pd.concat([df_signal, shuffleBackground])
+rawdata = pd.concat([df_signal, shuffleBackground])
+
+X = rawdata.drop('weights',axis=1)
 
 X = sc.fit_transform(X)
 
@@ -143,14 +147,13 @@ X_train, X_test, y_train, y_test = train_test_split(
     X_dev, y_dev, test_size=0.2, random_state=seed
 )
 
-
 neuralNet = keras.models.load_model(file)
 
 y_predicted = neuralNet.predict(X_test)
 
 flag2 = 1
 if flag2 == 1:
-    numbins = 1000
+    numbins = 100000
 
     sigScore = neuralNet.predict(X[y > 0.5]).ravel()
     bkgScore = neuralNet.predict(X[y < 0.5]).ravel()
@@ -162,23 +165,24 @@ if flag2 == 1:
     fp = []
     hist, bins = np.histogram(sigScore, bins=numbins, range=xlimit, density=False)
     count = 0
-    for i in range(numbins - 1, 0, -1):
+    for i in range(numbins - 1, -1, -1):
         count += hist[i] / sigSUM
         tp.append(count)
     hist, bins = np.histogram(bkgScore, bins=numbins, range=xlimit, density=False)
     count = 0
-    for j in range(numbins - 1, 0, -1):
+    for j in range(numbins - 1, -1, -1):
         count += hist[j] / bkgSUM
         fp.append(count)
-    plt.subplot(211)
+    area = auc(fp,tp)
+    plt.subplot(212)
     plt.hist(
         sigScore,
         color="r",
         alpha=0.5,
         range=xlimit,
-        bins=numbins,
-        histtype="bar",
-        density=True,
+        bins=100,
+        histtype="stepfilled",
+        density=False,
         label="Signal Distribution",
     )
     plt.hist(
@@ -186,17 +190,20 @@ if flag2 == 1:
         color="b",
         alpha=0.5,
         range=xlimit,
-        bins=numbins,
-        histtype="bar",
-        density=True,
+        bins=100,
+        histtype="stepfilled",
+        density=False,
         label="Background Distribution",
     )
+    plt.xlabel("Score")
+    plt.ylabel("Distribution")
     plt.yscale("log")
-    plt.subplot(212)
-    plt.plot(fp, tp, "r-", label="ROC")
+    plt.legend(loc='upper right')
+    plt.subplot(211)
+    plt.plot(fp, tp, "r-", label="ROC (area = %0.6f)"%(area))
     plt.plot([0, 1], [0, 1], "--", color=(0.6, 0.6, 0.6), label="Luck")
-    # plt.xlim([-0.05, 1.05])
-    # plt.ylim([-0.05, 1.05])
+    plt.xlim([-0.05, 1.05])
+    plt.ylim([-0.05, 1.05])
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
     plt.title("Receiver operating characteristic")
