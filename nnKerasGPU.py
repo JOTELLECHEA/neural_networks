@@ -37,7 +37,6 @@ import slug # Library with common functions used in multiple scripts.
 tree = 'OutputTree' 
 seed = 42 # Random seed number to reproduce results.
 
-#######################################################
 
 # Branches names of high/low level variables aka: features.
 HighLevel = ['numjet','numlep','btag','srap','cent','m_bb','h_b','mt1','mt2','mt3','dr1','dr2','dr3']
@@ -45,7 +44,7 @@ LeptonVar = ['lepton1pT','lepton1eta','lepton1phi','lepton1flav','lepton2pT','le
 # Constants = ['Hmass','Electronmass','Zmass','Muonmass','Wmass','Taumass','Umass','Dmass','Cmass','Smass','Tmass','Bmass','speedLight']
 JetVar    = ['jet1pT','jet1eta','jet1phi','jet1b','jet1c','jet2pT','jet2eta','jet2phi','jet2b','jet2c','jet3pT','jet3eta','jet3phi','jet3b','jet3c','jet4pT','jet4eta',
 'jet4phi','jet4b','jet4c','jet5pT','jet5eta','jet5phi','jet5b','jet5c','jet6pT','jet6eta','jet6phi','jet6b','jet6c','jet7pT','jet7eta','jet7phi','jet7b','jet7c',
-'jet8pT','jet8eta','jet8phi','jet8b','jet8c','jet9pT','jet9eta','jet9phi','jet9b','jet9c','jet10pT','jet10eta','jet10phi','jet10b','jet10c']#,'jet11pT','jet11eta',
+'jet8pT','jet8eta','jet8phi','jet8b','jet8c','jet9pT','jet9eta','jet9phi','jet9b','jet9c','jet10pT','jet10eta','jet10phi','jet10b','jet10c','weights']#,'jet11pT','jet11eta',
 # 'jet11phi','jet11b','jet11c','jet12pT','jet12eta','jet12phi','jet12b','jet12c','jet13pT','jet13eta','jet13phi','jet13b','jet13c','jet14pT','jet14eta','jet14phi',
 # 'jet14b','jet14c','jet15pT','jet15eta','jet15phi','jet15b','jet15c','jet16pT','jet16eta','jet16phi','jet16b','jet16c','jet17pT','jet17eta','jet17phi','jet17b',
 # 'jet17c','jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c','jet20pT','jet20eta','jet20phi','jet20b','jet20c',
@@ -53,7 +52,7 @@ JetVar    = ['jet1pT','jet1eta','jet1phi','jet1b','jet1c','jet2pT','jet2eta','je
 branches = sorted(HighLevel + JetVar + LeptonVar)
 numBranches = len(branches)
 
-###########################################################################################################################
+
 
 # Data read from file.
 # signal         = uproot.open('data/new_signal_tthh.root')[tree] #old data sample.
@@ -66,7 +65,9 @@ df_background  = background.pandas.df(branches) # Adding features(branches) to d
 shuffleBackground = shuffle(df_background,random_state=seed)
 
 # Signal and shuffle background data.
-X = pd.concat([df_signal,shuffleBackground])
+rawdata = pd.concat([df_signal,shuffleBackground])
+
+X = rawdata.drop('weights',axis=1)
 
 # Normalized the data with a Gaussian distrubuition with 0 mean and unit variance.
 X = sc.fit_transform(X)
@@ -77,15 +78,15 @@ y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
 
 
 # Shuffle full data and split into train/test and validation set.
-X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.001, random_state=seed)
-X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev, test_size = 0.2,random_state=seed)
+X_dev,X_eval, y_dev,y_eval = train_test_split(X, y, test_size = 0.001, random_state=seed, stratify = y)
+X_train,X_test, y_train,y_test = train_test_split(X_dev, y_dev, test_size = 0.2,random_state=seed,stratify = y_dev)
 
-##########################################################################################################
+
 
 def main(LAYER,BATCH):
     learnRate   = 0.0001
     batchSize   = BATCH
-    numEpochs   = 2
+    numEpochs   = 150
     '''NN structure ex. [5,5,5,5,1] 4 layers with 5 neurons each and one output layer.
     this method I made to quickly add layers to model. For loop an array with (n-1) layers
     and lastly adds a 1 for the output. Look at build_model() to see how this array is applied.'''
@@ -95,10 +96,10 @@ def main(LAYER,BATCH):
     for i in range(numLayers-1):
         network.append(neurons)
     network.append(1)
-    print(network)
+    print('Script starting....\n',network)
     numNeurons  = sum(network)
 
-    #####################################################
+    
 
     startTime = datetime.now()
     pre = time.strftime('%Y_%m_%d')
@@ -114,7 +115,6 @@ def main(LAYER,BATCH):
     # filename for plots to be identified by saved model. 
     figname = 'data/' +  pre + '-plots-' + suf  
 
-    # ##########################################################################################################
     # NN model defined as a function.
 
     def build_model():
@@ -133,7 +133,7 @@ def main(LAYER,BATCH):
         for i in  range(1,numLayers-2):
             model.add(Dense(network[i] , activation = act)) # Hidden layers. 
             # Turning off nuerons of layer above in loop with probability = 1-r, so r = 0.25, then 75% of nerouns are kept.  
-            model.add(Dropout(0.01)) 
+            model.add(Dropout(0.01, seed =seed)) 
 
         # Last layer needs to have one neuron for a binary classification(BC) which yields from 0 to 1. 
         model.add(Dense(network[-1] , activation  = 'sigmoid')) # Output layer's activation function for BC needs to be sigmoid.
@@ -235,7 +235,6 @@ def main(LAYER,BATCH):
             maxbdt=bdtscore
             maxs=s
             maxb=b
-        # print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
     print("Score Threshold for Max Signif. = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
     runTime = datetime.now() - startTime
     areaUnderCurve = "{:.4f}".format(aucroc)
