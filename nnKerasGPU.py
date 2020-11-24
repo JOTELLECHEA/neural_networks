@@ -247,7 +247,7 @@ def main(LAYER,BATCH):
     cm = confusion_matrix(y_test, y_predicted_round)
     modelParam  = ['NN Archi.','#Br.','LR','Batch','AUC','Avg.P','Run Time','ConfusionMatrix [TP FP] [FN TN]','Score','Max Signif','nsig','nbkg']
     df = pd.DataFrame(np.array([[network,numBranches,learnRate,batchSize,areaUnderCurve,avgPer,runTime,cm,maxbdt,maxsignif,maxs,maxb]]),columns=modelParam)
-    df.to_csv('fiveLayerDropout.csv', mode='a', header=False, index=False)
+    df.to_csv('fiveLayerDropout_1.csv', mode='a', header=False, index=False)
     print(df.to_string(justify='left',columns=modelParam, header=True, index=False))
     print('Saving model.....')
     neuralNet.save(modelName) # Save Model as a HDF5 filein Data folder
