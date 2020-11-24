@@ -132,9 +132,14 @@ shuffleBackground = shuffle(df_background, random_state=seed)
 # signal and limited shuffle background data to counter inbalanced data problem.
 rawdata = pd.concat([df_signal, shuffleBackground])
 
-X = rawdata.drop('weights',axis=1)
+X = rawdata#.drop('weights',axis=1)
 
 X = sc.fit_transform(X)
+print(X[0])
+
+
+sigw = rawdata['weights'][:len(signal)]
+bkgw = rawdata['weights'][len(signal):]
 
 # Labeling data with 1's and 0's to distinguish.
 y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
@@ -149,13 +154,13 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 neuralNet = keras.models.load_model(file)
 
-y_predicted = neuralNet.predict(X_test)
+y_predicted = neuralNet.predict(X)
 
 flag2 = 1
 if flag2 == 1:
     numbins = 100000
 
-    sigScore = neuralNet.predict(X[y > 0.5]).ravel()
+    sigScore = neuralNet.predict(X[y >0.5]).ravel()
     bkgScore = neuralNet.predict(X[y < 0.5]).ravel()
     sigSUM = len(sigScore)
     bkgSUM = len(bkgScore)
@@ -184,6 +189,7 @@ if flag2 == 1:
         histtype="stepfilled",
         density=False,
         label="Signal Distribution",
+        weights=sigw
     )
     plt.hist(
         bkgScore,
@@ -194,6 +200,7 @@ if flag2 == 1:
         histtype="stepfilled",
         density=False,
         label="Background Distribution",
+        weights=bkgw
     )
     plt.xlabel("Score")
     plt.ylabel("Distribution")
