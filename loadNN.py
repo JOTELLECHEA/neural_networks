@@ -137,7 +137,7 @@ X = rawdata#.drop('weights',axis=1)
 X = sc.fit_transform(X)
 print(X[0])
 
-
+# signal 0.00232
 sigw = rawdata['weights'][:len(signal)]
 bkgw = rawdata['weights'][len(signal):]
 
