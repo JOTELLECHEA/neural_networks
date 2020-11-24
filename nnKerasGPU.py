@@ -50,7 +50,7 @@ JetVar    = ['jet1pT','jet1eta','jet1phi','jet1b','jet1c','jet2pT','jet2eta','je
 # 'jet17c','jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c','jet20pT','jet20eta','jet20phi','jet20b','jet20c',
 # 'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
 branches = sorted(HighLevel + JetVar + LeptonVar)
-numBranches = len(branches)
+numBranches = len(branches) - 1
 
 
 
