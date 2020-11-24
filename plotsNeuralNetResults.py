@@ -9,7 +9,7 @@ file = 'fiveLayerDropout.csv'
 # modelParam  = ['NN Archi.','#Br.','LR','Batch','AUC','Avg.P','Y/M/D @ H:M','ConfusionMatrix [TP FP] [FN TN]','Score','Max Signif','nsig','nbkg']
 modelParam  = ['NN Archi.','#Br.','LR','Batch','AUC','Avg.P','Run Time','ConfusionMatrix [TP FP] [FN TN]','Score','Max Signif','nsig','nbkg']
 data = pd.read_csv(file)
-print(data.to_string(justify='left',columns=modelParam,header=True,index=False))
+# print(data.to_string(justify='left',columns=modelParam,header=True,index=False))
 
 # GPU 
 # xlen = []
@@ -23,18 +23,19 @@ print(data.to_string(justify='left',columns=modelParam,header=True,index=False))
 # score = data['Score'][:36]
 
 # #CPU 
-# xlen = []
-# for i in range(5):
-# 	xlen.append(10 + i)
-# 	xlen.append(10 + i)
-# 	xlen.append(10 + i)
-# auc  = data['AUC'][36:]
-# maxs = data['Max Signif'][36:]
-# avgp = data['Avg.P'][36:]
-# score = data['Score'][36:]
+index = 97
+xlen = []
+for i in range(9):
+	xlen.append(4 + i)
+	# xlen.append(10 + i)
+	# xlen.append(10 + i)
+auc  = data['AUC'][index:]
+maxs = data['Max Signif'][index:]
+avgp = data['Avg.P'][index:]
+score = data['Score'][index:]
 
 
-if True == False:
+if True == 1:
 
 	plt.plot(xlen,auc,'b-', label = 'AUC')
 	# plt.plot(xlen,maxs,'g-', label = 'Max Signif')
@@ -46,8 +47,8 @@ if True == False:
 	plt.grid()
 	plt.show()
 
-	timedate = data['Y/M/D @ H:M']
-	new = {}
+	# timedate = data['Y/M/D @ H:M']
+	# new = {}
 	# new[0] = timedate[0].replace('_@_','.')
 
 	# new[0] = new[0].replace('_','.')
@@ -59,10 +60,10 @@ if True == False:
 
 	# new[1] = new[1].split('.')
 
-	for i in range(len(data)):
-		new[i] = timedate[i].replace('_@_','.')
-		new[i] = new[i].replace('_','.')
-		new[i] = new[i].split('.')
+	# for i in range(len(data)):
+	# 	new[i] = timedate[i].replace('_@_','.')
+	# 	new[i] = new[i].replace('_','.')
+	# 	new[i] = new[i].split('.')
 
 
 
