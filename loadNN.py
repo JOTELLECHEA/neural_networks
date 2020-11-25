@@ -116,7 +116,7 @@ JetVar = [
 # 'jet17c','jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c','jet20pT','jet20eta','jet20phi','jet20b','jet20c',
 # 'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
 branches = sorted(HighLevel + JetVar + LeptonVar)
-numBranches = len(branches)
+numBranches = len(branches) - 1
 
 parser = argparse.ArgumentParser(description="Plot 1D plots of sig/bac")
 parser.add_argument("--file", type=str, help="Use '--file=' followed by a *.h5 file")
@@ -132,13 +132,14 @@ shuffleBackground = shuffle(df_background, random_state=seed)
 # signal and limited shuffle background data to counter inbalanced data problem.
 rawdata = pd.concat([df_signal, shuffleBackground])
 
-X = rawdata#.drop('weights',axis=1)
+X = rawdata.drop('weights',axis=1)
 
 X = sc.fit_transform(X)
-print(X[0])
+
 
 # signal 0.00232
-sigw = rawdata['weights'][:len(signal)]
+# sigw = rawdata['weights'][:len(signal)]
+sigw = np.ones(len(signal)) * 0.00232
 bkgw = rawdata['weights'][len(signal):]
 
 # Labeling data with 1's and 0's to distinguish.
@@ -179,6 +180,15 @@ if flag2 == 1:
         count += hist[j] / bkgSUM
         fp.append(count)
     area = auc(fp,tp)
+
+    maxsigma = 0.0
+    for t,f in zip(tp,fp):
+        if f > 0:
+            sigma = t/np.sqrt(f)
+            if sigma >= maxsigma:
+                maxsigma = sigma
+    print(maxsigma)
+
     plt.subplot(212)
     plt.hist(
         sigScore,
@@ -217,6 +227,7 @@ if flag2 == 1:
     plt.legend(loc="lower right")
     plt.grid()
     plt.show()
+
 
 flag = 0
 if flag == 1:
