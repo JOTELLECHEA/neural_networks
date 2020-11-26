@@ -12,7 +12,7 @@ import tensorflow as tf
 from tensorflow import keras
 import tkinter as tk
 import matplotlib
-
+import slug
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -136,7 +136,6 @@ X = rawdata.drop('weights',axis=1)
 
 X = sc.fit_transform(X)
 
-
 # signal 0.00232
 # sigw = rawdata['weights'][:len(signal)]
 sigw = np.ones(len(signal)) * 0.00232
@@ -155,7 +154,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 neuralNet = keras.models.load_model(file)
 
-y_predicted = neuralNet.predict(X)
+allScore = neuralNet.predict(X)
 
 flag2 = 1
 if flag2 == 1:
@@ -163,7 +162,7 @@ if flag2 == 1:
 
     sigScore = neuralNet.predict(X[y >0.5]).ravel()
     bkgScore = neuralNet.predict(X[y < 0.5]).ravel()
-    sigSUM = len(sigScore)
+    sigSUM = len(sigScore) 
     bkgSUM = len(bkgScore)
 
     xlimit = (0, 1)
@@ -180,14 +179,31 @@ if flag2 == 1:
         count += hist[j] / bkgSUM
         fp.append(count)
     area = auc(fp,tp)
-
-    maxsigma = 0.0
+    xplot =tp
+    yplot = fp
+    # computes max signif
+    sigSUM = len(sigScore) * 0.00232 * 0.608791
+    tp = np.array(tp) * sigSUM
+    fp = np.array(fp) * bkgSUM 
+    syst=0.0
+    stat=0.0
+    maxsignif=0.0
+    maxs=0
+    maxb=0
+    bincounter=numbins-1
+    bincountatmaxsignif=999
     for t,f in zip(tp,fp):
-        if f > 0:
-            sigma = t/np.sqrt(f)
-            if sigma >= maxsigma:
-                maxsigma = sigma
-    print(maxsigma)
+        signif = slug.getZPoisson(t,f,stat,syst)
+        if f>=10 and signif>maxsignif:
+            maxsignif=signif
+            maxs=t
+            maxb=f
+            bincountatmaxsignif=bincounter
+            score = bincountatmaxsignif/numbins
+        bincounter -= 1
+    print("Score = %6.3f, Signif = %5.2f, nsig = %10d, nbkg = %10d" % (score,maxsignif,maxs,maxb))
+    # for i in range(numBranches):
+    #     print(i,branches[i])
 
     plt.subplot(212)
     plt.hist(
@@ -217,7 +233,7 @@ if flag2 == 1:
     plt.yscale("log")
     plt.legend(loc='upper right')
     plt.subplot(211)
-    plt.plot(fp, tp, "r-", label="ROC (area = %0.6f)"%(area))
+    plt.plot(yplot, xplot, "r-", label="ROC (area = %0.6f)"%(area))
     plt.plot([0, 1], [0, 1], "--", color=(0.6, 0.6, 0.6), label="Luck")
     plt.xlim([-0.05, 1.05])
     plt.ylim([-0.05, 1.05])
@@ -229,7 +245,7 @@ if flag2 == 1:
     plt.show()
 
 
-flag = 0
+flag = 1
 if flag == 1:
 
     NNsnumjet = []
@@ -251,31 +267,33 @@ if flag == 1:
     NNbmt1 = []
     NNbdr1 = []
 
-    ScoreForMaxSignif = 0.9996988
-
+    sigCount = 0
+    bkgCount = 0
     for i in range(len(X)):
         if i < len(signal):
-            if score[i] > ScoreForMaxSignif:
-                NNsnumjet.append(X["numjet"].values[i])
-                NNsnumlep.append(X["numlep"].values[i])
-                NNsbtag.append(X["btag"].values[i])
-                NNssrap.append(X["srap"].values[i])
-                NNscent.append(X["cent"].values[i])
-                NNsm_bb.append(X["m_bb"].values[i])
-                NNsh_b.append(X["h_b"].values[i])
-                NNsmt1.append(X["mt1"].values[i])
-                NNsdr1.append(X["dr1"].values[i])
+            if allScore[i] > score:
+                NNsnumjet.append(rawdata["numjet"].values[i])
+                NNsnumlep.append(rawdata["numlep"].values[i])
+                NNsbtag.append(rawdata["btag"].values[i])
+                NNssrap.append(rawdata["srap"].values[i])
+                NNscent.append(rawdata["cent"].values[i])
+                NNsm_bb.append(rawdata["m_bb"].values[i])
+                NNsh_b.append(rawdata["h_b"].values[i])
+                NNsmt1.append(rawdata["mt1"].values[i])
+                NNsdr1.append(rawdata["dr1"].values[i])
+                sigCount += 1
         else:
-            if score[i] > ScoreForMaxSignif:
-                NNbnumjet.append(X["numjet"].values[i])
-                NNbnumlep.append(X["numlep"].values[i])
-                NNbbtag.append(X["btag"].values[i])
-                NNbsrap.append(X["srap"].values[i])
-                NNbcent.append(X["cent"].values[i])
-                NNbm_bb.append(X["m_bb"].values[i])
-                NNbh_b.append(X["h_b"].values[i])
-                NNbmt1.append(X["mt1"].values[i])
-                NNbdr1.append(X["dr1"].values[i])
+            if allScore[i] > score:
+                NNbnumjet.append(rawdata["numjet"].values[i])
+                NNbnumlep.append(rawdata["numlep"].values[i])
+                NNbbtag.append(rawdata["btag"].values[i])
+                NNbsrap.append(rawdata["srap"].values[i])
+                NNbcent.append(rawdata["cent"].values[i])
+                NNbm_bb.append(rawdata["m_bb"].values[i])
+                NNbh_b.append(rawdata["h_b"].values[i])
+                NNbmt1.append(rawdata["mt1"].values[i])
+                NNbdr1.append(rawdata["dr1"].values[i])
+                bkgCount += 1
 
     snumlep = df_signal["numlep"].values
     bnumlep = df_background["numlep"].values
@@ -303,7 +321,7 @@ if flag == 1:
 
     sdr1 = df_signal["dr1"].values
     bdr1 = df_background["dr1"].values
-
+    print(sigCount)
     def hPlot(x, y, nx, ny, a, b, c, Name):
         bins = np.linspace(a, b, c)
         plt.hist(
@@ -313,6 +331,7 @@ if flag == 1:
             label="background",
             linestyle="solid",
             color="steelblue",
+            weights=bkgw
         )
         plt.hist(
             x,
@@ -321,6 +340,7 @@ if flag == 1:
             label="signal",
             linestyle="solid",
             color="firebrick",
+            weights=sigw
         )
         plt.hist(
             ny,
@@ -329,6 +349,7 @@ if flag == 1:
             label="NN-background",
             linestyle="dashed",
             color="steelblue",
+            # weights=bkgw
         )
         plt.hist(
             nx,
@@ -337,6 +358,7 @@ if flag == 1:
             label="NN-signal",
             linestyle="dashed",
             color="firebrick",
+            weights=sigw[:sigCount]
         )
         plt.legend(loc=1)
         plt.xlabel(Name)
@@ -346,33 +368,33 @@ if flag == 1:
     fig1 = plt.figure(1)
 
     ax1 = fig1.add_subplot(221)
-    hPlot(snumjet, bnumjet, NNsnumjet, NNbnumjet, 1, 21, 21, branches[0])
+    hPlot(snumjet, bnumjet, NNsnumjet, NNbnumjet, 1, 21, 21, branches[72])
 
     ax2 = fig1.add_subplot(222)
-    hPlot(snumlep, bnumlep, NNsnumlep, NNbnumlep, 1, 3, 3, branches[1])
+    hPlot(snumlep, bnumlep, NNsnumlep, NNbnumlep, 1, 3, 3, branches[73])
 
     ax3 = fig1.add_subplot(223)
-    hPlot(sbtag, bbtag, NNsbtag, NNbbtag, 0, 10, 10, branches[2])
+    hPlot(sbtag, bbtag, NNsbtag, NNbbtag, 0, 10, 10, branches[0])
 
     ax4 = fig1.add_subplot(224)
-    hPlot(ssrap, bsrap, NNssrap, NNbsrap, 0, 10, 10, branches[3])
+    hPlot(ssrap, bsrap, NNssrap, NNbsrap, 0, 10, 10, branches[74])
 
     fig2 = plt.figure(2)
 
     ax1 = fig2.add_subplot(221)
-    hPlot(scent, bcent, NNscent, NNbcent, 0, 1, 10, branches[4])
+    hPlot(scent, bcent, NNscent, NNbcent, 0, 1, 10, branches[1])
 
     ax2 = fig2.add_subplot(222)
-    hPlot(sm_bb, bm_bb, NNsm_bb, NNbm_bb, 0, 250, 10, branches[5])
+    hPlot(sm_bb, bm_bb, NNsm_bb, NNbm_bb, 0, 250, 10, branches[68])
 
     ax3 = fig2.add_subplot(223)
-    hPlot(sh_b, bh_b, NNsh_b, NNbh_b, 0, 1500, 10, branches[6])
+    hPlot(sh_b, bh_b, NNsh_b, NNbh_b, 0, 1500, 10, branches[5])
 
     ax4 = fig2.add_subplot(224)
-    hPlot(smt1, bmt1, NNsmt1, NNbmt1, 0, 300, 100, branches[7])
+    hPlot(smt1, bmt1, NNsmt1, NNbmt1, 0, 300, 100, branches[69])
 
     plot3 = plt.figure(3)
-    hPlot(sdr1, bdr1, NNsdr1, NNbdr1, 0, 7, 100, branches[8])
+    hPlot(sdr1, bdr1, NNsdr1, NNbdr1, 0, 7, 100, branches[2])
 
     plt.show()
-    plt.savefig("test.png")
+    # plt.savefig("test.png")
