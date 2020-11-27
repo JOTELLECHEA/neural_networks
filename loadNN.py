@@ -57,7 +57,7 @@ LeptonVar = [
     "lepton3phi",
     "lepton3flav",
 ]
-# Constants = ['Hmass','Electronmass','Zmass','Muonmass','Wmass','Taumass','Umass','Dmass','Cmass','Smass','Tmass','Bmass','speedLight']
+
 JetVar = [
     "jet1pT",
     "jet1eta",
@@ -109,13 +109,9 @@ JetVar = [
     "jet10phi",
     "jet10b",
     "jet10c",
-    "weights"
-]  # ,'jet11pT','jet11eta',
-# 'jet11phi','jet11b','jet11c','jet12pT','jet12eta','jet12phi','jet12b','jet12c','jet13pT','jet13eta','jet13phi','jet13b','jet13c','jet14pT','jet14eta','jet14phi',
-# 'jet14b','jet14c','jet15pT','jet15eta','jet15phi','jet15b','jet15c','jet16pT','jet16eta','jet16phi','jet16b','jet16c','jet17pT','jet17eta','jet17phi','jet17b',
-# 'jet17c','jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c','jet20pT','jet20eta','jet20phi','jet20b','jet20c',
-# 'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
-branches = sorted(HighLevel + JetVar + LeptonVar)
+
+] 
+branches = sorted(HighLevel + JetVar + LeptonVar + ['weights'])
 numBranches = len(branches) - 1
 
 parser = argparse.ArgumentParser(description="Plot 1D plots of sig/bac")
@@ -129,6 +125,8 @@ df_signal = signal.pandas.df(branches)
 background = uproot.open("data/new_background.root")[tree]
 df_background = background.pandas.df(branches)
 shuffleBackground = shuffle(df_background, random_state=seed)
+
+
 # signal and limited shuffle background data to counter inbalanced data problem.
 rawdata = pd.concat([df_signal, shuffleBackground])
 
@@ -182,7 +180,7 @@ if flag2 == 1:
     xplot =tp
     yplot = fp
     # computes max signif
-    sigSUM = len(sigScore) * 0.00232 * 0.608791
+    sigSUM = len(sigScore) * scalefactor
     tp = np.array(tp) * sigSUM
     fp = np.array(fp) * bkgSUM 
     syst=0.0
@@ -201,9 +199,7 @@ if flag2 == 1:
             bincountatmaxsignif=bincounter
             score = bincountatmaxsignif/numbins
         bincounter -= 1
-    print("Score = %6.3f, Signif = %5.2f, nsig = %10d, nbkg = %10d" % (score,maxsignif,maxs,maxb))
-    # for i in range(numBranches):
-    #     print(i,branches[i])
+    print("Score = %6.3f\n, Signif = %5.2f\n, nsig = %d\n, nbkg = %d\n" % (score,maxsignif,maxs,maxb))
 
     plt.subplot(212)
     plt.hist(
