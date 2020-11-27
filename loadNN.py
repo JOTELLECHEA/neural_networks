@@ -136,9 +136,9 @@ X = rawdata.drop('weights',axis=1)
 
 X = sc.fit_transform(X)
 
-# signal 0.00232
-# sigw = rawdata['weights'][:len(signal)]
-sigw = np.ones(len(signal)) * 0.00232
+# signal
+scalefactor = 0.00232* 0.608791
+sigw = rawdata['weights'][:len(signal)]* scalefactor
 bkgw = rawdata['weights'][len(signal):]
 
 # Labeling data with 1's and 0's to distinguish.
@@ -248,6 +248,8 @@ if flag2 == 1:
 flag = 1
 if flag == 1:
 
+    Sweights=[]
+    Bweights=[]
     NNsnumjet = []
     NNsnumlep = []
     NNsbtag = []
@@ -267,8 +269,6 @@ if flag == 1:
     NNbmt1 = []
     NNbdr1 = []
 
-    sigCount = 0
-    bkgCount = 0
     for i in range(len(X)):
         if i < len(signal):
             if allScore[i] > score:
@@ -281,7 +281,7 @@ if flag == 1:
                 NNsh_b.append(rawdata["h_b"].values[i])
                 NNsmt1.append(rawdata["mt1"].values[i])
                 NNsdr1.append(rawdata["dr1"].values[i])
-                sigCount += 1
+                Sweights.append(scalefactor*rawdata['weights'].values[i])
         else:
             if allScore[i] > score:
                 NNbnumjet.append(rawdata["numjet"].values[i])
@@ -293,7 +293,7 @@ if flag == 1:
                 NNbh_b.append(rawdata["h_b"].values[i])
                 NNbmt1.append(rawdata["mt1"].values[i])
                 NNbdr1.append(rawdata["dr1"].values[i])
-                bkgCount += 1
+                Bweights.append(rawdata['weights'].values[i])
 
     snumlep = df_signal["numlep"].values
     bnumlep = df_background["numlep"].values
@@ -321,7 +321,7 @@ if flag == 1:
 
     sdr1 = df_signal["dr1"].values
     bdr1 = df_background["dr1"].values
-    print(sigCount)
+
     def hPlot(x, y, nx, ny, a, b, c, Name):
         bins = np.linspace(a, b, c)
         plt.hist(
@@ -349,7 +349,7 @@ if flag == 1:
             label="NN-background",
             linestyle="dashed",
             color="steelblue",
-            # weights=bkgw
+            weights=Bweights
         )
         plt.hist(
             nx,
@@ -358,7 +358,7 @@ if flag == 1:
             label="NN-signal",
             linestyle="dashed",
             color="firebrick",
-            weights=sigw[:sigCount]
+            weights=Sweights
         )
         plt.legend(loc=1)
         plt.xlabel(Name)
