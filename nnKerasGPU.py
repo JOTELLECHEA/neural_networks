@@ -235,7 +235,7 @@ def main(LAYER,BATCH):
             maxbdt=bdtscore
             maxs=s
             maxb=b
-    print("Score Threshold for Max Signif. = %6.3f, Max Signif = %5.2f, nsig = %10d, nbkg = %10d" % (maxbdt,maxsignif,maxs,maxb))
+    print("Score Threshold for Max Signif. = %6.3f\n, Max Signif = %5.2f\n, nsig = %10d\n, nbkg = %10d\n" % (maxbdt,maxsignif,maxs,maxb))
     runTime = datetime.now() - startTime
     areaUnderCurve = "{:.4f}".format(aucroc)
     maxsignif = "{:5.2f}".format(maxsignif)
