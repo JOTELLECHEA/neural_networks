@@ -26,8 +26,7 @@ def plotROC(x,y,AUC):
     plt.legend(loc = 'lower right')
     plt.grid()
 
-nSig = (426908)*(990/(930000/0.609))
-nBG=((320752+3332932+158645)/(610000.+270000.+5900000.))*(5.85e6+612000.+269000)
+
 def getZPoisson(s, b, stat, syst):
     """
     The significance for optimisation.
