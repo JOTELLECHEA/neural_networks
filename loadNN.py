@@ -13,6 +13,7 @@ from tensorflow import keras
 import tkinter as tk
 import matplotlib
 import slug
+
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -109,9 +110,8 @@ JetVar = [
     "jet10phi",
     "jet10b",
     "jet10c",
-
-] 
-branches = sorted(HighLevel + JetVar + LeptonVar + ['weights'])
+]
+branches = sorted(HighLevel + JetVar + LeptonVar + ["weights"])
 numBranches = len(branches) - 1
 
 parser = argparse.ArgumentParser(description="Plot 1D plots of sig/bac")
@@ -130,14 +130,14 @@ shuffleBackground = shuffle(df_background, random_state=seed)
 # signal and limited shuffle background data to counter inbalanced data problem.
 rawdata = pd.concat([df_signal, shuffleBackground])
 
-X = rawdata.drop('weights',axis=1)
+X = rawdata.drop("weights", axis=1)
 
 X = sc.fit_transform(X)
 
 # signal
-scalefactor = 0.00232* 0.608791
-sigw = rawdata['weights'][:len(signal)]* scalefactor
-bkgw = rawdata['weights'][len(signal):]
+scalefactor = 0.00232 * 0.608791
+sigw = rawdata["weights"][: len(signal)] * scalefactor
+bkgw = rawdata["weights"][len(signal) :]
 
 # Labeling data with 1's and 0's to distinguish.
 y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
@@ -158,9 +158,9 @@ flag2 = 1
 if flag2 == 1:
     numbins = 100000
 
-    sigScore = neuralNet.predict(X[y >0.5]).ravel()
+    sigScore = neuralNet.predict(X[y > 0.5]).ravel()
     bkgScore = neuralNet.predict(X[y < 0.5]).ravel()
-    sigSUM = len(sigScore) 
+    sigSUM = len(sigScore)
     bkgSUM = len(bkgScore)
 
     xlimit = (0, 1)
@@ -176,30 +176,33 @@ if flag2 == 1:
     for j in range(numbins - 1, -1, -1):
         count += hist[j] / bkgSUM
         fp.append(count)
-    area = auc(fp,tp)
-    xplot =tp
+    area = auc(fp, tp)
+    xplot = tp
     yplot = fp
     # computes max signif
     sigSUM = len(sigScore) * scalefactor
     tp = np.array(tp) * sigSUM
-    fp = np.array(fp) * bkgSUM 
-    syst=0.0
-    stat=0.0
-    maxsignif=0.0
-    maxs=0
-    maxb=0
-    bincounter=numbins-1
-    bincountatmaxsignif=999
-    for t,f in zip(tp,fp):
-        signif = slug.getZPoisson(t,f,stat,syst)
-        if f>=10 and signif>maxsignif:
-            maxsignif=signif
-            maxs=t
-            maxb=f
-            bincountatmaxsignif=bincounter
-            score = bincountatmaxsignif/numbins
+    fp = np.array(fp) * bkgSUM
+    syst = 0.0
+    stat = 0.0
+    maxsignif = 0.0
+    maxs = 0
+    maxb = 0
+    bincounter = numbins - 1
+    bincountatmaxsignif = 999
+    for t, f in zip(tp, fp):
+        signif = slug.getZPoisson(t, f, stat, syst)
+        if f >= 10 and signif > maxsignif:
+            maxsignif = signif
+            maxs = t
+            maxb = f
+            bincountatmaxsignif = bincounter
+            score = bincountatmaxsignif / numbins
         bincounter -= 1
-    print("Score = %6.3f\n, Signif = %5.2f\n, nsig = %d\n, nbkg = %d\n" % (score,maxsignif,maxs,maxb))
+    print(
+        "Score = %6.3f\n, Signif = %5.2f\n, nsig = %d\n, nbkg = %d\n"
+        % (score, maxsignif, maxs, maxb)
+    )
 
     plt.subplot(212)
     plt.hist(
@@ -211,7 +214,7 @@ if flag2 == 1:
         histtype="stepfilled",
         density=False,
         label="Signal Distribution",
-        weights=sigw
+        weights=sigw,
     )
     plt.hist(
         bkgScore,
@@ -222,14 +225,14 @@ if flag2 == 1:
         histtype="stepfilled",
         density=False,
         label="Background Distribution",
-        weights=bkgw
+        weights=bkgw,
     )
     plt.xlabel("Score")
     plt.ylabel("Distribution")
     plt.yscale("log")
-    plt.legend(loc='upper right')
+    plt.legend(loc="upper right")
     plt.subplot(211)
-    plt.plot(yplot, xplot, "r-", label="ROC (area = %0.6f)"%(area))
+    plt.plot(yplot, xplot, "r-", label="ROC (area = %0.6f)" % (area))
     plt.plot([0, 1], [0, 1], "--", color=(0.6, 0.6, 0.6), label="Luck")
     plt.xlim([-0.05, 1.05])
     plt.ylim([-0.05, 1.05])
@@ -244,8 +247,8 @@ if flag2 == 1:
 flag = 1
 if flag == 1:
 
-    Sweights=[]
-    Bweights=[]
+    Sweights = []
+    Bweights = []
     NNsnumjet = []
     NNsnumlep = []
     NNsbtag = []
@@ -277,7 +280,7 @@ if flag == 1:
                 NNsh_b.append(rawdata["h_b"].values[i])
                 NNsmt1.append(rawdata["mt1"].values[i])
                 NNsdr1.append(rawdata["dr1"].values[i])
-                Sweights.append(scalefactor*rawdata['weights'].values[i])
+                Sweights.append(scalefactor * rawdata["weights"].values[i])
         else:
             if allScore[i] > score:
                 NNbnumjet.append(rawdata["numjet"].values[i])
@@ -289,7 +292,7 @@ if flag == 1:
                 NNbh_b.append(rawdata["h_b"].values[i])
                 NNbmt1.append(rawdata["mt1"].values[i])
                 NNbdr1.append(rawdata["dr1"].values[i])
-                Bweights.append(rawdata['weights'].values[i])
+                Bweights.append(rawdata["weights"].values[i])
 
     snumlep = df_signal["numlep"].values
     bnumlep = df_background["numlep"].values
@@ -327,7 +330,7 @@ if flag == 1:
             label="background",
             linestyle="solid",
             color="steelblue",
-            weights=bkgw
+            weights=bkgw,
         )
         plt.hist(
             x,
@@ -336,7 +339,7 @@ if flag == 1:
             label="signal",
             linestyle="solid",
             color="firebrick",
-            weights=sigw
+            weights=sigw,
         )
         plt.hist(
             ny,
@@ -345,7 +348,7 @@ if flag == 1:
             label="NN-background",
             linestyle="dashed",
             color="steelblue",
-            weights=Bweights
+            weights=Bweights,
         )
         plt.hist(
             nx,
@@ -354,7 +357,7 @@ if flag == 1:
             label="NN-signal",
             linestyle="dashed",
             color="firebrick",
-            weights=Sweights
+            weights=Sweights,
         )
         plt.legend(loc=1)
         plt.xlabel(Name)
@@ -393,4 +396,3 @@ if flag == 1:
     hPlot(sdr1, bdr1, NNsdr1, NNbdr1, 0, 7, 100, branches[2])
 
     plt.show()
-    # plt.savefig("test.png")
