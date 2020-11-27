@@ -111,7 +111,6 @@ if scanROC:
             maxbdt=bdtscore
             maxs=s
             maxb=b
-        # print "%8.6f %8.6f %5.2f %5.2f %8.6f %8.6f %8.6f %8.6f %8.6f %10d %10d" % ( t, f, signif, s/sqrt(b), d0i, d1i, d2i, d3i, bdtscore, s, b)
     print(" Score = %6.7f\n Sign. = %4.2f\n nsig. = %d\n nbkg. = %d" % (maxbdt,maxsignif,maxs,maxb))
 
 drawPlots=True
