@@ -14,7 +14,8 @@ import tkinter as tk
 import matplotlib
 import slug
 
-matplotlib.use("TkAgg")
+# matplotlib.use("TkAgg")
+matplotlib.use("pdf")
 import matplotlib.pyplot as plt
 import seaborn as sns
 from numpy import array
@@ -58,7 +59,6 @@ LeptonVar = [
     "lepton3phi",
     "lepton3flav",
 ]
-
 JetVar = [
     "jet1pT",
     "jet1eta",
@@ -117,7 +117,7 @@ numBranches = len(branches) - 1
 parser = argparse.ArgumentParser(description="Plot 1D plots of sig/bac")
 parser.add_argument("--file", type=str, help="Use '--file=' followed by a *.h5 file")
 args = parser.parse_args()
-file = str(args.file)
+file = 'data/' + str(args.file)
 
 # Data read from file.
 signal = uproot.open("data/new_signal_v2.root")[tree]
@@ -200,7 +200,7 @@ if flag2 == 1:
             score = bincountatmaxsignif / numbins
         bincounter -= 1
     print(
-        "Score = %6.3f\n, Signif = %5.2f\n, nsig = %d\n, nbkg = %d\n"
+        "Score = %6.3f\n Signif = %5.2f\n nsig = %d\n nbkg = %d\n"
         % (score, maxsignif, maxs, maxb)
     )
 
