@@ -13,9 +13,7 @@ from tensorflow import keras
 import tkinter as tk
 import matplotlib
 import slug
-
-# matplotlib.use("TkAgg")
-matplotlib.use("pdf")
+matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 from numpy import array
