@@ -16,16 +16,12 @@ import slug
 
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
-import seaborn as sns
 from numpy import array
 from tensorflow.keras.models import load_model
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import auc
-
-mng = plt.get_current_fig_manager()
-mng.full_screen_toggle()
 
 sc = StandardScaler()
 seed = 42
