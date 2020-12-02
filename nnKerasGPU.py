@@ -29,7 +29,8 @@ from tensorflow.keras.layers import Dense, Dropout, Activation
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
-from sklearn.preprocessing import StandardScaler  # Normalized data to range from (0,1)
+from sklearn.preprocessing import StandardScaler  
+# Normalized data to range from (0,1)
 
 sc = StandardScaler()
 from sklearn.metrics import (
@@ -48,7 +49,6 @@ import slug  # Library with common functions used in multiple scripts.
 # Variables.
 tree = "OutputTree"
 seed = 42  # Random seed number to reproduce results.
-
 
 # Branches names of high/low level variables aka: features.
 HighLevel = [
@@ -80,7 +80,6 @@ LeptonVar = [
     "lepton3phi",
     "lepton3flav",
 ]
-# Constants = ['Hmass','Electronmass','Zmass','Muonmass','Wmass','Taumass','Umass','Dmass','Cmass','Smass','Tmass','Bmass','speedLight']
 JetVar = [
     "jet1pT",
     "jet1eta",
@@ -132,18 +131,11 @@ JetVar = [
     "jet10phi",
     "jet10b",
     "jet10c",
-    "weights",
-]  # ,'jet11pT','jet11eta',
-# 'jet11phi','jet11b','jet11c','jet12pT','jet12eta','jet12phi','jet12b','jet12c','jet13pT','jet13eta','jet13phi','jet13b','jet13c','jet14pT','jet14eta','jet14phi',
-# 'jet14b','jet14c','jet15pT','jet15eta','jet15phi','jet15b','jet15c','jet16pT','jet16eta','jet16phi','jet16b','jet16c','jet17pT','jet17eta','jet17phi','jet17b',
-# 'jet17c','jet18pT','jet18eta','jet18phi','jet18b','jet18c','jet19pT','jet19eta','jet19phi','jet19b','jet19c','jet20pT','jet20eta','jet20phi','jet20b','jet20c',
-# 'jet21pT','jet21eta','jet21phi','jet21b','jet21c']
-branches = sorted(HighLevel + JetVar + LeptonVar)
+]
+branches = sorted(HighLevel + JetVar + LeptonVar + ["weights"])
 numBranches = len(branches) - 1
 
-
 # Data read from file.
-# signal         = uproot.open('data/new_signal_tthh.root')[tree] #old data sample.
 signal = uproot.open("data/new_signal_v2.root")[tree]
 df_signal = signal.pandas.df(branches)  # Adding features(branches) to dataframe.
 background = uproot.open("data/new_background.root")[tree]
@@ -161,6 +153,11 @@ X = rawdata.drop("weights", axis=1)
 
 # Normalized the data with a Gaussian distrubuition with 0 mean and unit variance.
 X = sc.fit_transform(X)
+
+# signal
+scalefactor = 0.00232 * 0.608791
+sigw = rawdata["weights"][: len(signal)] * scalefactor
+bkgw = rawdata["weights"][len(signal) :]
 
 # Labeling data with 1's and 0's to distinguish.(1/positve/signal and 0/negative/background)
 # Truth Labels.
@@ -193,27 +190,28 @@ def main(LAYER, BATCH):
     numNeurons = sum(network)
 
     startTime = datetime.now()
-    pre = time.strftime("%Y_%m_%d")
-    suf = time.strftime("%H.%M.%S")
+    pre = time.strftime("%Y.%m.%d_") + time.strftime("%H.%M.%S_")
 
     # filename for loadNN.py script
-    name = "data/" + pre + "-rocDataNN-" + suf + ".csv"
+    name = "data/" + pre + ".rocDataNN.csv"
 
     # filename for keras model to be saved as.
-    modelName = "data/" + pre + "-neuralNet-" + suf + ".h5"
+    h5name= str(LAYER)+ '.'+str(neurons)+'.'+str(learnRate)+'.'+str(BATCH)
+    modelName = "data/" + pre + h5name+".h5"
 
     # filename for plots to be identified by saved model.
-    figname = "data/" + pre + "-plots-" + suf
+    figname = "data/" + pre + ".plots" 
 
     # NN model defined as a function.
 
     def build_model():
 
         # Create a NN model.
-        model = Sequential()  # barebones model no layers.
-        opt = keras.optimizers.Nadam(
-            learning_rate=learnRate
-        )  # Best option for most NN.
+        # model = Sequential()  # barebones model no layers.
+        # opt = keras.optimizers.Nadam(
+        #     learning_rate=learnRate
+        # )  # Best option for most NN.
+        opt = keras.optimizers.adam()  # Best option for most NN.
 
         # activation function other options possible.
         act = "relu"  # 0 for negative values, linear for nonzero values.
@@ -294,7 +292,7 @@ def main(LAYER, BATCH):
 
     checkPointsCallBack = ModelCheckpoint("temp.h5", save_best_only=True)
     earlyStopCallBack = EarlyStopping(
-        min_delta=0.001, patience=10, restore_best_weights=True
+        min_delta=0.001, patience=30, restore_best_weights=True
     )
     kModel = neuralNet.fit(
         X_train,
@@ -322,13 +320,13 @@ def main(LAYER, BATCH):
     # compare_train_test(kModel, X_train, y_train, X_test, y_test)
     ##########################################################################
 
-    flag = 0
-    if flag == 1:
-        plot2 = plt.figure(2)
-        background = X_train[np.random.choice(X_train.shape[0], 100, replace=False)]
-        explainer = shap.DeepExplainer(neuralNet, background)
-        shap_values = explainer.shap_values(X_test)
-        shap.summary_plot(shap_values, X_train, plot_type="bar")
+    # flag = 1
+    # if flag == 1:
+        # plot2 = plt.figure(2)
+        # background = X_train[np.random.choice(X_train.shape[0], 100, replace=False)]
+        # explainer = shap.DeepExplainer(neuralNet, background)
+        # shap_values = explainer.shap_values(X_test)
+        # shap.summary_plot(shap_values, X_train, plot_type="bar")
     ###################################################################
     # pd.DataFrame(kModel.history).plot(figsize=(8,5))
     # plt.grid(True)
@@ -336,52 +334,68 @@ def main(LAYER, BATCH):
     # plt.savefig(figname + 'modelSummary.png')
     ###################################################################
     # computes max signif
-    nSig = (426908) * (990 / (930000 / 0.609))
-    nBG = ((320752 + 3332932 + 158645) / (610000.0 + 270000.0 + 5900000.0)) * (
-        5.85e6 + 612000.0 + 269000
-    )
-    signifs = np.array([])
-    signifs2 = {}
+    numbins = 100000
+    allScore = neuralNet.predict(X)
+    sigScore = neuralNet.predict(X[y > 0.5]).ravel()
+    bkgScore = neuralNet.predict(X[y < 0.5]).ravel()
+    sigSUM = len(sigScore)
+    bkgSUM = len(bkgScore)
+
+    xlimit = (0, 1)
+    tp = []
+    fp = []
+    hist, bins = np.histogram(sigScore, bins=numbins, range=xlimit, density=False)
+    count = 0
+    for i in range(numbins - 1, -1, -1):
+        count += hist[i] / sigSUM
+        tp.append(count)
+    hist, bins = np.histogram(bkgScore, bins=numbins, range=xlimit, density=False)
+    count = 0
+    for j in range(numbins - 1, -1, -1):
+        count += hist[j] / bkgSUM
+        fp.append(count)
+    area = auc(fp, tp)
+    xplot = tp
+    yplot = fp
+    # computes max signif
+    sigSUM = len(sigScore) * scalefactor
+    tp = np.array(tp) * sigSUM
+    fp = np.array(fp) * bkgSUM
     syst = 0.0
     stat = 0.0
     maxsignif = 0.0
-    maxbdt = 2
     maxs = 0
     maxb = 0
-    for f, t, bdtscore in zip(fpr, tpr, thresholds):
-        s = nSig * t
-        b = nBG * f
-        n = s + b
-        signif = slug.getZPoisson(s, b, stat, syst)
-        np.append(signifs, signif)
-        signifs2[f] = signif
-        if signif > maxsignif:
+    bincounter = numbins - 1
+    bincountatmaxsignif = 999
+    for t, f in zip(tp, fp):
+        signif = slug.getZPoisson(t, f, stat, syst)
+        if f >= 10 and signif > maxsignif:
             maxsignif = signif
-            maxbdt = bdtscore
-            maxs = s
-            maxb = b
+            maxs = t
+            maxb = f
+            bincountatmaxsignif = bincounter
+            score = bincountatmaxsignif / numbins
+        bincounter -= 1
     print(
-        "Score Threshold for Max Signif. = %6.3f\n, Max Signif = %5.2f\n, nsig = %10d\n, nbkg = %10d\n"
-        % (maxbdt, maxsignif, maxs, maxb)
+        "\n Score = %6.3f\n Signif = %5.2f\n nsig = %d\n nbkg = %d\n"
+        % (score, maxsignif, maxs, maxb)
     )
     runTime = datetime.now() - startTime
     areaUnderCurve = "{:.4f}".format(aucroc)
     maxsignif = "{:5.2f}".format(maxsignif)
     average_precision = average_precision_score(y_test, y_predicted)
     avgPer = "{0:0.4f}".format(average_precision)
-    maxbdt = "{0:6.3f}".format(maxbdt)
+    score = "{0:6.3f}".format(score)
     maxs = "%10d" % (maxs)
     maxb = "%10d" % (maxb)
     cm = confusion_matrix(y_test, y_predicted_round)
     modelParam = [
-        "NN Archi.",
-        "#Br.",
-        "LR",
-        "Batch",
+        'FileName',
+        "ConfusionMatrix [TP FP] [FN TN]",
+        "Run Time",
         "AUC",
         "Avg.P",
-        "Run Time",
-        "ConfusionMatrix [TP FP] [FN TN]",
         "Score",
         "Max Signif",
         "nsig",
@@ -391,15 +405,12 @@ def main(LAYER, BATCH):
         np.array(
             [
                 [
-                    network,
-                    numBranches,
-                    learnRate,
-                    batchSize,
+                    modelName[5:],
+                    cm,
+                    runTime,
                     areaUnderCurve,
                     avgPer,
-                    runTime,
-                    cm,
-                    maxbdt,
+                    score,
                     maxsignif,
                     maxs,
                     maxb,
@@ -408,23 +419,23 @@ def main(LAYER, BATCH):
         ),
         columns=modelParam,
     )
-    df.to_csv("fiveLayerDropout_1.csv", mode="a", header=False, index=False)
+    df.to_csv("fiveLayerDropout_2.csv", mode="a", header=False, index=False)
     print(df.to_string(justify="left", columns=modelParam, header=True, index=False))
     print("Saving model.....")
     neuralNet.save(modelName)  # Save Model as a HDF5 filein Data folder
     print("Model Saved")
     print("Saving maxsignif.....")
-    r0 = ["name", "var"]
-    r1 = ["fpr", fpr]
-    r2 = ["tpr", tpr]
-    r3 = ["thresholds", thresholds]
-    r4 = ["Max Signif", maxsignif]
-    with open(name, "a") as csvFile:
-        writer = csv.writer(csvFile)
-        writer.writerow(r0)
-        writer.writerow(r1)
-        writer.writerow(r2)
-        writer.writerow(r3)
-        writer.writerow(r4)
-    csvFile.close()
+    # r0 = ["name", "var"]
+    # r1 = ["fpr", fpr]
+    # r2 = ["tpr", tpr]
+    # r3 = ["thresholds", thresholds]
+    # r4 = ["Max Signif", maxsignif]
+    # with open(name, "a") as csvFile:
+    #     writer = csv.writer(csvFile)
+    #     writer.writerow(r0)
+    #     writer.writerow(r1)
+    #     writer.writerow(r2)
+    #     writer.writerow(r3)
+    #     writer.writerow(r4)
+    # csvFile.close()
     print("Maxsignif Saved")
