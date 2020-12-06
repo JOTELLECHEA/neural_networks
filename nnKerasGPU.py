@@ -29,7 +29,8 @@ from tensorflow.keras.layers import Dense, Dropout, Activation
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
-from sklearn.preprocessing import StandardScaler  
+from sklearn.preprocessing import StandardScaler
+
 # Normalized data to range from (0,1)
 
 sc = StandardScaler()
@@ -196,22 +197,22 @@ def main(LAYER, BATCH):
     name = "data/" + pre + ".rocDataNN.csv"
 
     # filename for keras model to be saved as.
-    h5name= str(LAYER)+ '.'+str(neurons)+'.'+str(learnRate)+'.'+str(BATCH)
-    modelName = "data/" + pre + h5name+".h5"
+    h5name = str(LAYER) + "." + str(neurons) + "." + str(learnRate) + "." + str(BATCH)
+    modelName = "data/" + pre + h5name + ".h5"
 
     # filename for plots to be identified by saved model.
-    figname = "data/" + pre + ".plots" 
+    figname = "data/" + pre + ".plots"
 
     # NN model defined as a function.
 
     def build_model():
 
         # Create a NN model.
-        # model = Sequential()  # barebones model no layers.
+        model = Sequential()  # barebones model no layers.
         # opt = keras.optimizers.Nadam(
         #     learning_rate=learnRate
         # )  # Best option for most NN.
-        opt = keras.optimizers.adam()  # Best option for most NN.
+        opt = keras.optimizers.Adam()  # Best option for most NN.
 
         # activation function other options possible.
         act = "relu"  # 0 for negative values, linear for nonzero values.
@@ -243,8 +244,8 @@ def main(LAYER, BATCH):
     def compare_train_test(kModel, X_train, y_train, X_test, y_test, bins=30):
         decisions = []
         for X, y in ((X_train, y_train), (X_test, y_test)):
-            d1 = neuralNet.predict(X[y > 0.5]).ravel()  # signal
-            d2 = neuralNet.predict(X[y < 0.5]).ravel()  # background
+            d1 = model.predict(X[y > 0.5]).ravel()  # signal
+            d2 = model.predict(X[y < 0.5]).ravel()  # background
             decisions += [d1, d2]
         low = min(np.min(d) for d in decisions)
         high = max(np.max(d) for d in decisions)
@@ -288,13 +289,13 @@ def main(LAYER, BATCH):
 
     ##########################################################################################################
     # Using model and setting parameters.
-    neuralNet = build_model()
+    model = build_model()
 
     checkPointsCallBack = ModelCheckpoint("temp.h5", save_best_only=True)
     earlyStopCallBack = EarlyStopping(
-        min_delta=0.001, patience=30, restore_best_weights=True
+        monitor="val_loss", patience=30, restore_best_weights=True
     )
-    kModel = neuralNet.fit(
+    kModel = model.fit(
         X_train,
         y_train,
         epochs=numEpochs,
@@ -303,9 +304,10 @@ def main(LAYER, BATCH):
         verbose=1,
         callbacks=[earlyStopCallBack, checkPointsCallBack],
     )
+
     ##########################################################################################################
 
-    y_predicted = neuralNet.predict(X_test)
+    y_predicted = model.predict(X_test)
     y_predicted_round = [1 * (x[0] >= 0.5) for x in y_predicted]
 
     # Prediction, fpr,tpr and threshold values for ROC.
@@ -320,24 +322,21 @@ def main(LAYER, BATCH):
     # compare_train_test(kModel, X_train, y_train, X_test, y_test)
     ##########################################################################
 
-    # flag = 1
-    # if flag == 1:
-        # plot2 = plt.figure(2)
-        # background = X_train[np.random.choice(X_train.shape[0], 100, replace=False)]
-        # explainer = shap.DeepExplainer(neuralNet, background)
-        # shap_values = explainer.shap_values(X_test)
-        # shap.summary_plot(shap_values, X_train, plot_type="bar")
-    ###################################################################
-    # pd.DataFrame(kModel.history).plot(figsize=(8,5))
-    # plt.grid(True)
-    # plt.gca().set_ylim(0,1)
-    # plt.savefig(figname + 'modelSummary.png')
+    plot2 = plt.figure(2)
+
+    background = X_train[np.random.choice(X_train.shape[0], 100, replace=False)]
+    explainer = shap.DeepExplainer(model, background)
+    shap_values = explainer.shap_values(X_test)
+    shap.summary_plot(
+        shap_values, X_train, plot_type="bar", feature_names=branches[:-1]
+    )
+
     ###################################################################
     # computes max signif
     numbins = 100000
-    allScore = neuralNet.predict(X)
-    sigScore = neuralNet.predict(X[y > 0.5]).ravel()
-    bkgScore = neuralNet.predict(X[y < 0.5]).ravel()
+    allScore = model.predict(X)
+    sigScore = model.predict(X[y > 0.5]).ravel()
+    bkgScore = model.predict(X[y < 0.5]).ravel()
     sigSUM = len(sigScore)
     bkgSUM = len(bkgScore)
 
@@ -391,7 +390,7 @@ def main(LAYER, BATCH):
     maxb = "%10d" % (maxb)
     cm = confusion_matrix(y_test, y_predicted_round)
     modelParam = [
-        'FileName',
+        "FileName",
         "ConfusionMatrix [TP FP] [FN TN]",
         "Run Time",
         "AUC",
@@ -422,7 +421,7 @@ def main(LAYER, BATCH):
     df.to_csv("fiveLayerDropout_2.csv", mode="a", header=False, index=False)
     print(df.to_string(justify="left", columns=modelParam, header=True, index=False))
     print("Saving model.....")
-    neuralNet.save(modelName)  # Save Model as a HDF5 filein Data folder
+    model.save(modelName)  # Save Model as a HDF5 filein Data folder
     print("Model Saved")
     print("Saving maxsignif.....")
     # r0 = ["name", "var"]
