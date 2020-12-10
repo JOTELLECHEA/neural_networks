@@ -389,6 +389,10 @@ def main(LAYER, BATCH, RATE):# Layer must be > 3
         % (score, maxsignif, maxs, maxb)
     )
     runTime = datetime.now() - startTime
+    hh = int(runtime[7:9])
+    mm = int(runtime[10:12])
+    ss = int(runtime[13:15])
+    runtime = (hh * 3600 + mm * 60 + ss)/60
     areaUnderCurve = "{:.4f}".format(aucroc)
     maxsignif = "{:5.2f}".format(maxsignif)
     average_precision = average_precision_score(y_test, y_predicted)
