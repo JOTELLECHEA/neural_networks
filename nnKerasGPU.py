@@ -18,7 +18,8 @@ import tkinter as tk  # Used to view plots via ssh.
 import matplotlib
 import matplotlib.pyplot as plt
 
-matplotlib.use("TkAgg")  # Format used to view.
+# matplotlib.use("TkAgg")  # Format used to view.
+matplotlib.use("PDF")  # Format used to view.
 import math
 import time
 from math import log, sqrt
@@ -174,7 +175,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 
-def main(LAYER, BATCH):
+def main(LAYER, BATCH):# Layer must be > 3
     learnRate = 0.0001
     batchSize = BATCH
     numEpochs = 150
@@ -191,13 +192,13 @@ def main(LAYER, BATCH):
     numNeurons = sum(network)
 
     startTime = datetime.now()
-    pre = time.strftime("%Y.%m.%d_") + time.strftime("%H.%M.%S_")
+    pre = time.strftime("%Y.%m.%d_") + time.strftime("%H.%M.%S.")
 
     # filename for loadNN.py script
     name = "data/" + pre + ".rocDataNN.csv"
 
     # filename for keras model to be saved as.
-    h5name = str(LAYER) + "." + str(neurons) + "." + str(learnRate) + "." + str(BATCH)
+    h5name = "numLayers"+str(LAYER) + ".numBranches" + str(neurons) + ".batchSize" + str(BATCH)
     modelName = "data/" + pre + h5name + ".h5"
 
     # filename for plots to be identified by saved model.
@@ -226,7 +227,8 @@ def main(LAYER, BATCH):
         for i in range(1, numLayers - 2):
             model.add(Dense(network[i], activation=act))  # Hidden layers.
             # Turning off nuerons of layer above in loop with probability = 1-r, so r = 0.25, then 75% of nerouns are kept.
-            model.add(Dropout(0.01, seed=seed))
+            model.add(Dropout(0.1, seed=seed))
+            # model.add(Dropout(0.1+i*0.1, seed=seed))
 
         # Last layer needs to have one neuron for a binary classification(BC) which yields from 0 to 1.
         model.add(
@@ -321,16 +323,16 @@ def main(LAYER, BATCH):
     # slug.plotPR(precision,recall,thresRecall)
     # compare_train_test(kModel, X_train, y_train, X_test, y_test)
     ##########################################################################
+    if False:
+        plot2 = plt.figure(2)
 
-    plot2 = plt.figure(2)
-
-    background = X_train[np.random.choice(X_train.shape[0], 100, replace=False)]
-    explainer = shap.DeepExplainer(model, background)
-    shap_values = explainer.shap_values(X_test)
-    shap.summary_plot(
-        shap_values, X_train, plot_type="bar", feature_names=branches[:-1]
-    )
-
+        backgrounds = X_train[np.random.choice(X_train.shape[0], 100, replace=False)]
+        explainer = shap.DeepExplainer(model, backgrounds)
+        shap_values = explainer.shap_values(X_test)
+        shap.summary_plot(shap_values, X_train, plot_type="bar", feature_names=branches[:-1],max_display=25,
+        )
+   
+   
     ###################################################################
     # computes max signif
     numbins = 100000
@@ -418,9 +420,10 @@ def main(LAYER, BATCH):
         ),
         columns=modelParam,
     )
-    df.to_csv("fiveLayerDropout_2.csv", mode="a", header=False, index=False)
+    df.to_csv("fiveLayerDropout_3.csv", mode="a", header=False, index=False)
     print(df.to_string(justify="left", columns=modelParam, header=True, index=False))
     print("Saving model.....")
+    print('old auc: \n',aucroc, '\n new auc',areaUnderCurve)
     model.save(modelName)  # Save Model as a HDF5 filein Data folder
     print("Model Saved")
     print("Saving maxsignif.....")
