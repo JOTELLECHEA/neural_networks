@@ -1,7 +1,18 @@
 import pandas as pd
 import numpy as np
+import argparse
+
+
+
+parser = argparse.ArgumentParser(description="Plot 1D plots of sig/bac")
+parser.add_argument("--file", type=str, help="Use '--file=' followed by a *.h5 file")
+args = parser.parse_args()
+file = "data/" + str(args.file)
+
+
 # file = 'hyperparameterRecord_v3.csv'
-file = 'fiveLayerDropout_2.csv'
+# file = 'fiveLayerDropout_2.csv'
+file = 'fiveLayerDropout_3.csv'
 # modelParam  = ['NN Archi.','#Br.','LR','Batch','AUC','Avg.P','Y/M/D @ H:M','ConfusionMatrix [TP FP] [FN TN]','Score','Max Signif','nsig','nbkg']
 # modelParam  = ['NN Archi.','#Br.','LR','Batch','AUC','Avg.P','Run Time','ConfusionMatrix [TP FP] [FN TN]','Score','Max Signif','nsig','nbkg']
 modelParam = [
