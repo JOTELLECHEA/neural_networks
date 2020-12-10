@@ -31,7 +31,7 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
-
+status = len(tf.config.experimental.list_physical_devices("GPU"))
 # Normalized data to range from (0,1)
 
 sc = StandardScaler()
@@ -62,25 +62,25 @@ HighLevel = [
     "m_bb",
     "h_b",
     "mt1",
-    "mt2",
-    "mt3",
+    # "mt2",
+    # "mt3",
     "dr1",
-    "dr2",
-    "dr3",
+    # "dr2",
+    # "dr3",
 ]
 LeptonVar = [
     "lepton1pT",
     "lepton1eta",
     "lepton1phi",
     "lepton1flav",
-    "lepton2pT",
-    "lepton2eta",
-    "lepton2phi",
-    "lepton2flav",
-    "lepton3pT",
-    "lepton3eta",
-    "lepton3phi",
-    "lepton3flav",
+    # "lepton2pT",
+    # "lepton2eta",
+    # "lepton2phi",
+    # "lepton2flav",
+    # "lepton3pT",
+    # "lepton3eta",
+    # "lepton3phi",
+    # "lepton3flav",
 ]
 JetVar = [
     "jet1pT",
@@ -175,7 +175,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 
-def main(LAYER, BATCH):# Layer must be > 3
+def main(LAYER, BATCH, RATE):# Layer must be > 3
     learnRate = 0.0001
     batchSize = BATCH
     numEpochs = 150
@@ -189,6 +189,12 @@ def main(LAYER, BATCH):# Layer must be > 3
         network.append(neurons)
     network.append(1)
     print("Script starting....\n", network)
+    if status == 1: 
+        print('GPU')
+        sufix = 'GPU'
+    else:
+        sufix='CPU'
+        print('CPU')
     numNeurons = sum(network)
 
     startTime = datetime.now()
@@ -199,7 +205,7 @@ def main(LAYER, BATCH):# Layer must be > 3
 
     # filename for keras model to be saved as.
     h5name = "numLayers"+str(LAYER) + ".numBranches" + str(neurons) + ".batchSize" + str(BATCH)
-    modelName = "data/" + pre + h5name + ".h5"
+    modelName = "data/" + pre + h5name + sufix+".h5"
 
     # filename for plots to be identified by saved model.
     figname = "data/" + pre + ".plots"
@@ -227,7 +233,7 @@ def main(LAYER, BATCH):# Layer must be > 3
         for i in range(1, numLayers - 2):
             model.add(Dense(network[i], activation=act))  # Hidden layers.
             # Turning off nuerons of layer above in loop with probability = 1-r, so r = 0.25, then 75% of nerouns are kept.
-            model.add(Dropout(0.1, seed=seed))
+            model.add(Dropout(0.1+i*RATE, seed=seed))
             # model.add(Dropout(0.1+i*0.1, seed=seed))
 
         # Last layer needs to have one neuron for a binary classification(BC) which yields from 0 to 1.
