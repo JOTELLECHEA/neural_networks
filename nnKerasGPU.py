@@ -397,6 +397,7 @@ def main(LAYER, BATCH, RATE):# Layer must be > 3
     maxs = "%10d" % (maxs)
     maxb = "%10d" % (maxb)
     cm = confusion_matrix(y_test, y_predicted_round)
+    CM = [cm[0][0],cm[0][1]],[cm[1,0],cm[1,1]]
     modelParam = [
         "FileName",
         "ConfusionMatrix [TP FP] [FN TN]",
@@ -413,7 +414,7 @@ def main(LAYER, BATCH, RATE):# Layer must be > 3
             [
                 [
                     modelName[5:],
-                    cm,
+                    CM,
                     runTime,
                     areaUnderCurve,
                     avgPer,
