@@ -225,15 +225,17 @@ def augment_rootfile(filepath):
                 leptoneta[n] = event.lepeta[n-1]
                 leptonphi[n] = event.lepphi[n-1]
                 mt[n]        = missingPT(n-1)
-                if len(delta_r[n-1]) == 0: 
-                    dr[n] = -999
-                else:
-                    dr[n] = min(delta_r[n-1])
+                dr[n] = min(delta_r[n-1])
+                # if len(delta_r[n-1]) == 0: 
+                #     dr[n] = -999
+                # else:
+                #     dr[n] = min(delta_r[n-1])
             else:
                 leptonpT[n]  = -999
                 leptoneta[n] = -9
                 leptonphi[n] = -9
                 mt[n]        = -999
+                dr[n] = -999
         for n in lloop:
             br_leptonpT[n].Fill()
             br_leptoneta[n].Fill()
