@@ -225,7 +225,6 @@ def augment_rootfile(filepath):
                 leptoneta[n] = event.lepeta[n-1]
                 leptonphi[n] = event.lepphi[n-1]
                 mt[n]        = missingPT(n-1)
-                dr[n] = min(delta_r[n-1])
                 if len(delta_r[n-1]) == 0: 
                     dr[n] = -999
                 else:
