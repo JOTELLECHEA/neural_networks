@@ -22,6 +22,7 @@ def augment_rootfile(filepath):
     # define branches
     numlep  = array( 'f', [ 0 ] )
     numjet  = array( 'f', [ 0 ] )
+    weights = array( 'f', [ 0 ] )
     btag    = array( 'f', [ 0 ] )
     srap    = array( 'f', [ 0 ] )
     cent    = array( 'f', [ 0 ] )
@@ -31,6 +32,7 @@ def augment_rootfile(filepath):
     leptonpT={}
     leptoneta={}
     leptonphi={}
+    leptonflav={}
     mt={}
     dr={}
     maxlepton=4
@@ -38,17 +40,20 @@ def augment_rootfile(filepath):
         leptonpT[i]  = array( 'f', [ 0 ] )
         leptoneta[i] = array( 'f', [ 0 ] )
         leptonphi[i] = array( 'f', [ 0 ] )
+        leptonflav[i] = array( 'f', [ 0 ] )
         mt[i]        = array( 'f', [ 0 ] )
         dr[i]        = array( 'f', [ 0 ] )
     br_leptonpT={}
     br_leptoneta={}
     br_leptonphi={}
+    br_leptonflav={}
     br_mt={}
     br_dr={}
     for i in range(1,maxlepton):
         br_leptonpT[i]  = tree.Branch('lepton%dpT'%i  , leptonpT[i] , 'lepton%dpT/F'%i)
         br_leptoneta[i] = tree.Branch('lepton%deta'%i , leptoneta[i] , 'lepton%deta/F'%i)
         br_leptonphi[i] = tree.Branch('lepton%dphi'%i , leptonphi[i] , 'lepton%dphi/F'%i)
+        br_leptonflav[i] = tree.Branch('lepton%dflav'%i , leptonflav[i] , 'lepton%dflav/F'%i)
         br_mt[i]        = tree.Branch('mt%d'%i , mt[i] , 'mt%d/F'%i)
         br_dr[i]        = tree.Branch('dr%d'%i , dr[i] , 'dr%d/F'%i)
     jetpT={}
@@ -76,6 +81,7 @@ def augment_rootfile(filepath):
         br_jetc[i]   = tree.Branch('jet%dc'%i , jetc[i] , 'jet%dc/F'%i)
     br_numlep  = tree.Branch( 'numlep' , numlep , 'numlep/F'  )
     br_numjet  = tree.Branch( 'numjet' , numjet , 'numjet/F'  )
+    br_weights  = tree.Branch( 'weights' , weights , 'weights/F'  )
     br_btag    = tree.Branch( 'btag'   , btag   , 'btag/F'    )
     br_cent    = tree.Branch( 'cent'   , cent   , 'cent/F'    )
     br_srap    = tree.Branch( 'srap'   , srap   , 'srap/F'    )
@@ -138,6 +144,7 @@ def augment_rootfile(filepath):
         if i % 1000 == 0: print("   processing entry {:8d}/{:d} [{:5.0f} evts/s]".format(i, n_entries, i/(time.clock()-start_time)))
         numlep[0] = lep = event.nlep[0]
         numjet[0] = jet = event.njet[0]
+        weights[0]= event.mcweight[0]
         if lep > 0:  
             neutrino[0] = ROOT.TLorentzVector()
             neutrino[0].SetPtEtaPhiM(event.met[0],0,event.met_phi[0],0)
@@ -221,41 +228,44 @@ def augment_rootfile(filepath):
         lloop=range(1,maxlepton)
         for n in lloop:
             if n <= lep:
-                leptonpT[n]  = event.leppT[n-1]
-                leptoneta[n] = event.lepeta[n-1]
-                leptonphi[n] = event.lepphi[n-1]
-                mt[n]        = missingPT(n-1)
+                leptonpT[n][0]  = event.leppT[n-1]
+                leptoneta[n][0] = event.lepeta[n-1]
+                leptonphi[n][0] = event.lepphi[n-1]
+                leptonflav[n][0]= event.lepflav[n-1]
+                mt[n][0]        = missingPT(n-1)
                 if len(delta_r[n-1]) == 0: 
-                    dr[n] = -999
+                    dr[n][0] = -999
                 else:
-                    dr[n] = min(delta_r[n-1])
+                    dr[n][0] = min(delta_r[n-1])
             else:
-                leptonpT[n]  = -999
-                leptoneta[n] = -9
-                leptonphi[n] = -9
-                mt[n]        = -999
-                dr[n] = -999
+                leptonpT[n][0]  = -999
+                leptoneta[n][0] = -9
+                leptonphi[n][0] = -9
+                leptonflav[n][0]= -999
+                mt[n][0]        = -999
+                dr[n][0] = -999
         for n in lloop:
             br_leptonpT[n].Fill()
             br_leptoneta[n].Fill()
             br_leptonphi[n].Fill()
+            br_leptonflav[n].Fill()
             br_mt[n].Fill()
             br_dr[n].Fill()
 
         jloop=range(1,maxjets)
         for n in jloop:
             if n <= jet:
-                jetpT[n] = event.jetpT[n-1]
-                jeteta[n] = event.jeteta[n-1]
-                jetphi[n] = event.jetphi[n-1]
-                jetb[n] = event.jetbhadron[n-1]
-                jetc[n] = event.jetchadron[n-1]
+                jetpT[n][0] = event.jetpT[n-1]
+                jeteta[n][0] = event.jeteta[n-1]
+                jetphi[n][0] = event.jetphi[n-1]
+                jetb[n][0] = event.jetbhadron[n-1]
+                jetc[n][0] = event.jetchadron[n-1]
             else:
-                jetpT[n]  = -999
-                jeteta[n] = -9
-                jetphi[n] = -9
-                jetb[n]   = -9
-                jetc[n]   = -9
+                jetpT[n][0]  = -999
+                jeteta[n][0] = -9
+                jetphi[n][0] = -9
+                jetb[n][0]   = -9
+                jetc[n][0]   = -9
         for n in jloop:
             br_jetpT[n].Fill()
             br_jeteta[n].Fill()
@@ -266,6 +276,7 @@ def augment_rootfile(filepath):
         # fill new branches
         br_numjet.Fill()
         br_numlep.Fill()
+        br_weights.Fill()
         br_btag.Fill()
         br_cent.Fill() 
         br_srap.Fill()
