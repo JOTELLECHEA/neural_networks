@@ -1,7 +1,7 @@
 # Written By : Jonathan O. Tellechea
 # Adviser    : Mike Hance, Phd
 # Research   : Using a neural network to maximize the significance of tttHH production.
-# Description: Creates a csv file for ROC plots from h5 file. 
+# Description: Creates a csv file for ROC plots from h5 file, to then be used by rocplots.py.
 ###########################################################################################################################\
 # Import packages.
 import uproot
