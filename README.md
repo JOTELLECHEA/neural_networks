@@ -43,8 +43,10 @@ Advisor: Michael Hance.
      nsig. = 56
      nbkg. = 4074
      ```
+   - rocs.py
+      > Creates a csv file for ROC plots from h5 file, to then be used by rocplots.py.
    - rocplots.py
-      > modified ROC.
+      > Script that creates a ROC plot for Low, High, and Low + High VARS (Background rejection vs signal efficiency). 
       >![](https://github.com/JOTELLECHEA/neural_networks/blob/master/modifiedRoc.png)
 2. Files required
    - requirements.txt
