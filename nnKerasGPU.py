@@ -68,72 +68,16 @@ HighLevel = [
     "dr2",
     "dr3",
 ]
-LeptonVar = [
-    "lepton1pT",
-    "lepton1eta",
-    "lepton1phi",
-    "lepton1flav",
-    "lepton2pT",
-    "lepton2eta",
-    "lepton2phi",
-    "lepton2flav",
-    "lepton3pT",
-    "lepton3eta",
-    "lepton3phi",
-    "lepton3flav",
-]
-JetVar = [
-    "jet1pT",
-    "jet1eta",
-    "jet1phi",
-    "jet1b",
-    "jet1c",
-    "jet2pT",
-    "jet2eta",
-    "jet2phi",
-    "jet2b",
-    "jet2c",
-    "jet3pT",
-    "jet3eta",
-    "jet3phi",
-    "jet3b",
-    "jet3c",
-    "jet4pT",
-    "jet4eta",
-    "jet4phi",
-    "jet4b",
-    "jet4c",
-    "jet5pT",
-    "jet5eta",
-    "jet5phi",
-    "jet5b",
-    "jet5c",
-    "jet6pT",
-    "jet6eta",
-    "jet6phi",
-    "jet6b",
-    "jet6c",
-    "jet7pT",
-    "jet7eta",
-    "jet7phi",
-    "jet7b",
-    "jet7c",
-    "jet8pT",
-    "jet8eta",
-    "jet8phi",
-    "jet8b",
-    "jet8c",
-    "jet9pT",
-    "jet9eta",
-    "jet9phi",
-    "jet9b",
-    "jet9c",
-    "jet10pT",
-    "jet10eta",
-    "jet10phi",
-    "jet10b",
-    "jet10c",
-]
+type = ['flav','pT','eta','phi','b','c']
+LeptonVAR = []
+JetVAR = []
+for i in range(4):
+    for j in range(3):
+        LeptonVAR.append('lepton'+ str(j+1) + type[i])
+for i in range(1,6):
+    for j in range(10):
+        JetVAR.append('jet'+ str(j+1) + type[i])
+
 branches = sorted(HighLevel + JetVar + LeptonVar + ["weights"])
 numBranches = len(branches) - 1
 
