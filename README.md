@@ -42,6 +42,9 @@ Research on  ttHH production via NN/Keras
      nsig. = 56
      nbkg. = 4074
      ```
+   - rocplots.py
+      > modified ROC.
+      >![](https://github.com/JOTELLECHEA/neural_networks/blob/master/modifiedRoc.png)
 2. Files required
    - requirements.txt
       > required progrmas needed to run scripts. 
