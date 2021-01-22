@@ -48,9 +48,10 @@ from sklearn.metrics import confusion_matrix
 from datetime import datetime
 import slug  # Library with common functions used in multiple scripts.
 
-# Variables.
+# Fixed values.
 tree = "OutputTree"
-seed = 42  # Random seed number to reproduce results.
+seed = 42  
+phase = 3
 
 # Branches names of high/low level variables aka: features.
 HighLevel = [
@@ -78,7 +79,14 @@ for i in range(1,6):
     for j in range(10):
         JetVAR.append('jet'+ str(j+1) + type[i])
 
-branches = sorted(HighLevel + JetVar + LeptonVar + ["weights"])
+# Auto select feature set. 
+if phase == 1:
+    branches = sorted(HighLevel + ['weights'])
+elif phase==2:
+    branches = sorted(LeptonVAR + JetVAR ['weights'])
+elif phase ==3:
+    branches = sorted(HighLevel + JetVAR + LeptonVAR+ ["weights"])
+
 numBranches = len(branches) - 1
 
 # Data read from file.
