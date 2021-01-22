@@ -55,6 +55,7 @@ for i in range(1,6):
     for j in range(10):
         JetVAR.append('jet'+ str(j+1) + type[i])
 
+# Auto select feature set. 
 if phase == 1:
     branches = sorted(HighLevel + ['weights'])
 elif phase==2:
