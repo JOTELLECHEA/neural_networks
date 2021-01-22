@@ -62,25 +62,25 @@ HighLevel = [
     "m_bb",
     "h_b",
     "mt1",
-    # "mt2",
-    # "mt3",
+    "mt2",
+    "mt3",
     "dr1",
-    # "dr2",
-    # "dr3",
+    "dr2",
+    "dr3",
 ]
 LeptonVar = [
     "lepton1pT",
     "lepton1eta",
     "lepton1phi",
     "lepton1flav",
-    # "lepton2pT",
-    # "lepton2eta",
-    # "lepton2phi",
-    # "lepton2flav",
-    # "lepton3pT",
-    # "lepton3eta",
-    # "lepton3phi",
-    # "lepton3flav",
+    "lepton2pT",
+    "lepton2eta",
+    "lepton2phi",
+    "lepton2flav",
+    "lepton3pT",
+    "lepton3eta",
+    "lepton3phi",
+    "lepton3flav",
 ]
 JetVar = [
     "jet1pT",
@@ -176,7 +176,6 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 
 def main(LAYER, BATCH, RATE):# Layer must be > 3
-    learnRate = 0.0001
     batchSize = BATCH
     numEpochs = 150
     """NN structure ex. [5,5,5,5,1] 4 layers with 5 neurons each and one output layer.
@@ -191,9 +190,9 @@ def main(LAYER, BATCH, RATE):# Layer must be > 3
     print("Script starting....\n", network)
     if status == 1: 
         print('GPU')
-        sufix = 'GPU'
+        sufix = '.GPU'
     else:
-        sufix='CPU'
+        sufix='.CPU'
         print('CPU')
     numNeurons = sum(network)
 
@@ -216,10 +215,8 @@ def main(LAYER, BATCH, RATE):# Layer must be > 3
 
         # Create a NN model.
         model = Sequential()  # barebones model no layers.
-        # opt = keras.optimizers.Nadam(
-        #     learning_rate=learnRate
-        # )  # Best option for most NN.
-        opt = keras.optimizers.Adam()  # Best option for most NN.
+
+        opt = keras.optimizers.Nadam()  # Best option for most NN.
 
         # activation function other options possible.
         act = "relu"  # 0 for negative values, linear for nonzero values.
@@ -233,7 +230,7 @@ def main(LAYER, BATCH, RATE):# Layer must be > 3
         for i in range(1, numLayers - 2):
             model.add(Dense(network[i], activation=act))  # Hidden layers.
             # Turning off nuerons of layer above in loop with probability = 1-r, so r = 0.25, then 75% of nerouns are kept.
-            model.add(Dropout(0.1+i*RATE, seed=seed))
+            model.add(Dropout(RATE, seed=seed))
             # model.add(Dropout(0.1+i*0.1, seed=seed))
 
         # Last layer needs to have one neuron for a binary classification(BC) which yields from 0 to 1.
@@ -388,11 +385,11 @@ def main(LAYER, BATCH, RATE):# Layer must be > 3
         "\n Score = %6.3f\n Signif = %5.2f\n nsig = %d\n nbkg = %d\n"
         % (score, maxsignif, maxs, maxb)
     )
-    runTime = datetime.now() - startTime
-    hh = int(runtime[7:9])
-    mm = int(runtime[10:12])
-    ss = int(runtime[13:15])
-    runtime = (hh * 3600 + mm * 60 + ss)/60
+    runtime = datetime.now() - startTime
+    # hh = int(runtime[7:9])
+    # mm = int(runtime[10:12])
+    # ss = int(runtime[13:15])
+    # runtime = (hh * 3600 + mm * 60 + ss)/60
     areaUnderCurve = "{:.4f}".format(aucroc)
     maxsignif = "{:5.2f}".format(maxsignif)
     average_precision = average_precision_score(y_test, y_predicted)
@@ -419,7 +416,7 @@ def main(LAYER, BATCH, RATE):# Layer must be > 3
                 [
                     modelName[5:],
                     CM,
-                    runTime,
+                    runtime,
                     areaUnderCurve,
                     avgPer,
                     score,
@@ -431,7 +428,7 @@ def main(LAYER, BATCH, RATE):# Layer must be > 3
         ),
         columns=modelParam,
     )
-    df.to_csv("fiveLayerDropout_3.csv", mode="a", header=False, index=False)
+    df.to_csv("testelep2.csv", mode="a", header=False, index=False)
     print(df.to_string(justify="left", columns=modelParam, header=True, index=False))
     print("Saving model.....")
     print('old auc: \n',aucroc, '\n new auc',areaUnderCurve)
