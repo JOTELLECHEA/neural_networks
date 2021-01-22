@@ -380,7 +380,7 @@ def main(LAYER, BATCH, RATE):# Layer must be > 3
         ),
         columns=modelParam,
     )
-    df.to_csv("testelep2.csv", mode="a", header=False, index=False)
+    df.to_csv("csv/testelep2.csv", mode="a", header=False, index=False)
     print(df.to_string(justify="left", columns=modelParam, header=True, index=False))
     print("Saving model.....")
     print('old auc: \n',aucroc, '\n new auc',areaUnderCurve)
