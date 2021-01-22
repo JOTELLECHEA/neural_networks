@@ -27,6 +27,7 @@ sc = StandardScaler()
 # Fixed values.
 seed = 42
 tree = "OutputTree"
+phase = 3
 
 # Branches names of high/low level variables aka: features.
 HighLevel = [
@@ -53,7 +54,7 @@ for i in range(4):
 for i in range(1,6):
     for j in range(10):
         JetVAR.append('jet'+ str(j+1) + type[i])
-phase = 3
+
 if phase == 1:
     branches = sorted(HighLevel + ['weights'])
 elif phase==2:
@@ -155,10 +156,12 @@ if flag2 == 1:
     #     "\n Score = %6.3f\n Signif = %5.2f\n nsig = %d\n nbkg = %d\n"
     #     % (score, maxsignif, maxs, maxb)
     # )
-    data = {'fpr':fpr,'tpr':tpr,'bkgR':1/fpr}
- 
 
+    # Data to be saved as a csv. Then converted to a pandas data frame. 
+    data = {'fpr':fpr,'tpr':tpr,'bkgR':1/fpr}
     df = pd.DataFrame(data)
+
+    # Auto save, Phase intialized in line 30.
     if phase == 1:
         df.to_csv("highlvlvars.csv", mode="a", header=True, index=False)
     elif phase==2:
