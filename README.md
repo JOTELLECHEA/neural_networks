@@ -1,5 +1,6 @@
 # neural_networks
-Research on  ttHH production via NN/Keras
+Conduct research involving prospective di-Higgs production at the HL-LHC by using machine learning via Neural networks.\
+Advisor: Michael Hance.
 
 # TBD
 
