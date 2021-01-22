@@ -13,20 +13,20 @@ from sklearn.metrics import auc
 
 # Load High and Low level csv file created by rocs.py script. 
 hnlv = pd.read_csv('highandlowlvlvars.csv')
-f_hnlv = hnlv['xplot']
-t_hnlv = hnlv['yplot']
+f_hnlv = hnlv['fpr']
+t_hnlv = hnlv['tpr']
 bkgR_hnlv = hnlv['bkgR']
 
 # Load Low level VARS csv file created by rocs.py script. 
 llv = pd.read_csv('lowlvlvars.csv')
-f_llv = llv['xplot'] 
-t_llv = llv['yplot']
+f_llv = llv['fpr'] 
+t_llv = llv['tpr']
 bkgR_llv = llv['bkgR']
 
 # Load High Level VARS csv file created by rocs.py script. 
 hlv = pd.read_csv('highlvlvars.csv')
-f_hlv = hlv['xplot']
-t_hlv = hlv['yplot']
+f_hlv = hlv['fpr']
+t_hlv = hlv['tpr']
 bkgR_hlv = hlv['bkgR']
 
 # Plots of the three ROC. 
