@@ -4,6 +4,7 @@
 # Description: Script that loads NN weights and makes 1D plots that apply NN score for a cut.
 # Reference  :http://cdsweb.cern.ch/record/2220969/files/ATL-PHYS-PUB-2016-023.pdf
 ###########################################################################################################################\
+# Import packages.
 import uproot
 import argparse
 import numpy as np
@@ -13,7 +14,6 @@ from tensorflow import keras
 import tkinter as tk
 import matplotlib
 import slug
-
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 from numpy import array
@@ -22,8 +22,9 @@ from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import auc,roc_curve
-
 sc = StandardScaler()
+
+# Fixed values.
 seed = 42
 tree = "OutputTree"
 
@@ -52,9 +53,14 @@ for i in range(4):
 for i in range(1,6):
     for j in range(10):
         JetVAR.append('jet'+ str(j+1) + type[i])
+phase = 3
+if phase == 1:
+    branches = sorted(HighLevel + ['weights'])
+elif phase==2:
+    branches = sorted(LeptonVAR + JetVAR ['weights'])
+elif phase ==3:
+    branches = sorted(HighLevel + JetVAR + LeptonVAR+ ["weights"])
 
-# branches = sorted(HighLevel + JetVAR + LeptonVAR+ ["weights"])
-branches = sorted(HighLevel + ['weights'])
 numBranches = len(branches) - 1
 
 parser = argparse.ArgumentParser(description="Plot 1D plots of sig/bac")
@@ -96,7 +102,7 @@ y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
 neuralNet = keras.models.load_model(file)
 
 y_predicted = neuralNet.predict(X)
-fp, tp, thresholds = roc_curve(y, y_predicted)
+fpr, tpr, thresholds = roc_curve(y, y_predicted)
 
 flag2 = 1
 if flag2 == 1:
@@ -149,12 +155,13 @@ if flag2 == 1:
     #     "\n Score = %6.3f\n Signif = %5.2f\n nsig = %d\n nbkg = %d\n"
     #     % (score, maxsignif, maxs, maxb)
     # )
-    data = {'xplot':fp,'yplot':tp,'bkgR':1/fp}
+    data = {'fpr':fpr,'tpr':tpr,'bkgR':1/fpr}
  
 
     df = pd.DataFrame(data)
-
-    df.to_csv("highlvlvars.csv", mode="a", header=True, index=False)
-    # df.to_csv("highandlowlvlvars.csv", mode="a", header=True, index=False)
-    # df.to_csv("lowlvlvars.csv", mode="a", header=True, index=False)
-
+    if phase == 1:
+        df.to_csv("highlvlvars.csv", mode="a", header=True, index=False)
+    elif phase==2:
+        df.to_csv("lowlvlvars.csv", mode="a", header=True, index=False)
+    elif phase ==3:
+        df.to_csv("highandlowlvlvars.csv", mode="a", header=True, index=False)
