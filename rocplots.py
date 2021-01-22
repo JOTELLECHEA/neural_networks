@@ -1,3 +1,8 @@
+# Written By : Jonathan O. Tellechea
+# Adviser    : Mike Hance, Phd
+# Research   : Using a neural network to maximize the significance of tttHH production.
+# Description: Script that creates a ROC plot for Low, High, and Low + High VARS (Background rejection vs signal efficiency). 
+##############################################################################################################################
 import pandas as pd
 import tkinter as tk
 import matplotlib
