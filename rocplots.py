@@ -12,19 +12,19 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import auc
 
 # Load High and Low level csv file created by rocs.py script. 
-hnlv = pd.read_csv('highandlowlvlvars.csv')
+hnlv = pd.read_csv('csv/highandlowlvlvars.csv')
 f_hnlv = hnlv['fpr']
 t_hnlv = hnlv['tpr']
 bkgR_hnlv = hnlv['bkgR']
 
 # Load Low level VARS csv file created by rocs.py script. 
-llv = pd.read_csv('lowlvlvars.csv')
+llv = pd.read_csv('csv/lowlvlvars.csv')
 f_llv = llv['fpr'] 
 t_llv = llv['tpr']
 bkgR_llv = llv['bkgR']
 
 # Load High Level VARS csv file created by rocs.py script. 
-hlv = pd.read_csv('highlvlvars.csv')
+hlv = pd.read_csv('csv/highlvlvars.csv')
 f_hlv = hlv['fpr']
 t_hlv = hlv['tpr']
 bkgR_hlv = hlv['bkgR']
@@ -36,7 +36,7 @@ plt.plot(t_hnlv, bkgR_hnlv, "k-", label="All, AUC = %0.3f" % (auc(f_hnlv,t_hnlv)
 
 # Plot parameters and title/labels.
 plt.yscale("log")
-plt.xscale("log")
+# plt.xscale("log")
 plt.xlabel("Signal efficiency")
 plt.ylabel("Background rejection")
 plt.title("Receiver operating characteristic")
