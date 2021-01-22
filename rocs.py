@@ -1,8 +1,7 @@
 # Written By : Jonathan O. Tellechea
 # Adviser    : Mike Hance, Phd
 # Research   : Using a neural network to maximize the significance of tttHH production.
-# Description: Script that loads NN weights and makes 1D plots that apply NN score for a cut.
-# Reference  :http://cdsweb.cern.ch/record/2220969/files/ATL-PHYS-PUB-2016-023.pdf
+# Description: Creates a csv file for ROC plots from h5 file. 
 ###########################################################################################################################\
 # Import packages.
 import uproot
@@ -63,10 +62,12 @@ elif phase==2:
 elif phase ==3:
     branches = sorted(HighLevel + JetVAR + LeptonVAR+ ["weights"])
 
+# Number of features excludes weights.
 numBranches = len(branches) - 1
 
-parser = argparse.ArgumentParser(description="Plot 1D plots of sig/bac")
-parser.add_argument("--file", type=str, help="Use '--file=' followed by a *.h5 file")
+# File used.
+parser = argparse.ArgumentParser(description="Imports weights from trained NN, files located in data/")
+parser.add_argument("--file", type=str, help="Use '--file' followed by a *.h5 file")
 args = parser.parse_args()
 file = "data/" + str(args.file)
 
@@ -81,11 +82,13 @@ shuffleBackground = shuffle(df_background, random_state=seed)
 # signal and limited shuffle background data to counter inbalanced data problem.
 rawdata = pd.concat([df_signal, shuffleBackground])
 
+# Drops weights column from rawdata.
 X = rawdata.drop("weights", axis=1)
 
+# Transforms X to have a mean = 0 and a variance = 1.
 X = sc.fit_transform(X)
 
-# signal
+# Weights of data applied to scale events. 
 scalefactor = 0.00232 * 0.608791
 sigw = rawdata["weights"][: len(signal)] * scalefactor
 bkgw = rawdata["weights"][len(signal) :]
@@ -93,22 +96,18 @@ bkgw = rawdata["weights"][len(signal) :]
 # Labeling data with 1's and 0's to distinguish.
 y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
 
-# # Shuffle full data and split into train/test and validation set.
-# X_dev, X_eval, y_dev, y_eval = train_test_split(
-#     X, y, test_size=0.001, random_state=seed
-# )
-# X_train, X_test, y_train, y_test = train_test_split(
-#     X_dev, y_dev, test_size=0.2, random_state=seed
-# )
 
 neuralNet = keras.models.load_model(file)
 
 y_predicted = neuralNet.predict(X)
+
+# False postive rate, true positive rate and threshold from trained NN model.
 fpr, tpr, thresholds = roc_curve(y, y_predicted)
 
 flag2 = 1
 if flag2 == 1:
     numbins = 100000
+''' This code is here until we determine if it is still needed.'''
 
     # sigScore = neuralNet.predict(X[y > 0.5]).ravel()
     # bkgScore = neuralNet.predict(X[y < 0.5]).ravel()
