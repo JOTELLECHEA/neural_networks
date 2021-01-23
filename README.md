@@ -47,7 +47,7 @@ Advisor: Michael Hance.
       > Creates a csv file for ROC plots from h5 file, to then be used by rocplots.py.
    - rocplots.py
       > Script that creates a ROC plot for Low, High, and Low + High VARS (Background rejection vs signal efficiency). 
-      >![](https://github.com/JOTELLECHEA/neural_networks/blob/master/modifiedRoc.png)
+      >![](https://github.com/JOTELLECHEA/neural_networks/blob/master/Images/modifiedRoc.png)
 2. Files required
    - requirements.txt
       > required progrmas needed to run scripts. 
