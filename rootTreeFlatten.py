@@ -42,6 +42,7 @@ def augment_rootfile(filepath):
     m_bb    = array( 'f', [ 0 ] )
     h_b     = array( 'f', [ 0 ] )
     chi     = array( 'f', [ 0 ] )
+    truth   = array( 'f',[0])
     leptonpT={}
     leptoneta={}
     leptonphi={}
@@ -93,6 +94,7 @@ def augment_rootfile(filepath):
         br_jetb[i]   = tree.Branch('jet%db'%i , jetb[i] , 'jet%db/F'%i)
         br_jetc[i]   = tree.Branch('jet%dc'%i , jetc[i] , 'jet%dc/F'%i)
     br_numlep  = tree.Branch( 'numlep' , numlep , 'numlep/F'  )
+    br_truth  = tree.Branch( 'truth' , truth , 'truth/F'  )
     br_numjet  = tree.Branch( 'numjet' , numjet , 'numjet/F'  )
     br_weights  = tree.Branch( 'weights' , weights , 'weights/F'  )
     br_btag    = tree.Branch( 'btag'   , btag   , 'btag/F'    )
@@ -158,6 +160,7 @@ def augment_rootfile(filepath):
         numlep[0] = lep = event.nlep[0]
         numjet[0] = jet = event.njet[0]
         weights[0]= event.mcweight[0]
+        truth[0] = truthLabel
         if lep > 0:  
             neutrino[0] = ROOT.TLorentzVector()
             neutrino[0].SetPtEtaPhiM(event.met[0],0,event.met_phi[0],0)
@@ -296,6 +299,7 @@ def augment_rootfile(filepath):
         br_m_bb.Fill()
         br_h_b.Fill()
         br_chi.Fill()
+        br_truth.Fill()
       
         i += 1
 
