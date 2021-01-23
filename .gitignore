@@ -1,7 +1,6 @@
 *.root
 Dockerfile
 read*
-*.png
 *.ipynb
 .ipynb_checkpoints/
 mlenv/
@@ -9,5 +8,5 @@ data/
 temp.h5
 __pycache__/
 *.csv
-*.pdf
+
 
