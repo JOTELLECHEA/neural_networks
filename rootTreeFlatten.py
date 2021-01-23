@@ -14,11 +14,6 @@ def augment_rootfile(filepath):
 
     shutil.copyfile(filepath,"new_"+filepath)
 
-    # get tree to loop over
-    treename = "OutputTree"
-    t = ROOT.TFile("new_"+filepath, "UPDATE")
-    tree = t.Get(treename)
-
     truthLabel = 137
     if filepath == 'TTHH.root':
         truthLabel = 0
@@ -31,6 +26,11 @@ def augment_rootfile(filepath):
     else:
         print('Invalid ROOT file')
         sys.exit()
+
+    # get tree to loop over
+    treename = "OutputTree"
+    t = ROOT.TFile("new_"+filepath, "UPDATE")
+    tree = t.Get(treename)
 
     # define branches
     numlep  = array( 'f', [ 0 ] )
