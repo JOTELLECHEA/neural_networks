@@ -19,6 +19,19 @@ def augment_rootfile(filepath):
     t = ROOT.TFile("new_"+filepath, "UPDATE")
     tree = t.Get(treename)
 
+    truthLabel = 137
+    if filepath == 'TTHH.root':
+        truthLabel = 0
+    elif filepath== 'TTBB.root':
+        truthLabel = 1
+    elif filepath== 'TTH.root':
+        truthLabel = 2
+    elif filepath== 'TTZ.root':
+        truthLabel = 3
+    else:
+        print('Invalid ROOT file')
+        sys.exit()
+
     # define branches
     numlep  = array( 'f', [ 0 ] )
     numjet  = array( 'f', [ 0 ] )
