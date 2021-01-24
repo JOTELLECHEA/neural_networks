@@ -2,14 +2,14 @@
 Conduct research involving prospective di-Higgs production at the HL-LHC by using machine learning via Neural networks.\
 Advisor: Michael Hance.
 
-# TBD
+# TBD (This readme is in the works last update is 1/23/2021)
 
 1. Programs Descriptions
    - nnKerasGPU.py
      > NN via Keras and tensorflow with GPU.
      ```bash
      $ python -i nnKerasGPU.py
-     >>> main(5,512) 
+     >>> main(5,512,.01) 
      ```
    - multiNN.py
      > loops over nnKerasGPU.py to test NN. 
