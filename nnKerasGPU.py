@@ -32,6 +32,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
 status = len(tf.config.experimental.list_physical_devices("GPU"))
+
 # Normalized data to range from (0,1)
 
 sc = StandardScaler()
@@ -81,21 +82,28 @@ for i in range(1,6):
 
 # Auto select feature set. 
 if phase == 1:
-    branches = sorted(HighLevel + ['weights'])
+    branches = sorted(HighLevel) + ['weights','truth']
 elif phase==2:
-    branches = sorted(LeptonVAR + JetVAR ['weights'])
+    branches = sorted(LeptonVAR + JetVAR) + ['weights','truth']
 elif phase ==3:
-    branches = sorted(HighLevel + JetVAR + LeptonVAR+ ["weights"])
+    branches = sorted(HighLevel + JetVAR + LeptonVAR) + ["weights",'truth']
 
-numBranches = len(branches) - 1
+numBranches = len(branches) - 2
 
 # Data read from file.
-signal = uproot.open("data/new_signal_v2.root")[tree]
+signal = uproot.open("data/new_TTHH.root")[tree]
 df_signal = signal.pandas.df(branches)  # Adding features(branches) to dataframe.
-background = uproot.open("data/new_background.root")[tree]
-df_background = background.pandas.df(
-    branches
-)  # Adding features(branches) to dataframe.
+
+bkgTTBB = uproot.open('data/new_TTBB.root')[tree]
+df_bkgTTBB = bkgTTBB.pandas.df(branches)
+
+bkgTTH = uproot.open('data/new_TTH.root')[tree]
+df_bkgTTH = bkgTTH.pandas.df(branches)
+
+bkgTTZ = uproot.open('data/new_TTZ.root')[tree]
+df_bkgTTZ = bkgTTZ.pandas.df(branches)
+
+df_background = pd.concat([df_bkgTTBB,df_bkgTTH,df_bkgTTZ])
 
 # The 3 backgrounds are concatenated we shuffle to make sure they are not sorted.
 shuffleBackground = shuffle(df_background, random_state=seed)
@@ -103,7 +111,7 @@ shuffleBackground = shuffle(df_background, random_state=seed)
 # Signal and shuffle background data.
 rawdata = pd.concat([df_signal, shuffleBackground])
 
-X = rawdata.drop("weights", axis=1)
+X = rawdata.drop(["weights",'truth'], axis=1)
 
 # Normalized the data with a Gaussian distrubuition with 0 mean and unit variance.
 X = sc.fit_transform(X)
