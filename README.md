@@ -8,7 +8,6 @@ These are all the scripts used in this repo.
 ```bash
 .
 ├── ./hyperparameterRecord.py
-├── ./Images
 ├── ./loadNN.py
 ├── ./multiNN.py
 ├── ./nnKerasGPU.py
