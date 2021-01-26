@@ -26,7 +26,8 @@ These are all the scripts used in this repo.
 #
 1. Programs Descriptions
    - nnKerasGPU.py
-     NN via Keras and tensorflow with GPU.
+     NN via Keras and tensorflow with GPU.The main(LAYER, BATCH, RATE), LAYER is the number of layers inlcuding the output layer, BATCH is the batch size, and 
+     RATE is the dropout rate (The % of neurons randomly turned off) value must be between [0,1].
      ```bash
      $ python -i nnKerasGPU.py
      >>> main(5,512,.01) 
