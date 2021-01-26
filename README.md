@@ -25,6 +25,16 @@ These are all the scripts used in this repo.
 ```
 #
 1. Libraries required to run scripts in repo.
+   - Create a virtual enviroment run the scripts in this repo.
+   Choose a name for your enviroment(env), replace ### with the name of your env.
+   When you are done with the env, you can exit by typing 'off', to start the env 
+   you have to source it.
+  ```bash 
+    $ python3 -m venv ###
+    $ source ###/bin/activate
+    (###)$
+    (###)$ pip install -r requirements.txt
+  ```
    - requirements.txt
       required progrmas needed to run scripts
 2. Programs Descriptions
