@@ -2,8 +2,9 @@
 # Adviser    : Mike Hance, Phd
 # Research   : Using a neural network to maximize the significance of tttHH production.
 # Description: Creates a csv file for ROC plots from h5 file, to then be used by rocplots.py.
-###########################################################################################################################\
+###########################################################################################################################
 # Import packages.
+import sys
 import uproot
 import argparse
 import numpy as np
@@ -26,7 +27,12 @@ sc = StandardScaler()
 # Fixed values.
 seed = 42
 tree = "OutputTree"
-phase = 3
+
+# File used.
+parser = argparse.ArgumentParser(description="Imports weights from trained NN, files located in data/")
+parser.add_argument("--file", type=str, help="Use '--file' followed by a *.h5 file")
+args = parser.parse_args()
+file = "data/" + str(args.file)
 
 # Branches names of high/low level variables aka: features.
 HighLevel = [
@@ -55,27 +61,35 @@ for i in range(1,6):
         JetVAR.append('jet'+ str(j+1) + type[i])
 
 # Auto select feature set. 
+phase = input('Enter 1 for High, 2 for Low, or 3 for both:')
+
 if phase == 1:
-    branches = sorted(HighLevel + ['weights'])
+    branches = sorted(HighLevel) + ['weights','truth']
 elif phase==2:
-    branches = sorted(LeptonVAR + JetVAR ['weights'])
+    branches = sorted(LeptonVAR + JetVAR) + ['weights','truth']
 elif phase ==3:
-    branches = sorted(HighLevel + JetVAR + LeptonVAR+ ["weights"])
+    branches = sorted(HighLevel + JetVAR + LeptonVAR) + ["weights",'truth']
+else:
+    print('Invalid option')
+    sys.exit()
 
-# Number of features excludes weights.
-numBranches = len(branches) - 1
-
-# File used.
-parser = argparse.ArgumentParser(description="Imports weights from trained NN, files located in data/")
-parser.add_argument("--file", type=str, help="Use '--file' followed by a *.h5 file")
-args = parser.parse_args()
-file = "data/" + str(args.file)
+numBranches = len(branches) - 2
 
 # Data read from file.
-signal = uproot.open("data/new_signal_v2.root")[tree]
-df_signal = signal.pandas.df(branches)
-background = uproot.open("data/new_background.root")[tree]
-df_background = background.pandas.df(branches)
+signal = uproot.open("data/new_TTHH.root")[tree]
+df_signal = signal.pandas.df(branches)  
+
+bkgTTBB = uproot.open('data/new_TTBB.root')[tree]
+df_bkgTTBB = bkgTTBB.pandas.df(branches)
+
+bkgTTH = uproot.open('data/new_TTH.root')[tree]
+df_bkgTTH = bkgTTH.pandas.df(branches)
+
+bkgTTZ = uproot.open('data/new_TTZ.root')[tree]
+df_bkgTTZ = bkgTTZ.pandas.df(branches)
+
+df_background = pd.concat([df_bkgTTBB,df_bkgTTH,df_bkgTTZ])
+
 shuffleBackground = shuffle(df_background, random_state=seed)
 
 
@@ -107,6 +121,17 @@ fpr, tpr, thresholds = roc_curve(y, y_predicted)
 flag2 = 1
 if flag2 == 1:
     numbins = 100000
+    data = {'fpr':fpr,'tpr':tpr,'bkgR':1/fpr}
+    df = pd.DataFrame(data)
+
+    # Auto save, Phase intialized in line 30.
+    if phase == 1:
+        df.to_csv("highlvlvars.csv", mode="a", header=True, index=False)
+    elif phase==2:
+        df.to_csv("lowlvlvars.csv", mode="a", header=True, index=False)
+    elif phase ==3:
+        df.to_csv("highandlowlvlvars.csv", mode="a", header=True, index=False)
+
 ''' This code is here until we determine if it is still needed.'''
 
     # sigScore = neuralNet.predict(X[y > 0.5]).ravel()
@@ -158,13 +183,3 @@ if flag2 == 1:
     # )
 
     # Data to be saved as a csv. Then converted to a pandas data frame. 
-    data = {'fpr':fpr,'tpr':tpr,'bkgR':1/fpr}
-    df = pd.DataFrame(data)
-
-    # Auto save, Phase intialized in line 30.
-    if phase == 1:
-        df.to_csv("highlvlvars.csv", mode="a", header=True, index=False)
-    elif phase==2:
-        df.to_csv("lowlvlvars.csv", mode="a", header=True, index=False)
-    elif phase ==3:
-        df.to_csv("highandlowlvlvars.csv", mode="a", header=True, index=False)
