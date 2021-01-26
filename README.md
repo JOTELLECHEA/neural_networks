@@ -6,22 +6,22 @@ Advisor: Michael Hance.
 
 1. Programs Descriptions
    - nnKerasGPU.py
-     > NN via Keras and tensorflow with GPU.
+     NN via Keras and tensorflow with GPU.
      ```bash
      $ python -i nnKerasGPU.py
      >>> main(5,512,.01) 
      ```
    - multiNN.py
-     > loops over nnKerasGPU.py to test NN. 
+     loops over nnKerasGPU.py to test NN. 
    - slug.py
-     >Script that computes max significance, ROC and PR plots.
+     Script that computes max significance, ROC and PR plots.
    - loadNN.py
-     >Script that creates cuts on signal & background based on score given by NN. 
+     Script that creates cuts on signal & background based on score given by NN. 
      ```bash
      $ python -i loadNN.py --file filename.h5
      ```
    - hyperparameterRecord.py
-     >Script that uses keeps a record on results.
+     Script that uses keeps a record on results.
      ```bash
      $ python hyperparameterRecord.py
          NN Archi.             #Br.  LR      Batch  AUC     Avg.P  Run Time                ConfusionMatrix [TP FP] [FN TN]       Score  Max Signif  nsig  nbkg
@@ -33,9 +33,9 @@ Advisor: Michael Hance.
      5    [75, 75, 75, 75, 1]  75    0.0001   256   0.9484  0.7729  0 days 00:27:49.218513  [[754273   7336]\n [ 37228  48163]]  0.875   1.02        87   7310
      ```
    - rootroot.py
-     >Uses ROOT to produce histogram plots of jet four vectors.
+     Uses ROOT to produce histogram plots of jet four vectors.
    - rocCurve.py
-     >Uses a csv file to recreate roc and maxs signif.
+     Uses a csv file to recreate roc and maxs signif.
      ```bash
      $ python rocCurve.py --file data/2020_11_14-rocDataNN-22.13.33.csv
      Score = 0.8901054
@@ -44,13 +44,13 @@ Advisor: Michael Hance.
      nbkg. = 4074
      ```
    - rocs.py
-      > Creates a csv file for ROC plots from h5 file, to then be used by rocplots.py.
+      Creates a csv file for ROC plots from h5 file, to then be used by rocplots.py.
    - rocplots.py
-      > Script that creates a ROC plot for Low, High, and Low + High VARS (Background rejection vs signal efficiency). 
-      >![](https://github.com/JOTELLECHEA/neural_networks/blob/master/Images/modifiedRoc.png)
+      Script that creates a ROC plot for Low, High, and Low + High VARS (Background rejection vs signal efficiency). 
+      ![](https://github.com/JOTELLECHEA/neural_networks/blob/master/Images/modifiedRoc.png)
 2. Files required
    - requirements.txt
-      > required progrmas needed to run scripts. 
+      required progrmas needed to run scripts. 
 <!--2. Programs Parser Variables/ Outputs
   - lepvec_Pt.py
      >`--x=i` where  i = 1-4: ttHH,ttbb,ttH,ttZ.-->
