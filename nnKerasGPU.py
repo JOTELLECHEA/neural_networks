@@ -394,7 +394,6 @@ def main(LAYER, BATCH, RATE):# Layer must be > 3
     print('old auc: \n',aucroc, '\n new auc',areaUnderCurve)
     model.save(modelName)  # Save Model as a HDF5 filein Data folder
     print("Model Saved")
-    print("Saving maxsignif.....")
     # r0 = ["name", "var"]
     # r1 = ["fpr", fpr]
     # r2 = ["tpr", tpr]
@@ -408,4 +407,4 @@ def main(LAYER, BATCH, RATE):# Layer must be > 3
     #     writer.writerow(r3)
     #     writer.writerow(r4)
     # csvFile.close()
-    print("Maxsignif Saved")
+
