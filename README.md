@@ -6,22 +6,22 @@ Advisor: Michael Hance.
 # Scripts
 These are all the scripts used in this repo. 
 ```bash
-   .
-   ├── ./hyperparameterRecord.py
-   ├── ./Images
-   ├── ./loadNN.py
-   ├── ./multiNN.py
-   ├── ./nnKerasGPU.py
-   ├── ./plotsNeuralNetResults.py
-   ├── ./requirements.txt
-   ├── ./rocCurve.py
-   ├── ./rocplots.py
-   ├── ./rocs.py
-   ├── ./rootFiles.py
-   ├── ./rootroot.py
-   ├── ./rootTreeFlatten.py
-   ├── ./scikit-KerasGPU.py
-   ├── ./slug.py
+.
+├── ./hyperparameterRecord.py
+├── ./Images
+├── ./loadNN.py
+├── ./multiNN.py
+├── ./nnKerasGPU.py
+├── ./plotsNeuralNetResults.py
+├── ./requirements.txt
+├── ./rocCurve.py
+├── ./rocplots.py
+├── ./rocs.py
+├── ./rootFiles.py
+├── ./rootroot.py
+├── ./rootTreeFlatten.py
+├── ./scikit-KerasGPU.py
+├── ./slug.py
 
 ```
 #
