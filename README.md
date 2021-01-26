@@ -2,7 +2,7 @@
 Conduct research involving prospective di-Higgs production at the HL-LHC by using machine learning via Neural networks.\
 Advisor: Michael Hance.
 
-# TBD (This readme is in the works last update is 1/23/2021)
+# TBD (This readme is in the works last update is 1/25/2021)
 # Scripts
 These are all the scripts used in this repo. 
 ```bash
@@ -11,32 +11,29 @@ These are all the scripts used in this repo.
 ├── ./loadNN.py
 ├── ./multiNN.py
 ├── ./nnKerasGPU.py
-├── ./plotsNeuralNetResults.py
+├── ./plotsNeuralNetResults.py (TBD)
 ├── ./requirements.txt
 ├── ./rocCurve.py
 ├── ./rocplots.py
 ├── ./rocs.py
-├── ./rootFiles.py
 ├── ./rootroot.py
-├── ./rootTreeFlatten.py
-├── ./scikit-KerasGPU.py
+├── ./rootTreeFlatten.py (TBD)
+├── ./scikit-KerasGPU.py (TBD)
 ├── ./slug.py
 
 ```
 #
-1. Libraries required to run scripts in repo.
+1. To run scripts in repo a virtual enviorment is created.
    - Create a virtual enviroment run the scripts in this repo.
    Choose a name for your enviroment(env), replace ### with the name of your env.
    When you are done with the env, you can exit by typing 'off', to start the env 
-   you have to source it.
+   you have to source it. Then the required packages are installed.
   ```bash 
     $ python3 -m venv ###
     $ source ###/bin/activate
     (###)$
     (###)$ pip install -r requirements.txt
   ```
-   - requirements.txt
-      required progrmas needed to run scripts
 2. Programs Descriptions
    - nnKerasGPU.py \
      NN via Keras and tensorflow with GPU.The main(LAYER, BATCH, RATE), LAYER is the number of layers inlcuding the output layer, BATCH is the batch size, and 
