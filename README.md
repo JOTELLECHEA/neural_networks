@@ -3,13 +3,12 @@ Conduct research involving prospective di-Higgs production at the HL-LHC by usin
 Advisor: Michael Hance.
 
 # TBD (This readme is in the works last update is 1/23/2021)
-# The scripts in this repo.
+# Scripts
+These are all the scripts used in this repo. 
 ```bash
    .
-   ├── ./featuresMap.txt
    ├── ./hyperparameterRecord.py
    ├── ./Images
-   ├── ./LearnRate.py
    ├── ./loadNN.py
    ├── ./multiNN.py
    ├── ./nnKerasGPU.py
