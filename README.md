@@ -24,7 +24,10 @@ These are all the scripts used in this repo.
 
 ```
 #
-1. Programs Descriptions
+1. Libraries required to run scripts in repo.
+   - requirements.txt
+      required progrmas needed to run scripts
+2. Programs Descriptions
    - nnKerasGPU.py \
      NN via Keras and tensorflow with GPU.The main(LAYER, BATCH, RATE), LAYER is the number of layers inlcuding the output layer, BATCH is the batch size, and 
      RATE is the dropout rate (The % of neurons randomly turned off) value must be between [0,1]. To run script follow example below:
@@ -54,7 +57,7 @@ These are all the scripts used in this repo.
 
        ```
      
-   - loadNN.py \ 
+   - loadNN.py 
      Script that uses NN score to create cuts on signal & background and plot the features and ROC. nnKerasGPU.py saves NN weights
      as HDF which has the extention 'h5'. These Files are saved in the ~/data/, for more information on specific h5 files. Using 
      hyperparameterRecord.py one can choose a NN that has been trained and have a record of the conditions the NN was trained in.
@@ -97,9 +100,8 @@ These are all the scripts used in this repo.
       ```bash
            $ python -i rocplots.py
       ```
+3. Images produced
+   - modifiedROC
+     ![](https://github.com/JOTELLECHEA/neural_networks/blob/master/Images/modifiedRoc.png)
 
-![](https://github.com/JOTELLECHEA/neural_networks/blob/master/Images/modifiedRoc.png)
-2. Files required
-   - requirements.txt
-      required progrmas needed to run scripts. 
 
