@@ -80,12 +80,12 @@ These are all the scripts used in this repo.
      nsig. = 56
      nbkg. = 4074
 ```
-   - rocs.py \ 
+   - rocs.py\ 
      Creates a csv file with fpr,tpr,bkgR from h5 file, to then be used by rocplots.py. These csv files are saved in ~/csv/.
      Three phase are avaliable (must be changed in script):
-     - phase 1: High Level VARS
-     - phase 2: Low Level VARS
-     - phase 3: High and Low Level VARS
+     *phase 1: High Level VARS
+     *phase 2: Low Level VARS
+     *phase 3: High and Low Level VARS
 
 ```bash
      $ python rocs.py
