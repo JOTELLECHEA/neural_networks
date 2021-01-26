@@ -92,7 +92,7 @@ numBranches = len(branches) - 2
 
 # Data read from file.
 signal = uproot.open("data/new_TTHH.root")[tree]
-df_signal = signal.pandas.df(branches)  # Adding features(branches) to dataframe.
+df_signal = signal.pandas.df(branches)  
 
 bkgTTBB = uproot.open('data/new_TTBB.root')[tree]
 df_bkgTTBB = bkgTTBB.pandas.df(branches)
