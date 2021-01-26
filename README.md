@@ -54,49 +54,49 @@ These are all the scripts used in this repo.
 
        ```
      
-   -loadNN.py \ 
+   - loadNN.py \ 
      Script that uses NN score to create cuts on signal & background and plot the features and ROC. nnKerasGPU.py saves NN weights
      as HDF which has the extention 'h5'. These Files are saved in the ~/data/, for more information on specific h5 files. Using 
      hyperparameterRecord.py one can choose a NN that has been trained and have a record of the conditions the NN was trained in.
      (Currently a Jupyter NB version exist which displays the plots neatly and has a different statistical calculation). To run script 
      look at example below:
    
-   ```bash
+     ```bash
         $ python -i loadNN.py --file filename.h5
-   ```
-   -rootroot.py *** This scrip Requires ROOT *** \
+     ```
+   - rootroot.py *** This scrip Requires ROOT *** \
      This script is used to check the data by plotting the lepton/jet four Energy-momentum components individually.
      The root file has to be edited (Automating script will be done in the future). To run script look at example below:
      
-   ```bash
+     ```bash
         $ python -i rootroot.py
-   ```
-   -rocCurve.py *** This script is only for earlier NN trained, which have a csv file saved *** \
+     ```
+   - rocCurve.py *** This script is only for earlier NN trained, which have a csv file saved *** \
      Uses a csv file to recreate roc and maxs signif. The csv files are in ~/data/. To run script look at example below:
-    ```bash
+     ```bash
         $ python rocCurve.py --file data/2020_11_14-rocDataNN-22.13.33.csv
         Score = 0.8901054
         Sign. = 0.88
         nsig. = 56
         nbkg. = 4074
-    ```
-  -rocs.py \
+     ```
+   - rocs.py \
      Creates a csv file with fpr,tpr,bkgR from h5 file, to then be used by rocplots.py. These csv files are saved in ~/csv/.
      Three phase are avaliable (must be changed in script):
      * phase 1: High Level VARS
      * phase 2: Low Level VARS
      * phase 3: High and Low Level VARS
 
-   ```bash
+     ```bash
         $ python rocs.py
-   ```
-   -rocplots.py \
+     ```
+   - rocplots.py \
      Script that creates a modified ROC plot for Low, High, and Low + High VARS (Background rejection vs signal efficiency).
      The three csv files must be changed in script. 
      
-```bash
-     $ python -i rocplots.py
-```
+      ```bash
+           $ python -i rocplots.py
+      ```
 
 ![](https://github.com/JOTELLECHEA/neural_networks/blob/master/Images/modifiedRoc.png)
 2. Files required
