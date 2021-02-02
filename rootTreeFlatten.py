@@ -7,6 +7,8 @@ from array import array
 import shutil
 import random
 import itertools
+seed = 42
+random.seed(seed)  
 
 
 import ROOT
