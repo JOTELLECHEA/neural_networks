@@ -6,18 +6,20 @@
 ###########################################################################################################################
 # Imported packages.
 import csv, sys
-import uproot  
-import pandas as pd  
+import uproot
+import pandas as pd
 import numpy as np
 from numpy import array
+
 np.set_printoptions(threshold=sys.maxsize)
-import shap  
-import tensorflow as tf  
-import tkinter as tk  
+import shap
+import tensorflow as tf
+import tkinter as tk
 import matplotlib
 import matplotlib.pyplot as plt
-# matplotlib.use("TkAgg")  
-matplotlib.use("PDF") 
+
+# matplotlib.use("TkAgg")
+matplotlib.use("PDF")
 import math
 import time
 from math import log, sqrt
@@ -29,6 +31,7 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
+
 status = len(tf.config.experimental.list_physical_devices("GPU"))
 
 # Normalized data to range from (0,1)
@@ -48,7 +51,7 @@ import slug  # Library with common functions used in multiple scripts.
 
 # Fixed values.
 tree = "OutputTree"
-seed = 42  
+seed = 42
 phase = 3
 
 # Branches names of high/low level variables aka: features.
@@ -69,24 +72,24 @@ HighLevel = [
 ]
 
 ### Low Level START -
-type = ['flav','pT','eta','phi','b','c']
+type = ["flav", "pT", "eta", "phi", "b", "c"]
 LeptonVAR = []
 JetVAR = []
 for i in range(4):
     for j in range(3):
-        LeptonVAR.append('lepton'+ str(j+1) + type[i])
-for i in range(1,6):
+        LeptonVAR.append("lepton" + str(j + 1) + type[i])
+for i in range(1, 6):
     for j in range(10):
-        JetVAR.append('jet'+ str(j+1) + type[i])
+        JetVAR.append("jet" + str(j + 1) + type[i])
 ###                                               -END
 
-# Auto select feature set. 
+# Auto select feature set.
 if phase == 1:
-    branches = sorted(HighLevel) + ['weights','truth']
-elif phase==2:
-    branches = sorted(LeptonVAR + JetVAR) + ['weights','truth']
-elif phase ==3:
-    branches = sorted(HighLevel + JetVAR + LeptonVAR) + ["weights",'truth']
+    branches = sorted(HighLevel) + ["weights", "truth"]
+elif phase == 2:
+    branches = sorted(LeptonVAR + JetVAR) + ["weights", "truth"]
+elif phase == 3:
+    branches = sorted(HighLevel + JetVAR + LeptonVAR) + ["weights", "truth"]
 
 
 # Number of features.
@@ -94,18 +97,18 @@ numBranches = len(branches) - 2
 
 # Data read from file.
 signal = uproot.open("data/new_TTHH.root")[tree]
-df_signal = signal.pandas.df(branches)  
+df_signal = signal.pandas.df(branches)
 
-bkgTTBB = uproot.open('data/new_TTBB.root')[tree]
+bkgTTBB = uproot.open("data/new_TTBB.root")[tree]
 df_bkgTTBB = bkgTTBB.pandas.df(branches)
 
-bkgTTH = uproot.open('data/new_TTH.root')[tree]
+bkgTTH = uproot.open("data/new_TTH.root")[tree]
 df_bkgTTH = bkgTTH.pandas.df(branches)
 
-bkgTTZ = uproot.open('data/new_TTZ.root')[tree]
+bkgTTZ = uproot.open("data/new_TTZ.root")[tree]
 df_bkgTTZ = bkgTTZ.pandas.df(branches)
 
-df_background = pd.concat([df_bkgTTBB,df_bkgTTH,df_bkgTTZ])
+df_background = pd.concat([df_bkgTTBB, df_bkgTTH, df_bkgTTZ])
 
 # The 3 backgrounds are concatenated we shuffle to make sure they are not sorted.
 shuffleBackground = shuffle(df_background, random_state=seed)
@@ -113,7 +116,7 @@ shuffleBackground = shuffle(df_background, random_state=seed)
 # Signal and shuffle background data.
 rawdata = pd.concat([df_signal, shuffleBackground])
 
-X = rawdata.drop(["weights",'truth'], axis=1)
+X = rawdata.drop(["weights", "truth"], axis=1)
 
 # Normalized the data with a Gaussian distrubuition with 0 mean and unit variance.
 X = sc.fit_transform(X)
@@ -139,14 +142,14 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 def main(LAYER, BATCH, RATE):
     """
-    NN structure ex. [5,5,5,5,1] 4 layers with 5 neurons each and one output layer. LAYER value is 
-    the number of hidden layers excluding the output layer. Each hidden layer will contain the same 
-    amount of neurons (It is hard coded to be the number of features). The BATCH is the batch size, 
+    NN structure ex. [5,5,5,5,1] 4 layers with 5 neurons each and one output layer. LAYER value is
+    the number of hidden layers excluding the output layer. Each hidden layer will contain the same
+    amount of neurons (It is hard coded to be the number of features). The BATCH is the batch size,
     powers of 2 are perfered but any positive number works. RATE is the drop out rate; so a RATE = .5
     is half of the neurons being randomly turned off.
     """
     network = []
-    numEpochs = 150 # Number of times the NN gets trained.
+    numEpochs = 150  # Number of times the NN gets trained.
     batchSize = BATCH
     numLayers = LAYER
     neurons = numBranches
@@ -160,21 +163,28 @@ def main(LAYER, BATCH, RATE):
     # This is a conformation that the script is starting and the NN structure is displayed.
     print("Script starting....\n", network)
 
-    # This tags the output files with either GPU or CPU. 
-    if status == 1: 
-        print('GPU')
-        sufix = '.GPU'
+    # This tags the output files with either GPU or CPU.
+    if status == 1:
+        print("GPU")
+        sufix = ".GPU"
     else:
-        sufix='.CPU'
-        print('CPU')
-    
+        sufix = ".CPU"
+        print("CPU")
+
     # Start time for file name.
     startTime = datetime.now()
     pre = time.strftime("%Y.%m.%d_") + time.strftime("%H.%M.%S.")
 
     # Filename for keras model to be saved as.
-    h5name = "numLayers"+str(LAYER) + ".numBranches" + str(neurons) + ".batchSize" + str(BATCH)
-    modelName = "data/" + pre + h5name + sufix+".h5"
+    h5name = (
+        "numLayers"
+        + str(LAYER)
+        + ".numBranches"
+        + str(neurons)
+        + ".batchSize"
+        + str(BATCH)
+    )
+    modelName = "data/" + pre + h5name + sufix + ".h5"
 
     # Filename for plots to be identified by saved model.
     figname = "data/" + pre + ".plots"
@@ -186,7 +196,7 @@ def main(LAYER, BATCH, RATE):
         model = Sequential()
 
         # Best option for most NN.
-        opt = keras.optimizers.Nadam()  
+        opt = keras.optimizers.Nadam()
 
         # Activation function other options possible.
         act = "relu"  # Relu is 0 for negative values, linear for nonzero values.
@@ -194,12 +204,10 @@ def main(LAYER, BATCH, RATE):
         # Use model.add() to add one layer at a time, 1st layer needs input shape, So we pass the 1st element of network.
         # Dense Layers are fully connected and most common.
 
-        model.add(
-            Dense(network[0], input_dim=numBranches)
-        )
+        model.add(Dense(network[0], input_dim=numBranches))
 
         # Loop through and add layers (1,(n-2)) where n is the number of layers. We end at n-2 because we start at 1 not zero and
-        # we  the input layer is added above with input dimension. Therefore we must remove 2 from layers. 
+        # we  the input layer is added above with input dimension. Therefore we must remove 2 from layers.
         for i in range(1, numLayers - 2):
             model.add(Dense(network[i], activation=act))  # Hidden layers.
             # Turning off nuerons of layer above in loop with probability = 1-r, so r = 0.25, then 75% of nerouns are kept.
@@ -219,9 +227,9 @@ def main(LAYER, BATCH, RATE):
         return model
 
     def compare_train_test(kModel, X_train, y_train, X_test, y_test, bins=30):
-        '''
+        """
         This creates the signal and background distrubution.
-        '''
+        """
         decisions = []
         for X, y in ((X_train, y_train), (X_test, y_test)):
             d1 = model.predict(X[y > 0.5]).ravel()  # signal
@@ -267,7 +275,6 @@ def main(LAYER, BATCH, RATE):
 
         plt.errorbar(center, hist, yerr=err, fmt="o", c="b", label="B (test)")
 
-    
     # Using model and setting parameters.
     model = build_model()
 
@@ -275,7 +282,7 @@ def main(LAYER, BATCH, RATE):
     checkPointsCallBack = ModelCheckpoint("temp.h5", save_best_only=True)
 
     # This terminates early if the monitor does not see an improvement after a certain
-    # amount of epochs given by the patience.  
+    # amount of epochs given by the patience.
     earlyStopCallBack = EarlyStopping(
         monitor="val_loss", patience=30, restore_best_weights=True
     )
@@ -294,7 +301,7 @@ def main(LAYER, BATCH, RATE):
     # This is the predicted score. Values range between [0,1]
     y_predicted = model.predict(X_test)
 
-    # The score is rounded; values are 0 or 1.  
+    # The score is rounded; values are 0 or 1.
     y_predicted_round = [1 * (x[0] >= 0.5) for x in y_predicted]
 
     # Prediction, fpr,tpr and threshold values for ROC.
@@ -307,16 +314,21 @@ def main(LAYER, BATCH, RATE):
     # slug.plotROC(fpr, tpr, aucroc)
     # slug.plotPR(precision,recall,thresRecall)
     compare_train_test(kModel, X_train, y_train, X_test, y_test)
-   
+
     if 1:
-        # This plots the important features. 
+        # This plots the important features.
         plot2 = plt.figure(2)
         backgrounds = X_train[np.random.choice(X_train.shape[0], 100, replace=False)]
         explainer = shap.DeepExplainer(model, backgrounds)
         shap_values = explainer.shap_values(X_test)
-        shap.summary_plot(shap_values, X_train, plot_type="bar", feature_names=branches[:-1],max_display=25,
+        shap.summary_plot(
+            shap_values,
+            X_train,
+            plot_type="bar",
+            feature_names=branches[:-1],
+            max_display=25,
         )
-      
+
     # computes max signif
     numbins = 100000
     allScore = model.predict(X)
@@ -374,7 +386,7 @@ def main(LAYER, BATCH, RATE):
     maxs = "%10d" % (maxs)
     maxb = "%10d" % (maxb)
     cm = confusion_matrix(y_test, y_predicted_round)
-    CM = [cm[0][0],cm[0][1]],[cm[1,0],cm[1,1]]
+    CM = [cm[0][0], cm[0][1]], [cm[1, 0], cm[1, 1]]
     modelParam = [
         "FileName",
         "ConfusionMatrix [TP FP] [FN TN]",
@@ -407,6 +419,6 @@ def main(LAYER, BATCH, RATE):
     df.to_csv("csv/testelep2.csv", mode="a", header=False, index=False)
     print(df.to_string(justify="left", columns=modelParam, header=True, index=False))
     print("Saving model.....")
-    print('old auc: \n',aucroc, '\n new auc',areaUnderCurve)
+    print("old auc: \n", aucroc, "\n new auc", areaUnderCurve)
     model.save(modelName)  # Save Model as a HDF5 filein Data folder
     print("Model Saved")
