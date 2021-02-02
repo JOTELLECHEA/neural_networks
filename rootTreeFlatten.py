@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 
+# Import packages.
 import os, time, sys, argparse,math
-
 import numpy as np
 from array import array
 import shutil
@@ -9,13 +9,16 @@ import random
 import itertools
 seed = 42
 random.seed(seed)  
-
-
 import ROOT
+
+
+
 def augment_rootfile(filepath):
 
+    # Creates a copy of ROOT file and adds 'new_' to the beginning.
     shutil.copyfile(filepath,"new_"+filepath)
 
+    # This automatically detects which data sample is passed.
     truthLabel = 137
     if filepath == 'TTHH.root':
         truthLabel = 0
@@ -29,12 +32,16 @@ def augment_rootfile(filepath):
         print('Invalid ROOT file')
         sys.exit()
 
-    # get tree to loop over
+    # Tree name inside ROOT File.
     treename = "OutputTree"
+
+    # Gives access to new file and allows writting.
     t = ROOT.TFile("new_"+filepath, "UPDATE")
+
+    # ROOT tree object. Retrieving tree object to be accessed.
     tree = t.Get(treename)
 
-    # define branches
+    # Define branches as an array.
     numlep  = array( 'f', [ 0 ] )
     numjet  = array( 'f', [ 0 ] )
     weights = array( 'f', [ 0 ] )
@@ -45,12 +52,16 @@ def augment_rootfile(filepath):
     h_b     = array( 'f', [ 0 ] )
     chi     = array( 'f', [ 0 ] )
     truth   = array( 'f',[0])
+
+    # Create dictionary to automate filling lepton features.
     leptonpT={}
     leptoneta={}
     leptonphi={}
     leptonflav={}
     mt={}
     dr={}
+
+    # Defining branches from lepton dictionaries.
     maxlepton=4
     for i in range(1,maxlepton):
         leptonpT[i]  = array( 'f', [ 0 ] )
@@ -59,12 +70,16 @@ def augment_rootfile(filepath):
         leptonflav[i] = array( 'f', [ 0 ] )
         mt[i]        = array( 'f', [ 0 ] )
         dr[i]        = array( 'f', [ 0 ] )
+
+    # Create branches to be added to ROOT tree object for lepton features.
     br_leptonpT={}
     br_leptoneta={}
     br_leptonphi={}
     br_leptonflav={}
     br_mt={}
     br_dr={}
+
+    # Assign branches to tree object for lepton features.
     for i in range(1,maxlepton):
         br_leptonpT[i]  = tree.Branch('lepton%dpT'%i  , leptonpT[i] , 'lepton%dpT/F'%i)
         br_leptoneta[i] = tree.Branch('lepton%deta'%i , leptoneta[i] , 'lepton%deta/F'%i)
