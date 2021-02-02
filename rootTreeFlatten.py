@@ -87,11 +87,15 @@ def augment_rootfile(filepath):
         br_leptonflav[i] = tree.Branch('lepton%dflav'%i , leptonflav[i] , 'lepton%dflav/F'%i)
         br_mt[i]        = tree.Branch('mt%d'%i , mt[i] , 'mt%d/F'%i)
         br_dr[i]        = tree.Branch('dr%d'%i , dr[i] , 'dr%d/F'%i)
+
+    # Create dictionary to automate filling jet features.
     jetpT={}
     jeteta={}
     jetphi={}
     jetb={}
     jetc={}
+
+    # Defining branches from jet dictionaries.
     maxjets=22
     for i in range(1,maxjets):
         jetpT[i]  = array( 'f', [ 0 ] )
@@ -99,17 +103,24 @@ def augment_rootfile(filepath):
         jetphi[i] = array( 'f', [ 0 ] )
         jetb[i]   = array( 'f', [ 0 ] )
         jetc[i]   = array( 'f', [ 0 ] )
+
+
+    # Create branches to be added to ROOT tree object for jet features.
     br_jetpT={}
     br_jeteta={}
     br_jetphi={}
     br_jetc={}
     br_jetb={}
+
+    # Assign branches to tree object for jet features.
     for i in range(1,maxjets):
         br_jetpT[i]  = tree.Branch('jet%dpT'%i , jetpT[i] , 'jet%dpT/F'%i)
         br_jeteta[i] = tree.Branch('jet%deta'%i , jeteta[i] , 'jet%deta/F'%i)
         br_jetphi[i] = tree.Branch('jet%dphi'%i , jetphi[i] , 'jet%dphi/F'%i)
         br_jetb[i]   = tree.Branch('jet%db'%i , jetb[i] , 'jet%db/F'%i)
         br_jetc[i]   = tree.Branch('jet%dc'%i , jetc[i] , 'jet%dc/F'%i)
+
+    # Assign branches to tree object for High level features.
     br_numlep  = tree.Branch( 'numlep' , numlep , 'numlep/F'  )
     br_truth  = tree.Branch( 'truth' , truth , 'truth/F'  )
     br_numjet  = tree.Branch( 'numjet' , numjet , 'numjet/F'  )
@@ -123,9 +134,11 @@ def augment_rootfile(filepath):
 
 
 
-    # track the time
+    # Start time for progress bar.
     start_time = time.clock()
 
+
+    # 
     def missingPT(x):
         met_value = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[x]/(10**6) * ( 1 - ROOT.TMath.Cos((lepvec[x].DeltaPhi(neutrino[0])))))
         return met_value
