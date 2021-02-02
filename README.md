@@ -18,7 +18,6 @@ These are all the scripts used in this repo.
 ├── ./rocs.py
 ├── ./rootroot.py
 ├── ./rootTreeFlatten.py 
-├── ./scikit-KerasGPU.py (TBD)
 ├── ./slug.py
 
 ```
