@@ -172,12 +172,6 @@ def augment_rootfile(filepath):
     # Initialize VARS. 
         tracker_btj = [] # List for tracking btagjets.
         tracker_non = [] # List for tracking lightjets.
-        m1          = 0.
-        m2          = 0.
-        mv          = 0.
-        l1          = []
-        l2          = []
-        l3          = []
         dR1         = []
         dR2         = []
         dR3         = []
