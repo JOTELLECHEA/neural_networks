@@ -17,7 +17,7 @@ These are all the scripts used in this repo.
 ├── ./rocplots.py
 ├── ./rocs.py
 ├── ./rootroot.py
-├── ./rootTreeFlatten.py (TBD)
+├── ./rootTreeFlatten.py 
 ├── ./scikit-KerasGPU.py (TBD)
 ├── ./slug.py
 
@@ -106,6 +106,14 @@ These are all the scripts used in this repo.
      
       ```bash
            $ python -i rocplots.py
+      ```
+   - rootTreeFlatten.py *** This scrip Requires ROOT *** \
+     
+     Script that flattens branches in a ROOT file and adds new branches. Creates a copy of the ROOT file (new_filename.root) before flattening
+     to preserve original file.
+     
+      ```bash
+           $ python rootTreeFlatten.py --file filename.root
       ```
 3. Images produced
    - modifiedROC
