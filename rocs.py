@@ -14,6 +14,7 @@ from tensorflow import keras
 import tkinter as tk
 import matplotlib
 import slug
+
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 from numpy import array
@@ -21,7 +22,8 @@ from tensorflow.keras.models import load_model
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import auc,roc_curve
+from sklearn.metrics import auc, roc_curve
+
 sc = StandardScaler()
 
 # Fixed values.
@@ -29,7 +31,9 @@ seed = 42
 tree = "OutputTree"
 
 # File used.
-parser = argparse.ArgumentParser(description="Imports weights from trained NN, files located in data/")
+parser = argparse.ArgumentParser(
+    description="Imports weights from trained NN, files located in data/"
+)
 parser.add_argument("--file", type=str, help="Use '--file' followed by a *.h5 file")
 args = parser.parse_args()
 file = "data/" + str(args.file)
@@ -50,45 +54,45 @@ HighLevel = [
     "dr2",
     "dr3",
 ]
-type = ['flav','pT','eta','phi','b','c']
+type = ["flav", "pT", "eta", "phi", "b", "c"]
 LeptonVAR = []
 JetVAR = []
 for i in range(4):
     for j in range(3):
-        LeptonVAR.append('lepton'+ str(j+1) + type[i])
-for i in range(1,6):
+        LeptonVAR.append("lepton" + str(j + 1) + type[i])
+for i in range(1, 6):
     for j in range(10):
-        JetVAR.append('jet'+ str(j+1) + type[i])
+        JetVAR.append("jet" + str(j + 1) + type[i])
 
-# Auto select feature set. 
-phase = input('Enter 1 for High, 2 for Low, or 3 for both:')
+# Auto select feature set.
+phase = input("Enter 1 for High, 2 for Low, or 3 for both:")
 
 if phase == 1:
-    branches = sorted(HighLevel) + ['weights','truth']
-elif phase==2:
-    branches = sorted(LeptonVAR + JetVAR) + ['weights','truth']
-elif phase ==3:
-    branches = sorted(HighLevel + JetVAR + LeptonVAR) + ["weights",'truth']
+    branches = sorted(HighLevel) + ["weights", "truth"]
+elif phase == 2:
+    branches = sorted(LeptonVAR + JetVAR) + ["weights", "truth"]
+elif phase == 3:
+    branches = sorted(HighLevel + JetVAR + LeptonVAR) + ["weights", "truth"]
 else:
-    print('Invalid option')
+    print("Invalid option")
     sys.exit()
 
 numBranches = len(branches) - 2
 
 # Data read from file.
 signal = uproot.open("data/new_TTHH.root")[tree]
-df_signal = signal.pandas.df(branches)  
+df_signal = signal.pandas.df(branches)
 
-bkgTTBB = uproot.open('data/new_TTBB.root')[tree]
+bkgTTBB = uproot.open("data/new_TTBB.root")[tree]
 df_bkgTTBB = bkgTTBB.pandas.df(branches)
 
-bkgTTH = uproot.open('data/new_TTH.root')[tree]
+bkgTTH = uproot.open("data/new_TTH.root")[tree]
 df_bkgTTH = bkgTTH.pandas.df(branches)
 
-bkgTTZ = uproot.open('data/new_TTZ.root')[tree]
+bkgTTZ = uproot.open("data/new_TTZ.root")[tree]
 df_bkgTTZ = bkgTTZ.pandas.df(branches)
 
-df_background = pd.concat([df_bkgTTBB,df_bkgTTH,df_bkgTTZ])
+df_background = pd.concat([df_bkgTTBB, df_bkgTTH, df_bkgTTZ])
 
 shuffleBackground = shuffle(df_background, random_state=seed)
 
@@ -102,7 +106,7 @@ X = rawdata.drop("weights", axis=1)
 # Transforms X to have a mean = 0 and a variance = 1.
 X = sc.fit_transform(X)
 
-# Weights of data applied to scale events. 
+# Weights of data applied to scale events.
 scalefactor = 0.00232 * 0.608791
 sigw = rawdata["weights"][: len(signal)] * scalefactor
 bkgw = rawdata["weights"][len(signal) :]
@@ -121,65 +125,65 @@ fpr, tpr, thresholds = roc_curve(y, y_predicted)
 flag2 = 1
 if flag2 == 1:
     numbins = 100000
-    data = {'fpr':fpr,'tpr':tpr,'bkgR':1/fpr}
+    data = {"fpr": fpr, "tpr": tpr, "bkgR": 1 / fpr}
     df = pd.DataFrame(data)
 
     # Auto save, Phase intialized in line 30.
     if phase == 1:
         df.to_csv("highlvlvars.csv", mode="a", header=True, index=False)
-    elif phase==2:
+    elif phase == 2:
         df.to_csv("lowlvlvars.csv", mode="a", header=True, index=False)
-    elif phase ==3:
+    elif phase == 3:
         df.to_csv("highandlowlvlvars.csv", mode="a", header=True, index=False)
 
-''' This code is here until we determine if it is still needed.'''
+""" This code is here until we determine if it is still needed."""
 
-    # sigScore = neuralNet.predict(X[y > 0.5]).ravel()
-    # bkgScore = neuralNet.predict(X[y < 0.5]).ravel()
-    # sigSUM = len(sigScore)
-    # bkgSUM = len(bkgScore)
+# sigScore = neuralNet.predict(X[y > 0.5]).ravel()
+# bkgScore = neuralNet.predict(X[y < 0.5]).ravel()
+# sigSUM = len(sigScore)
+# bkgSUM = len(bkgScore)
 
-    # xlimit = (0, 1)
-    # tp = []
-    # fp = []
-    # hist, bins = np.histogram(sigScore, bins=numbins, range=xlimit, density=False)
-    # count = 0
-    # for i in range(numbins - 1, -1, -1):
-    #     count += hist[i] / sigSUM
-    #     tp.append(count)
-    # hist, bins = np.histogram(bkgScore, bins=numbins, range=xlimit, density=False)
-    # count = 0
-    # for j in range(numbins - 1, -1, -1):
-    #     count += hist[j] / bkgSUM
-    #     fp.append(count)
-    # area = auc(fp, tp)
-    # xplot = tp
-    # yplot = fp
-    # # computes max signif
-    # sigSUM = len(sigScore) * scalefactor
-    # tp = np.array(tp) * sigSUM
-    # fp = np.array(fp) * bkgSUM
-    # syst = 0.0
-    # stat = 0.0
-    # maxsignif = 0.0
-    # maxs = 0
-    # maxb = 0
-    # bincounter = numbins - 1
-    # bincountatmaxsignif = 999
-    # bkgRegection = []
-    # for t, f in zip(tp, fp):
-    #     bkgRegection.append(1/f)
-    #     signif = slug.getZPoisson(t, f, stat, syst)
-    #     if f >= 10 and signif > maxsignif:
-    #         maxsignif = signif
-    #         maxs = t
-    #         maxb = f
-    #         bincountatmaxsignif = bincounter
-    #         score = bincountatmaxsignif / numbins
-    #     bincounter -= 1
-    # print(
-    #     "\n Score = %6.3f\n Signif = %5.2f\n nsig = %d\n nbkg = %d\n"
-    #     % (score, maxsignif, maxs, maxb)
-    # )
+# xlimit = (0, 1)
+# tp = []
+# fp = []
+# hist, bins = np.histogram(sigScore, bins=numbins, range=xlimit, density=False)
+# count = 0
+# for i in range(numbins - 1, -1, -1):
+#     count += hist[i] / sigSUM
+#     tp.append(count)
+# hist, bins = np.histogram(bkgScore, bins=numbins, range=xlimit, density=False)
+# count = 0
+# for j in range(numbins - 1, -1, -1):
+#     count += hist[j] / bkgSUM
+#     fp.append(count)
+# area = auc(fp, tp)
+# xplot = tp
+# yplot = fp
+# # computes max signif
+# sigSUM = len(sigScore) * scalefactor
+# tp = np.array(tp) * sigSUM
+# fp = np.array(fp) * bkgSUM
+# syst = 0.0
+# stat = 0.0
+# maxsignif = 0.0
+# maxs = 0
+# maxb = 0
+# bincounter = numbins - 1
+# bincountatmaxsignif = 999
+# bkgRegection = []
+# for t, f in zip(tp, fp):
+#     bkgRegection.append(1/f)
+#     signif = slug.getZPoisson(t, f, stat, syst)
+#     if f >= 10 and signif > maxsignif:
+#         maxsignif = signif
+#         maxs = t
+#         maxb = f
+#         bincountatmaxsignif = bincounter
+#         score = bincountatmaxsignif / numbins
+#     bincounter -= 1
+# print(
+#     "\n Score = %6.3f\n Signif = %5.2f\n nsig = %d\n nbkg = %d\n"
+#     % (score, maxsignif, maxs, maxb)
+# )
 
-    # Data to be saved as a csv. Then converted to a pandas data frame. 
+# Data to be saved as a csv. Then converted to a pandas data frame.
