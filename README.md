@@ -108,7 +108,6 @@ These are all the scripts used in this repo.
            $ python -i rocplots.py
       ```
    - rootTreeFlatten.py *** This scrip Requires ROOT *** \
-     
      Script that flattens branches in a ROOT file and adds new branches. Creates a copy of the ROOT file (new_filename.root) before flattening
      to preserve original file.
      
