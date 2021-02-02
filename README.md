@@ -2,7 +2,7 @@
 Conduct research involving prospective di-Higgs production at the HL-LHC by using machine learning via Neural networks.\
 Advisor: Michael Hance.
 
-# TBD (This readme is in the works last update is 1/25/2021)
+# TBD (This readme is in the works last update is 2/2/2021)
 # Scripts
 These are all the scripts used in this repo. 
 ```bash
