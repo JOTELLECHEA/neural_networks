@@ -138,14 +138,18 @@ def augment_rootfile(filepath):
     start_time = time.clock()
 
 
-    # 
+### Fucnctions Start ###
+
+    # Calculates missing transverse momentum.
     def missingPT(x):
         met_value = ROOT.TMath.Sqrt(2 * event.met[0] * event.leppT[x]/(10**6) * ( 1 - ROOT.TMath.Cos((lepvec[x].DeltaPhi(neutrino[0])))))
         return met_value
-    # Average separation in pseudorapidity between two b-tagged jets.
+
+    # Calculates average separation in pseudorapidity between two b-tagged jets.
     def etabi_j(x,y):
         distance = abs(jetvec[tracker_btj[x]].Eta() - jetvec[tracker_btj[y]].Eta())
         return distance
+
     # Vector Pt or M Sum between two b-tagged jets.
     def vectorsum(x,y,c):
         if c == 'Pt':
@@ -153,14 +157,21 @@ def augment_rootfile(filepath):
         elif c == 'M':
             sum = (jetvec[tracker_btj[x]] + jetvec[tracker_btj[y]]).M()
         return sum
-#############################################################################
 
+### Fucnctions End ###
+
+    # Number of events.
     n_entries = tree.GetEntries()
+
+    # Dummy variable. For progress bar.
     i= 1
+
+    # Looping through tree by event(iterator).
     for event in tree:
-        #####################################################################
-        tracker_btj = []            # Initialize empty tracking btagjets.
-        tracker_non = []            # Initialize empty tracking lightjets.
+
+    # Initialize VARS. 
+        tracker_btj = [] # List for tracking btagjets.
+        tracker_non = [] # List for tracking lightjets.
         m1          = 0.
         m2          = 0.
         mv          = 0.
@@ -184,7 +195,7 @@ def augment_rootfile(filepath):
         btjmaxM     = 0.             # Initialize empty b-tag vecto for max .M().
         vec_sum_Pt  = 0.            # Initialize empty b-tag vector for summing Pt().
         vec_sum_M   = 0.            # Initialize empty b-tag vector for summing M().
-        ####################################################################
+        
         # show some progress
         if i % 1000 == 0: print("   processing entry {:8d}/{:d} [{:5.0f} evts/s]".format(i, n_entries, i/(time.clock()-start_time)))
         numlep[0] = lep = event.nlep[0]
