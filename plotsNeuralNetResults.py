@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 # file = 'hyperparameterRecord_v3.csv'
 # file = 'fiveLayerDropout.csv'
 # file = 'fiveLayerDropout_3.csv'
-file = '12.14.2020.csv'
+file = 'csv/12.14.2020.csv'
 
 # modelParam  = ['NN Archi.','#Br.','LR','Batch','AUC','Avg.P','Y/M/D @ H:M','ConfusionMatrix [TP FP] [FN TN]','Score','Max Signif','nsig','nbkg']
 # modelParam  = ['NN Archi.','#Br.','LR','Batch','AUC','Avg.P','Run Time','ConfusionMatrix [TP FP] [FN TN]','Score','Max Signif','nsig','nbkg']

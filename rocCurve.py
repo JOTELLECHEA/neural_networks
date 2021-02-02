@@ -1,8 +1,9 @@
 # Written By : Jonathan O. Tellechea and Mike Hance 
 # Adviser    : Mike Hance, Phd
 # Research   : To find the significance from a BDT/NN/DN.
-#
-###########################################################################################################################
+# Description: Uses a csv file to recreate roc and maxs signif. The csv files are in ~/data/.
+################################################################################################
+# Imported packages.
 import csv
 import itertools
 import math
@@ -13,14 +14,17 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import auc
 from numpy import array
-#################################################################################
+
+### parser -START
 parser = argparse.ArgumentParser(description= 'sigf of BDT/NN/DN')
 parser.add_argument("--file", type=str, help= "Use '--file=' followed by a *.csv file")
 parser.add_argument("--syst", action='store', default=0.0)
 args = parser.parse_args()
 file = str(args.file)
 df = pd.read_csv(file)
-##################################################################################
+### -END
+
+
 def data(x):
     return np.array([float(i) for i in df['var'][x][1:-1].split()])
 
