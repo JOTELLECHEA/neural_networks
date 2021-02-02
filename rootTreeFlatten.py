@@ -1,6 +1,11 @@
 #!/usr/bin/env python2
+# Written By : Jonathan O. Tellechea
+# Adviser    : Mike Hance, Phd
+# Research   : Using a neural network to maximize the significance of tttHH production.
+# Description: Script that Flattens ROOT branches and adds needed high level VARS. 
+##############################################################################################################################
 
-# Import packages.
+# Imported packages.
 import os, time, sys, argparse,math
 import numpy as np
 from array import array
@@ -138,7 +143,7 @@ def augment_rootfile(filepath):
     start_time = time.clock()
 
 
-### Fucnctions Start ###
+### Fucnctions START ###
 
     # Calculates missing transverse momentum.
     def missingPT(x):
@@ -158,7 +163,7 @@ def augment_rootfile(filepath):
             sum = (jetvec[tracker_btj[x]] + jetvec[tracker_btj[y]]).M()
         return sum
 
-### Fucnctions End ###
+### Fucnctions END ###
 
     # Number of events.
     n_entries = tree.GetEntries()
@@ -169,87 +174,158 @@ def augment_rootfile(filepath):
     # Looping through tree by event(iterator).
     for event in tree:
 
-    # Initialize VARS. 
+    ### Initialize VARS START ###
+
         tracker_btj = [] # List for tracking btagjets.
         tracker_non = [] # List for tracking lightjets.
-        dR1         = []
-        dR2         = []
-        dR3         = []
-        chisq       = []
-        lepvec      = {}
-        jetvec      = {}
-        neutrino    = {}
-        HB_sum_Pt   = 0.             # Initialize sum of Pt for all b-tag jets.
-        rand        = 0.
-        cen_sum_Pt  = 0.             # Initialize sum of Pt for all jets.
-        cen_sum_E   = 0.             # Initialize sum of E for all jets.
-        etasum      = 0.             # Initialize sum for eta seperation.
-        etasum_N    = 0.             # Initialize sum for eta separation average.
-        btjmaxPt    = 0.             # Initialize empty b-tag vecto for max .Pt().
-        btjmaxM     = 0.             # Initialize empty b-tag vecto for max .M().
-        vec_sum_Pt  = 0.            # Initialize empty b-tag vector for summing Pt().
-        vec_sum_M   = 0.            # Initialize empty b-tag vector for summing M().
+        dR1         = [] # List for Delta R values for jets, ands lepton 1.
+        dR2         = [] # List for Delta R values for jets, ands lepton 2.
+        dR3         = [] # List for Delta R values for jets, ands lepton 3.
+        chisq       = [] # Chi Square list.
+        lepvec      = {} # Lepton ROOT Four Vector.
+        jetvec      = {} # Jet ROOT Four Vector.
+        neutrino    = {} # Neutrino ROOT Fpur Vector.
+        HB_sum_Pt   = 0. # Initialize sum of Pt for all b-tag jets.
+        rand        = 0. # Initialize rand value.
+        cen_sum_Pt  = 0. # Initialize sum of Pt for all jets.
+        cen_sum_E   = 0. # Initialize sum of E for all jets.
+        etasum      = 0. # Initialize sum for eta seperation.
+        etasum_N    = 0. # Initialize sum for eta separation average.
+        btjmaxPt    = 0. # Initialize empty b-tag vecto for max .Pt().
+        btjmaxM     = 0. # Initialize empty b-tag vecto for max .M().
+        vec_sum_Pt  = 0. # Initialize empty b-tag vector for summing Pt().
+        vec_sum_M   = 0. # Initialize empty b-tag vector for summing M().
+
+    ### Initialize VARS END ###
         
-        # show some progress
+        # Show some progress
         if i % 1000 == 0: print("   processing entry {:8d}/{:d} [{:5.0f} evts/s]".format(i, n_entries, i/(time.clock()-start_time)))
-        numlep[0] = lep = event.nlep[0]
-        numjet[0] = jet = event.njet[0]
-        weights[0]= event.mcweight[0]
-        truth[0] = truthLabel
-        if lep > 0:  
+
+    ### Setting values START ###
+        numlep[0] = lep = event.nlep[0] # Number of Leptons.
+        numjet[0] = jet = event.njet[0] # Number of Jets.
+        weights[0]= event.mcweight[0] # Weights of event.
+        truth[0] = truthLabel # Label to identify data sample.
+
+        # 1 Lepton minimum requirment. 
+        if lep > 0:
+
+            # Create ROOT Four Vector for Neutrinos.          
             neutrino[0] = ROOT.TLorentzVector()
+
+            # Neutrinos Four Vector set.
             neutrino[0].SetPtEtaPhiM(event.met[0],0,event.met_phi[0],0)
+
+            # Loop through Leptons.
             for j in xrange(lep):
+
+                # Create ROOT Four Vector for Leptons.
                 lepvec[j] = ROOT.TLorentzVector()
+
+                # Leptons Four Vector set.
                 lepvec[j].SetPtEtaPhiM(event.leppT[j],event.lepeta[j],event.lepphi[j],0)
+
+            # Loop through Jets.    
             for k in xrange(jet):
+
+                # Create ROOT Four Vector for Jets.
                 jetvec[k] = ROOT.TLorentzVector()  
+
+                # Jets Four Vector set.
                 jetvec[k].SetPtEtaPhiM(event.jetpT[k],event.jeteta[k],event.jetphi[k],0)
+
+                # Getting Delta R Values. If statments needed to insure lepton exist. 
                 if lep > 0:
                     dR1.append(lepvec[0].DeltaR(jetvec[k]))
                 if lep > 1: 
                     dR2.append(lepvec[1].DeltaR(jetvec[k]))
                 if lep > 2:
                     dR3.append(lepvec[2].DeltaR(jetvec[k]))
+
+            # Loop through Jets.
             for x in xrange(jet):
-                cen_sum_E  += jetvec[x].E()          # Scalar sum of E.
-                cen_sum_Pt += jetvec[x].Pt()         # Scalar sum of Pt.
+
+                # Scalar sum of E.
+                cen_sum_E  += jetvec[x].E()
+
+                # Scalar sum of Pt.
+                cen_sum_Pt += jetvec[x].Pt()
+
+                # Random value for ATLAS MV1 b-jet tagger algorithm.
                 rand = random.random()
 
+                # 70% of truth-b-jets are labeled as b-tagged
                 if event.jetbhadron[x] == 1 and rand <= 0.7:
-                    tracker_btj.append(x)              # B-tag jets into a list.
+                    tracker_btj.append(x) 
+
+                # 20% mistag rate for c-jets.
                 elif event.jetchadron[x] == 1 and rand <= 0.2:
                     tracker_btj.append(x)
+
+                # 0.2% mistag rate for light-jets.
                 elif rand <= 0.002:
                     tracker_btj.append(x)
+
+                # Remaining Jets must be tagged c-jets.
                 else:
                     tracker_non.append(x)
+
+            # Number of b-tagged jets.
             btagjets = len(tracker_btj)
-            ntagjets = len(tracker_non)
             btag[0]  = btagjets 
+
+            # Number of non b-tagged jets.
+            ntagjets = len(tracker_non)
+            
+            # Prevent division by Zero.
             if cen_sum_E != 0:
-                cent[0] = cen_sum_Pt / cen_sum_E    # scalar sum of Pt/E.
+                # Scalar sum of Pt/E.
+                cent[0] = cen_sum_Pt / cen_sum_E
             else:
+                # Dummy Value to avoid empty entry.
                 cent[0] = -9999
+
+            # Loop through b-tagged jets.
             for k in xrange(btagjets):
+
+                # Sum of Pt for all b-tag jets.
                 HB_sum_Pt += jetvec[tracker_btj[k]].Pt()
+
+                # Loop through b-tagged jets.
                 for j in xrange(btagjets):
+
+                    # Ignore loop with same jet.
                     if k == j: continue
-                    etasum += etabi_j(k,j)           # Finding separation between all b_jets.
-                    vec_sum_Pt = vectorsum(k,j,'Pt') # Sum of btagjets Pt.
-                    vec_sum_M  = vectorsum(k,j,'M')  # Sum of btagjets M.
-                    if vec_sum_Pt < btjmaxPt:continue
+
+                    # Finding separation between all b_jets.
+                    etasum += etabi_j(k,j)
+
+                    # Sum of btagjets Pt.
+                    vec_sum_Pt = vectorsum(k,j,'Pt') 
+
+                    # Sum of btagjets M.
+                    vec_sum_M  = vectorsum(k,j,'M') 
+
                     # Finds max Pt and M for two btagjets.
+                    if vec_sum_Pt < btjmaxPt:continue
                     btjmaxPt = vec_sum_Pt
                     btjmaxM  = vec_sum_M
+
+            # Scale to GeV.
             m_bb[0] = btjmaxM/1000
             h_b[0]  = HB_sum_Pt/1000
+
+            # Average separation in pseudorapidity between two b-tagged jets (srap)
             if btagjets > 1:
-                etasum_N = etasum/(btagjets**2 - btagjets)  # Getting distance avg.
+                etasum_N = etasum/(btagjets**2 - btagjets)
             else:
+                # Dummy Value to avoid empty entry.
                 etasum_N = -999
 
-            srap[0] = etasum_N                        # btagjets speration avg.
+            # Srap
+            srap[0] = etasum_N 
+
+            # Chisquare.                       
             if btagjets >= 6:
                 for o in xrange(0,6):
                     for j in xrange(1,6):
@@ -270,15 +346,23 @@ def augment_rootfile(filepath):
                                 if j == l :continue
                                 if k == l :continue
                                 chisq.append((vectorsum(o,j,'M') - 120000)**2 + (vectorsum(k,l,'M') - 120000)**2)
+            # Checking if chiaquare exist.
             if len(chisq) > 0:
                 chi[0] = min(chisq)
+
+            # Dummy Value to avoid empty entry.
             else:
                 chi[0] = -999
-    ######################################################################################
+
+        # Combine the delta R.
         delta_r = [dR1,dR2,dR3]
+
+        # Loop through leptons: set Four Vector components, delata R and flavor.
         lloop=range(1,maxlepton)
         for n in lloop:
             if n <= lep:
+
+                # Using n-1 beacuse we start count at 1 insted of 0.
                 leptonpT[n][0]  = event.leppT[n-1]
                 leptoneta[n][0] = event.lepeta[n-1]
                 leptonphi[n][0] = event.lepphi[n-1]
@@ -288,13 +372,41 @@ def augment_rootfile(filepath):
                     dr[n][0] = -999
                 else:
                     dr[n][0] = min(delta_r[n-1])
+
             else:
+
+                # Dummy Values to avoid empty entry.
                 leptonpT[n][0]  = -999
                 leptoneta[n][0] = -9
                 leptonphi[n][0] = -9
                 leptonflav[n][0]= -999
                 mt[n][0]        = -999
                 dr[n][0] = -999
+
+        # Loop through jets: set Four Vector components and flavor.
+        jloop=range(1,maxjets)
+        for n in jloop:
+            if n <= jet:
+
+                # Using n-1 beacuse we start count at 1 insted of 0.
+                jetpT[n][0] = event.jetpT[n-1]
+                jeteta[n][0] = event.jeteta[n-1]
+                jetphi[n][0] = event.jetphi[n-1]
+                jetb[n][0] = event.jetbhadron[n-1]
+                jetc[n][0] = event.jetchadron[n-1]
+
+            else:
+
+                # Dummy Values to avoid empty entry.
+                jetpT[n][0]  = -999
+                jeteta[n][0] = -9
+                jetphi[n][0] = -9
+                jetb[n][0]   = -9
+                jetc[n][0]   = -9
+
+    ### Setting values End ###
+
+        # Fill new branches with set values.
         for n in lloop:
             br_leptonpT[n].Fill()
             br_leptoneta[n].Fill()
@@ -303,20 +415,6 @@ def augment_rootfile(filepath):
             br_mt[n].Fill()
             br_dr[n].Fill()
 
-        jloop=range(1,maxjets)
-        for n in jloop:
-            if n <= jet:
-                jetpT[n][0] = event.jetpT[n-1]
-                jeteta[n][0] = event.jeteta[n-1]
-                jetphi[n][0] = event.jetphi[n-1]
-                jetb[n][0] = event.jetbhadron[n-1]
-                jetc[n][0] = event.jetchadron[n-1]
-            else:
-                jetpT[n][0]  = -999
-                jeteta[n][0] = -9
-                jetphi[n][0] = -9
-                jetb[n][0]   = -9
-                jetc[n][0]   = -9
         for n in jloop:
             br_jetpT[n].Fill()
             br_jeteta[n].Fill()
@@ -324,7 +422,6 @@ def augment_rootfile(filepath):
             br_jetb[n].Fill()
             br_jetc[n].Fill() 
 
-        # fill new branches
         br_numjet.Fill()
         br_numlep.Fill()
         br_weights.Fill()
@@ -338,15 +435,16 @@ def augment_rootfile(filepath):
       
         i += 1
 
-    # write augmented tree to original file
+    # Write augmented tree to copied file.
     tree.Write("", ROOT.TObject.kOverwrite)
 
+    # Closes ROOT File and frees memory.
     t.Close()
+
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='flatten/augment ntuples')
-    parser.add_argument('--file', help='input file to skim')
+    parser.add_argument('--file', help='input ROOT file')
     args = parser.parse_args()
-
     augment_rootfile(args.file)
