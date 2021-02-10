@@ -17,8 +17,7 @@ import tensorflow as tf
 import tkinter as tk
 import matplotlib
 import matplotlib.pyplot as plt
-
-# matplotlib.use("TkAgg")
+from matplotlib.backends.backend_pdf import PdfPages
 matplotlib.use("PDF")
 import math
 import time
@@ -306,16 +305,32 @@ def main(LAYER, BATCH, RATE):
 
     # Prediction, fpr,tpr and threshold values for ROC.
     fpr, tpr, thresholds = roc_curve(y_test, y_predicted)
+    aucroc = auc(fpr, tpr)
     precision, recall, thresRecall = precision_recall_curve(y_test, y_predicted)
 
+    plt.xlabel("Score")
+    plt.ylabel("Distribution")
+    plt.yscale("log")
+    plt.legend(loc="upper right")
+    plt.subplot(211)
+    plt.plot(fpr, tpr, "r-", label="ROC (area = %0.6f)" % (aucroc))
+    plt.plot([0, 1], [0, 1], "--", color=(0.6, 0.6, 0.6), label="Luck")
+    plt.xlim([-0.05, 1.05])
+    plt.ylim([-0.05, 1.05])
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title("Receiver operating characteristic")
+    plt.legend(loc="lower right")
+    plt.grid()
+
     # AUC
-    aucroc = auc(fpr, tpr)
+    
     # plot1 = plt.figure(1)
     # slug.plotROC(fpr, tpr, aucroc)
     # slug.plotPR(precision,recall,thresRecall)
     compare_train_test(kModel, X_train, y_train, X_test, y_test)
 
-    if 1:
+    if 0:
         # This plots the important features.
         plot2 = plt.figure(2)
         backgrounds = X_train[np.random.choice(X_train.shape[0], 100, replace=False)]
