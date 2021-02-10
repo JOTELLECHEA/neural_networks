@@ -649,110 +649,105 @@ if flag == 1:
         plt.close()
 
 
-
-        # fig1 = plt.figure(1)
-
-        # ax1 = fig1.add_subplot(221)
         hPlot(snumjet, bnumjet, NNs1numjet, NNb1numjet, NNb2numjet, NNb3numjet, 1, 21, 21, branches[72])
         
 
-        # ax2 = fig1.add_subplot(222)
+
         hPlot(snumlep, bnumlep, NNs1numlep, NNb1numlep,NNb2numlep,NNb3numlep, 1, 3, 3, branches[73])
 
 
-        # # ax3 = fig1.add_subplot(223)
+
         hPlot(sbtag, bbtag, NNs1btag, NNb1btag,NNb2btag, NNb3btag,0, 10, 10, branches[0])
 
-        # # ax4 = fig1.add_subplot(224)
+
         # hPlot(ssrap, bsrap, NNssrap, NNbsrap, 0, 10, 10, branches[74])
 
-        # # fig2 = plt.figure(2)
 
-        # # ax1 = fig2.add_subplot(221)
+
+
         # hPlot(scent, bcent, NNscent, NNbcent, 0, 1, 10, branches[1])
 
-        # # ax2 = fig2.add_subplot(222)
+
         # hPlot(sm_bb, bm_bb, NNsm_bb, NNbm_bb, 0, 250, 10, branches[68])
 
-        # # ax3 = fig2.add_subplot(223)
+
         # hPlot(sh_b, bh_b, NNsh_b, NNbh_b, 0, 1500, 10, branches[5])
 
-        # # ax4 = fig2.add_subplot(224)
+ 
         # hPlot(smt1, bmt1, NNsmt1, NNbmt1, 0, 300, 100, branches[69])
 
-        # # plot3 = plt.figure(3)
+
         # hPlot(sdr1, bdr1, NNsdr1, NNbdr1, 0, 7, 100, branches[2])
 
-        # # fig4 = plt.figure(4)
+
         # num = 9
-        # # ax1 = fig4.add_subplot(4, 3, 1)
+
         # hPlot(sjetpt1, bjetpt1, NNsjetpt1, NNbjetpt1, 0, 1e6, 100, branches[num + 5])
-        # # ax2 = fig4.add_subplot(4, 3, 2)
+
         # hPlot(sjetpt2, bjetpt2, NNsjetpt2, NNbjetpt2, 0, 1e6, 100, branches[num + 10])
-        # # ax3 = fig4.add_subplot(4, 3, 3)
+
         # hPlot(sjetpt3, bjetpt3, NNsjetpt3, NNbjetpt3, 0, 1e6, 100, branches[num + 15])
-        # # ax4 = fig4.add_subplot(4, 3, 4)
+  
         # hPlot(sjetpt4, bjetpt4, NNsjetpt4, NNbjetpt4, 0, 1e6, 100, branches[num + 20])
-        # # ax5 = fig4.add_subplot(4, 3, 5)
+
         # hPlot(sjetpt5, bjetpt5, NNsjetpt5, NNbjetpt5, 0, 1e6, 100, branches[num + 25])
-        # # ax6 = fig4.add_subplot(4, 3, 6)
+
         # hPlot(sjetpt6, bjetpt6, NNsjetpt6, NNbjetpt6, 0, 1e6, 100, branches[num + 30])
-        # # ax7 = fig4.add_subplot(4, 3, 7)
+
         # hPlot(sjetpt7, bjetpt7, NNsjetpt7, NNbjetpt7, 0, 1e6, 100, branches[num + 35])
-        # # ax8 = fig4.add_subplot(4, 3, 8)
+
         # hPlot(sjetpt8, bjetpt8, NNsjetpt8, NNbjetpt8, 0, 1e6, 100, branches[num + 40])
-        # # ax9 = fig4.add_subplot(4, 3, 9)
+
         # hPlot(sjetpt9, bjetpt9, NNsjetpt9, NNbjetpt9, 0, 1e6, 100, branches[num + 45])
-        # # ax10 = fig4.add_subplot(4, 3, 10)
+
         # hPlot(sjetpt10, bjetpt10, NNsjetpt10, NNbjetpt10, 0, 1e6, 100, branches[num])
 
-        # # fig5 = plt.figure(5)
+
         # num = 8
-        # # ax1 = fig5.add_subplot(4, 3, 1)
+
         # hPlot(sjeteta1, bjeteta1, NNsjeteta1, NNbjeteta1, -6, 6, 12, branches[num + 5])
-        # # ax2 = fig5.add_subplot(4, 3, 2)
+
         # hPlot(sjeteta2, bjeteta2, NNsjeteta2, NNbjeteta2, -6, 6, 12, branches[num + 10])
-        # # ax3 = fig5.add_subplot(4, 3, 3)
+
         # hPlot(sjeteta3, bjeteta3, NNsjeteta3, NNbjeteta3, -6, 6, 12, branches[num + 15])
-        # # ax4 = fig5.add_subplot(4, 3, 4)
+ 
         # hPlot(sjeteta4, bjeteta4, NNsjeteta4, NNbjeteta4, -6, 6, 12, branches[num + 20])
-        # # ax5 = fig5.add_subplot(4, 3, 5)
+
         # hPlot(sjeteta5, bjeteta5, NNsjeteta5, NNbjeteta5, -6, 6, 12, branches[num + 25])
-        # # ax6 = fig5.add_subplot(4, 3, 6)
+   
         # hPlot(sjeteta6, bjeteta6, NNsjeteta6, NNbjeteta6, -6, 6, 12, branches[num + 30])
-        # # ax7 = fig5.add_subplot(4, 3, 7)
+
         # hPlot(sjeteta7, bjeteta7, NNsjeteta7, NNbjeteta7, -6, 6, 12, branches[num + 35])
-        # # ax8 = fig5.add_subplot(4, 3, 8)
+
         # hPlot(sjeteta8, bjeteta8, NNsjeteta8, NNbjeteta8, -6, 6, 12, branches[num + 40])
-        # # ax9 = fig5.add_subplot(4/, 3, 9)
+ 
         # hPlot(sjeteta9, bjeteta9, NNsjeteta9, NNbjeteta9, -6, 6, 12, branches[num + 45])
-        # # ax10 = fig5.add_subplot(4, 3, 10)
+
         # hPlot(sjeteta10, bjeteta10, NNsjeteta10, NNbjeteta10, -6, 6, 12, branches[num])
 
-        # # fig6 = plt.figure(6)
+
         # num = 10
-        # # ax1 = fig6.add_subplot(4, 3, 1)
+      
         # hPlot(sjetphi1, bjetphi1, NNsjetphi1, NNbjetphi1, -4, 4, 8, branches[num + 5])
-        # # ax2 = fig6.add_subplot(4, 3, 2)
+        
         # hPlot(sjetphi2, bjetphi2, NNsjetphi2, NNbjetphi2, -4, 4, 8, branches[num + 10])
-        # # ax3 = fig6.add_subplot(4, 3, 3)
+        
         # hPlot(sjetphi3, bjetphi3, NNsjetphi3, NNbjetphi3, -4, 4, 8, branches[num + 15])
-        # # ax4 = fig6.add_subplot(4, 3, 4)
+     
         # hPlot(sjetphi4, bjetphi4, NNsjetphi4, NNbjetphi4, -4, 4, 8, branches[num + 20])
-        # # ax5 = fig6.add_subplot(4, 3, 5)
+       
         # hPlot(sjetphi5, bjetphi5, NNsjetphi5, NNbjetphi5, -4, 4, 8, branches[num + 25])
-        # # ax6 = fig6.add_subplot(4, 3, 6)
+      
         # hPlot(sjetphi6, bjetphi6, NNsjetphi6, NNbjetphi6, -4, 4, 8, branches[num + 30])
-        # # ax7 = fig6.add_subplot(4, 3, 7)
+      
         # hPlot(sjetphi7, bjetphi7, NNsjetphi7, NNbjetphi7, -4, 4, 8, branches[num + 35])
-        # # ax8 = fig6.add_subplot(4, 3, 8)
+    
         # hPlot(sjetphi8, bjetphi8, NNsjetphi8, NNbjetphi8, -4, 4, 8, branches[num + 40])
-        # # ax9 = fig6.add_subplot(4, 3, 9)
+       
         # hPlot(sjetphi9, bjetphi9, NNsjetphi9, NNbjetphi9, -4, 4, 8, branches[num + 45])
-        # # ax10 = fig6.add_subplot(4, 3, 10)
+    
         # hPlot(sjetphi10, bjetphi10, NNsjetphi10, NNbjetphi10, -4, 4, 8, branches[num])
 
-            # We can also set the file's metadata via the PdfPages object:
         d = pdf.infodict()
         d['Title'] = 'LoadNN'
         d['Author'] = u'Jonathan O. Tellechea\xe4nen'
