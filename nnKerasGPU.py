@@ -127,7 +127,7 @@ bkgw = rawdata["weights"][len(signal) :]
 
 # Labeling data with 1's and 0's to distinguish.(1/positve/signal and 0/negative/background)
 # Truth Labels.
-y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
+y = np.concatenate((np.ones(len(df_signal)), np.zeros(len(shuffleBackground))))
 
 
 # Shuffle full data and split into train/test and validation set.
