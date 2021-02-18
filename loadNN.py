@@ -105,7 +105,7 @@ sigw = rawdata["weights"][: len(signal)] * scalefactor
 bkgw = rawdata["weights"][len(signal) :]
 
 # Labeling data with 1's and 0's to distinguish.
-y = np.concatenate((np.ones(len(signal)), np.zeros(len(shuffleBackground))))
+y = np.concatenate((np.ones(len(df_signal)), np.zeros(len(shuffleBackground))))
 
 # Shuffle full data and split into train/test and validation set.
 X_dev, X_eval, y_dev, y_eval = train_test_split(
@@ -168,14 +168,7 @@ if flag2 == 1:
         "\n Score = %6.3f\n Signif = %5.2f\n nsig = %d\n nbkg = %d\n"
         % (score, maxsignif, maxs, maxb)
     )
-   
-<<<<<<< HEAD
-=======
 
-    # plt.show()
-
-
->>>>>>> b4b2372f9e2145878f4ebb4405f2db309035d048
 flag = 1
 if flag == 1:
     hl = ['weights','numjet','numlep','btag','srap','cent','m_bb','h_b']
@@ -204,101 +197,7 @@ if flag == 1:
                     command = "" #  This line is here to clear out the previous command.
                     command = "NN" + sample[k] + str(j) + "dr" + str(w) + " = []"
                     exec(command)
-<<<<<<< HEAD
-  
-=======
-    # signal events
-    # Sweights = []
-    # NNsnumjet = []
-    # NNsnumlep = []
-    # NNsbtag = []
-    # NNssrap = []
-    # NNscent = []
-    # NNsm_bb = []
-    # NNsh_b = []
-    # NNsmt1 = []
-    # NNsdr1 = []
-    # NNsjetpt1 = []
-    # NNsjetpt2 = []
-    # NNsjetpt3 = []
-    # NNsjetpt4 = []
-    # NNsjetpt5 = []
-    # NNsjetpt6 = []
-    # NNsjetpt7 = []
-    # NNsjetpt8 = []
-    # NNsjetpt9 = []
-    # NNsjetpt10 = []
-    # NNsjeteta1 = []
-    # NNsjeteta2 = []
-    # NNsjeteta3 = []
-    # NNsjeteta4 = []
-    # NNsjeteta5 = []
-    # NNsjeteta6 = []
-    # NNsjeteta7 = []
-    # NNsjeteta8 = []
-    # NNsjeteta9 = []
-    # NNsjeteta10 = []
-    # NNsjetphi1 = []
-    # NNsjetphi2 = []
-    # NNsjetphi3 = []
-    # NNsjetphi4 = []
-    # NNsjetphi5 = []
-    # NNsjetphi6 = []
-    # NNsjetphi7 = []
-    # NNsjetphi8 = []
-    # NNsjetphi9 = []
-    # NNsjetphi10 = []
 
-    # # background events
-    # Bweights = []
-    # B1weights = []
-    # NNb1numjet = []
-    # NNb2numjet = []
-    # NNb3numjet = []
-    # NNb1numlep = []
-    # NNb2numlep = []
-    # NNb3numlep = []
-    # NNb1btag = []
-    # NNb2btag = []
-    # NNb3btag = []
-    # NNbsrap = []
-    # NNbcent = []
-    # NNbm_bb = []
-    # NNbh_b = []
-    # NNbmt1 = []
-    # NNbdr1 = []
-    # NNbjetpt1 = []
-    # NNbjetpt2 = []
-    # NNbjetpt3 = []
-    # NNbjetpt4 = []
-    # NNbjetpt5 = []
-    # NNbjetpt6 = []
-    # NNbjetpt7 = []
-    # NNbjetpt8 = []
-    # NNbjetpt9 = []
-    # NNbjetpt10 = []
-    # NNbjeteta1 = []
-    # NNbjeteta2 = []
-    # NNbjeteta3 = []
-    # NNbjeteta4 = []
-    # NNbjeteta5 = []
-    # NNbjeteta6 = []
-    # NNbjeteta7 = []
-    # NNbjeteta8 = []
-    # NNbjeteta9 = []
-    # NNbjeteta10 = []
-    # NNbjetphi1 = []
-    # NNbjetphi2 = []
-    # NNbjetphi3 = []
-    # NNbjetphi4 = []
-    # NNbjetphi5 = []
-    # NNbjetphi6 = []
-    # NNbjetphi7 = []
-    # NNbjetphi8 = []
-    # NNbjetphi9 = []
-    # NNbjetphi10 = []
-
->>>>>>> b4b2372f9e2145878f4ebb4405f2db309035d048
     for i in range(len(X)):
         if i < len(signal):
             if allScore[i] > score:
@@ -310,15 +209,11 @@ if flag == 1:
                 NNs1m_bb.append(rawdata["m_bb"].values[i])
                 NNs1h_b.append(rawdata["h_b"].values[i])
                 NNs1mt1.append(rawdata["mt1"].values[i])
-<<<<<<< HEAD
                 NNs1mt2.append(rawdata["mt2"].values[i])
                 NNs1mt3.append(rawdata["mt3"].values[i])
                 NNs1dr1.append(rawdata["dr1"].values[i])
                 NNs1dr2.append(rawdata["dr2"].values[i])
                 NNs1dr3.append(rawdata["dr3"].values[i])
-=======
-                NNs1dr1.append(rawdata["dr1"].values[i])
->>>>>>> b4b2372f9e2145878f4ebb4405f2db309035d048
                 NNs1jetpt1.append(rawdata["jet1pT"].values[i])
                 NNs1jetpt2.append(rawdata["jet2pT"].values[i])
                 NNs1jetpt3.append(rawdata["jet3pT"].values[i])
@@ -361,15 +256,11 @@ if flag == 1:
                     NNb1m_bb.append(rawdata["m_bb"].values[i])
                     NNb1h_b.append(rawdata["h_b"].values[i])
                     NNb1mt1.append(rawdata["mt1"].values[i])
-<<<<<<< HEAD
                     NNb1mt2.append(rawdata["mt2"].values[i])
                     NNb1mt3.append(rawdata["mt3"].values[i])
                     NNb1dr1.append(rawdata["dr1"].values[i])
                     NNb1dr2.append(rawdata["dr2"].values[i])
                     NNb1dr3.append(rawdata["dr3"].values[i])
-=======
-                    NNb1dr1.append(rawdata["dr1"].values[i])
->>>>>>> b4b2372f9e2145878f4ebb4405f2db309035d048
                     NNb1jetpt1.append(rawdata["jet1pT"].values[i])
                     NNb1jetpt2.append(rawdata["jet2pT"].values[i])
                     NNb1jetpt3.append(rawdata["jet3pT"].values[i])
@@ -400,10 +291,7 @@ if flag == 1:
                     NNb1jetphi8.append(rawdata["jet8phi"].values[i])
                     NNb1jetphi9.append(rawdata["jet9phi"].values[i])
                     NNb1jetphi10.append(rawdata["jet10phi"].values[i])
-<<<<<<< HEAD
                     NNb1weights.append(rawdata["weights"].values[i])
-=======
->>>>>>> b4b2372f9e2145878f4ebb4405f2db309035d048
 
                 if rawdata['truth'].values[i] == 2:
                     NNb2numjet.append(rawdata["numjet"].values[i])
@@ -414,15 +302,11 @@ if flag == 1:
                     NNb2m_bb.append(rawdata["m_bb"].values[i])
                     NNb2h_b.append(rawdata["h_b"].values[i])
                     NNb2mt1.append(rawdata["mt1"].values[i])
-<<<<<<< HEAD
                     NNb2mt2.append(rawdata["mt2"].values[i])
                     NNb2mt3.append(rawdata["mt3"].values[i])
                     NNb2dr1.append(rawdata["dr1"].values[i])
                     NNb2dr2.append(rawdata["dr2"].values[i])
                     NNb2dr3.append(rawdata["dr3"].values[i])
-=======
-                    NNb2dr1.append(rawdata["dr1"].values[i])
->>>>>>> b4b2372f9e2145878f4ebb4405f2db309035d048
                     NNb2jetpt1.append(rawdata["jet1pT"].values[i])
                     NNb2jetpt2.append(rawdata["jet2pT"].values[i])
                     NNb2jetpt3.append(rawdata["jet3pT"].values[i])
@@ -452,12 +336,8 @@ if flag == 1:
                     NNb2jetphi7.append(rawdata["jet7phi"].values[i])
                     NNb2jetphi8.append(rawdata["jet8phi"].values[i])
                     NNb2jetphi9.append(rawdata["jet9phi"].values[i])
-<<<<<<< HEAD
                     NNb2jetphi10.append(rawdata["jet10phi"].values[i])
                     NNb2weights.append(rawdata["weights"].values[i]) 
-=======
-                    NNb2jetphi10.append(rawdata["jet10phi"].values[i]) 
->>>>>>> b4b2372f9e2145878f4ebb4405f2db309035d048
 
                 if rawdata['truth'].values[i] == 3:
                     NNb3numjet.append(rawdata["numjet"].values[i])
@@ -468,15 +348,11 @@ if flag == 1:
                     NNb3m_bb.append(rawdata["m_bb"].values[i])
                     NNb3h_b.append(rawdata["h_b"].values[i])
                     NNb3mt1.append(rawdata["mt1"].values[i])
-<<<<<<< HEAD
                     NNb3mt2.append(rawdata["mt2"].values[i])
                     NNb3mt3.append(rawdata["mt3"].values[i])
                     NNb3dr1.append(rawdata["dr1"].values[i])
                     NNb3dr2.append(rawdata["dr2"].values[i])
                     NNb3dr3.append(rawdata["dr3"].values[i])
-=======
-                    NNb3dr1.append(rawdata["dr1"].values[i])
->>>>>>> b4b2372f9e2145878f4ebb4405f2db309035d048
                     NNb3jetpt1.append(rawdata["jet1pT"].values[i])
                     NNb3jetpt2.append(rawdata["jet2pT"].values[i])
                     NNb3jetpt3.append(rawdata["jet3pT"].values[i])
@@ -507,16 +383,7 @@ if flag == 1:
                     NNb3jetphi8.append(rawdata["jet8phi"].values[i])
                     NNb3jetphi9.append(rawdata["jet9phi"].values[i])
                     NNb3jetphi10.append(rawdata["jet10phi"].values[i])
-<<<<<<< HEAD
                     NNb3weights.append(rawdata["weights"].values[i])
-
-
-                
-=======
-
-
-                # Bweights.append(rawdata["weights"].values[i])
->>>>>>> b4b2372f9e2145878f4ebb4405f2db309035d048
 
     snumlep = df_signal["numlep"].values
     bnumlep = df_background["numlep"].values
@@ -637,11 +504,7 @@ if flag == 1:
             histtype="step",
             label="signal",
             linestyle="solid",
-<<<<<<< HEAD
             color="darkred",
-=======
-            color="red",
->>>>>>> b4b2372f9e2145878f4ebb4405f2db309035d048
             weights=sigw,
             stacked=False,
         )
@@ -651,29 +514,18 @@ if flag == 1:
             histtype="stepfilled",
             label=["NN-background-TTH","NN-background-TTZ","NN-background-TTBB"],
             linestyle="solid",
-<<<<<<< HEAD
             color=['blue','mediumorchid','green'],
             stacked=True,
             weights=[NNb3weights,NNb2weights,NNb1weights],
-=======
-            color=['blue','magenta','green'],
-            stacked=True,
-            # weights=Bweights,
->>>>>>> b4b2372f9e2145878f4ebb4405f2db309035d048
         )
         plt.hist(
             nx,
             bins=bins,
-            # alpha=0.5,
             histtype="step",
             hatch='/',
             label="NN-signal",
             linestyle="dashed",
-<<<<<<< HEAD
             color="darkred",
-=======
-            color="red",
->>>>>>> b4b2372f9e2145878f4ebb4405f2db309035d048
             weights=NNs1weights,
             stacked=False,
         )
@@ -732,7 +584,6 @@ if flag == 1:
         plt.close()
 
 
-<<<<<<< HEAD
         hPlot(snumjet, bnumjet, NNs1numjet, NNb1numjet, NNb2numjet, NNb3numjet, 1, 21, 22, branches[72])
         
         hPlot(snumlep, bnumlep, NNs1numlep, NNb1numlep,NNb2numlep,NNb3numlep, 0, 4, 5, branches[73])
@@ -824,106 +675,7 @@ if flag == 1:
         hPlot(sjetphi9, bjetphi9, NNs1jetphi9, NNb1jetphi9,NNb2jetphi1,NNb3jetphi9, -4, 4, 8, branches[num + 45])
     
         hPlot(sjetphi10, bjetphi10, NNs1jetphi10, NNb1jetphi10,NNb2jetphi1,NNb3jetphi10, -4, 4, 8, branches[num])
-=======
-        hPlot(snumjet, bnumjet, NNs1numjet, NNb1numjet, NNb2numjet, NNb3numjet, 1, 21, 21, branches[72])
         
-
-
-        hPlot(snumlep, bnumlep, NNs1numlep, NNb1numlep,NNb2numlep,NNb3numlep, 1, 3, 3, branches[73])
-
-
-
-        hPlot(sbtag, bbtag, NNs1btag, NNb1btag,NNb2btag, NNb3btag,0, 10, 10, branches[0])
-
-
-        # hPlot(ssrap, bsrap, NNssrap, NNbsrap, 0, 10, 10, branches[74])
-
-
-
-
-        # hPlot(scent, bcent, NNscent, NNbcent, 0, 1, 10, branches[1])
-
-
-        # hPlot(sm_bb, bm_bb, NNsm_bb, NNbm_bb, 0, 250, 10, branches[68])
-
-
-        # hPlot(sh_b, bh_b, NNsh_b, NNbh_b, 0, 1500, 10, branches[5])
-
- 
-        # hPlot(smt1, bmt1, NNsmt1, NNbmt1, 0, 300, 100, branches[69])
-
-
-        # hPlot(sdr1, bdr1, NNsdr1, NNbdr1, 0, 7, 100, branches[2])
-
-
-        # num = 9
-
-        # hPlot(sjetpt1, bjetpt1, NNsjetpt1, NNbjetpt1, 0, 1e6, 100, branches[num + 5])
-
-        # hPlot(sjetpt2, bjetpt2, NNsjetpt2, NNbjetpt2, 0, 1e6, 100, branches[num + 10])
-
-        # hPlot(sjetpt3, bjetpt3, NNsjetpt3, NNbjetpt3, 0, 1e6, 100, branches[num + 15])
-  
-        # hPlot(sjetpt4, bjetpt4, NNsjetpt4, NNbjetpt4, 0, 1e6, 100, branches[num + 20])
-
-        # hPlot(sjetpt5, bjetpt5, NNsjetpt5, NNbjetpt5, 0, 1e6, 100, branches[num + 25])
-
-        # hPlot(sjetpt6, bjetpt6, NNsjetpt6, NNbjetpt6, 0, 1e6, 100, branches[num + 30])
-
-        # hPlot(sjetpt7, bjetpt7, NNsjetpt7, NNbjetpt7, 0, 1e6, 100, branches[num + 35])
-
-        # hPlot(sjetpt8, bjetpt8, NNsjetpt8, NNbjetpt8, 0, 1e6, 100, branches[num + 40])
-
-        # hPlot(sjetpt9, bjetpt9, NNsjetpt9, NNbjetpt9, 0, 1e6, 100, branches[num + 45])
-
-        # hPlot(sjetpt10, bjetpt10, NNsjetpt10, NNbjetpt10, 0, 1e6, 100, branches[num])
-
-
-        # num = 8
-
-        # hPlot(sjeteta1, bjeteta1, NNsjeteta1, NNbjeteta1, -6, 6, 12, branches[num + 5])
-
-        # hPlot(sjeteta2, bjeteta2, NNsjeteta2, NNbjeteta2, -6, 6, 12, branches[num + 10])
-
-        # hPlot(sjeteta3, bjeteta3, NNsjeteta3, NNbjeteta3, -6, 6, 12, branches[num + 15])
- 
-        # hPlot(sjeteta4, bjeteta4, NNsjeteta4, NNbjeteta4, -6, 6, 12, branches[num + 20])
-
-        # hPlot(sjeteta5, bjeteta5, NNsjeteta5, NNbjeteta5, -6, 6, 12, branches[num + 25])
-   
-        # hPlot(sjeteta6, bjeteta6, NNsjeteta6, NNbjeteta6, -6, 6, 12, branches[num + 30])
-
-        # hPlot(sjeteta7, bjeteta7, NNsjeteta7, NNbjeteta7, -6, 6, 12, branches[num + 35])
-
-        # hPlot(sjeteta8, bjeteta8, NNsjeteta8, NNbjeteta8, -6, 6, 12, branches[num + 40])
- 
-        # hPlot(sjeteta9, bjeteta9, NNsjeteta9, NNbjeteta9, -6, 6, 12, branches[num + 45])
-
-        # hPlot(sjeteta10, bjeteta10, NNsjeteta10, NNbjeteta10, -6, 6, 12, branches[num])
-
-
-        # num = 10
-      
-        # hPlot(sjetphi1, bjetphi1, NNsjetphi1, NNbjetphi1, -4, 4, 8, branches[num + 5])
-        
-        # hPlot(sjetphi2, bjetphi2, NNsjetphi2, NNbjetphi2, -4, 4, 8, branches[num + 10])
-        
-        # hPlot(sjetphi3, bjetphi3, NNsjetphi3, NNbjetphi3, -4, 4, 8, branches[num + 15])
-     
-        # hPlot(sjetphi4, bjetphi4, NNsjetphi4, NNbjetphi4, -4, 4, 8, branches[num + 20])
-       
-        # hPlot(sjetphi5, bjetphi5, NNsjetphi5, NNbjetphi5, -4, 4, 8, branches[num + 25])
-      
-        # hPlot(sjetphi6, bjetphi6, NNsjetphi6, NNbjetphi6, -4, 4, 8, branches[num + 30])
-      
-        # hPlot(sjetphi7, bjetphi7, NNsjetphi7, NNbjetphi7, -4, 4, 8, branches[num + 35])
-    
-        # hPlot(sjetphi8, bjetphi8, NNsjetphi8, NNbjetphi8, -4, 4, 8, branches[num + 40])
-       
-        # hPlot(sjetphi9, bjetphi9, NNsjetphi9, NNbjetphi9, -4, 4, 8, branches[num + 45])
-    
-        # hPlot(sjetphi10, bjetphi10, NNsjetphi10, NNbjetphi10, -4, 4, 8, branches[num])
->>>>>>> b4b2372f9e2145878f4ebb4405f2db309035d048
 
         d = pdf.infodict()
         d['Title'] = 'LoadNN'
