@@ -540,8 +540,8 @@ if flag == 1:
         pdf.savefig()  # saves the current figure into a pdf page
         plt.close()
 
-
-    with PdfPages('test.pdf') as pdf:
+    pdfname = file[:-2] + 'pdf'
+    with PdfPages(pdfname) as pdf:
 
         plt.figure(figsize=(8, 6))
         plt.subplot(212)
@@ -681,3 +681,5 @@ if flag == 1:
         # d['CreationDate'] = datetime.datetime(2009, 11, 13)
         d['CreationDate'] = datetime.datetime.today()
         d['ModDate'] = datetime.datetime.today()
+
+        print(pdfname)
