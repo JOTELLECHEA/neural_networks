@@ -8,6 +8,9 @@
 import tkinter as tk
 import math
 import matplotlib
+import numpy as np 
+import pandas as pd
+import seaborn as sn
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 
@@ -35,6 +38,16 @@ def plotROC(x, y, AUC):
     plt.legend(loc="lower right")
     plt.grid()
 
+def confusedMatrix(Matrix):
+    label = ['Signal','Background']
+    df_CM = pd.DataFrame(Matrix, index=label, columns=label)
+    sn.heatmap(df_CM,cmap='Blues',annot=True)
+    plt.title('Confusion matrix, with normalization')
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.tight_layout()
+    plt.show()
+    
 
 def getZPoisson(s, b, stat, syst):
     """
