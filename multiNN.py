@@ -7,16 +7,14 @@
 # Imported packages.
 import nnKerasGPU as nn
 
-batch = 512
+batch = 512*2
 
-i = 5
+# i = 5
 
 # This runs nnKerasGPU.py multiple times. A for loop can be used to varry the parameters. 
-nn.main(i,batch,0.5)
-nn.main(i,256,0.5)
-nn.main(i,128,0.5)
-nn.main(i,64,0.5)
-nn.main(i,32,0.5)
+for i in range(1,4):
+	nn.main(i,batch,0.01)
+
 # nn.main(i,batch,0.4)
 # nn.main(i,batch,0.35)
 # nn.main(i,batch,0.3)
