@@ -22,7 +22,7 @@ from tensorflow.keras.models import load_model
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import auc
+from sklearn.metrics import auc, confusion_matrix
 
 sc = StandardScaler()
 seed = 42
@@ -118,6 +118,10 @@ X_train, X_test, y_train, y_test = train_test_split(
 neuralNet = keras.models.load_model(file)
 
 allScore = neuralNet.predict(X)
+
+
+# The score is rounded; values are 0 or 1.
+y_pred = [1 * (x[0] >= 0.5) for x in allScore]
 
 flag2 = 1
 if flag2 == 1:
@@ -540,146 +544,159 @@ if flag == 1:
         pdf.savefig()  # saves the current figure into a pdf page
         plt.close()
 
-    pdfname = file[:-2] + 'pdf'
-    with PdfPages(pdfname) as pdf:
+    
+    tn, fp, fn, tp = confusion_matrix(y, y_pred,normalize='all').ravel()
+    Matrix = np.matrix([[tp,fn],[fp,tn]])
+    slug.confusedMatrix(Matrix)
 
-        plt.figure(figsize=(8, 6))
-        plt.subplot(212)
-        plt.hist(
-            sigScore,
-            color="r",
-            alpha=0.5,
-            range=xlimit,
-            bins=100,
-            histtype="stepfilled",
-            density=False,
-            label="Signal Distribution",
-            weights=sigw,
-        )
-        plt.hist(
-            bkgScore,
-            color="b",
-            alpha=0.5,
-            range=xlimit,
-            bins=100,
-            histtype="stepfilled",
-            density=False,
-            label="Background Distribution",
-            weights=bkgw,
-        )
-        plt.xlabel("Score")
-        plt.ylabel("Distribution")
-        plt.yscale("log")
-        plt.legend(loc="upper right")
-        plt.subplot(211)
-        plt.plot(yplot, xplot, "r-", label="ROC (area = %0.6f)" % (area))
-        plt.plot([0, 1], [0, 1], "--", color=(0.6, 0.6, 0.6), label="Luck")
-        plt.xlim([-0.05, 1.05])
-        plt.ylim([-0.05, 1.05])
-        plt.xlabel("False Positive Rate")
-        plt.ylabel("True Positive Rate")
-        plt.title("Receiver operating characteristic")
-        plt.legend(loc="lower right")
-        plt.grid()
-        pdf.savefig()  # saves the current figure into a pdf page
-        plt.close()
+    y_pred2 = [1 * (x[0] >= score) for x in allScore]
 
+    tn, fp, fn, tp = confusion_matrix(y, y_pred2,normalize='all').ravel()
+    Matrix2 = np.matrix([[tp,fn],[fp,tn]])
+    slug.confusedMatrix(Matrix2)
 
+    # pdfname = file[:-2] + 'pdf'
+    # with PdfPages(pdfname) as pdf:
 
-        hPlot(snumjet, bnumjet, NNs1numjet, NNb1numjet, NNb2numjet, NNb3numjet, 1, 21, 22, 'Jet multiplicity')
+    #     plt.figure(figsize=(8, 6))
+    #     plt.subplot(212)
+    #     plt.hist(
+    #         sigScore,
+    #         color="r",
+    #         alpha=0.5,
+    #         range=xlimit,
+    #         bins=100,
+    #         histtype="stepfilled",
+    #         # density=False,
+    #         density=True,
+    #         label="Signal Distribution",
+    #         weights=sigw,
+    #     )
+    #     plt.hist(
+    #         bkgScore,
+    #         color="b",
+    #         alpha=0.5,
+    #         range=xlimit,
+    #         bins=100,
+    #         histtype="stepfilled",
+    #         # density=False,
+    #         density=True,
+    #         label="Background Distribution",
+    #         weights=bkgw,
+    #     )
+    #     plt.axvline(x= score,color='k')
+    #     plt.xlabel("Score")
+    #     plt.ylabel("Distribution")
+    #     plt.yscale("log")
+    #     plt.legend(loc="upper right")
+    #     plt.subplot(211)
+    #     plt.plot(yplot, xplot, "r-", label="ROC (area = %0.6f)" % (area))
+    #     plt.plot(maxs,maxb,'ko') 
+    #     plt.plot([0, 1], [0, 1], "--", color=(0.6, 0.6, 0.6), label="Luck")
+    #     plt.xlim([-0.05, 1.05])
+    #     plt.ylim([-0.05, 1.05])
+    #     plt.xlabel("False Positive Rate")
+    #     plt.ylabel("True Positive Rate")
+    #     plt.title("Receiver operating characteristic")
+    #     plt.legend(loc="lower right")
+    #     plt.grid()
+    #     pdf.savefig()  # saves the current figure into a pdf page
+    #     plt.close()
+
+        # hPlot(snumjet, bnumjet, NNs1numjet, NNb1numjet, NNb2numjet, NNb3numjet, 1, 21, 22, 'Jet multiplicity')
         
-        hPlot(snumlep, bnumlep, NNs1numlep, NNb1numlep,NNb2numlep,NNb3numlep, 0, 4, 5, 'Lepton multiplicity')
+        # hPlot(snumlep, bnumlep, NNs1numlep, NNb1numlep,NNb2numlep,NNb3numlep, 0, 4, 5, 'Lepton multiplicity')
 
-        hPlot(sbtag, bbtag, NNs1btag, NNb1btag,NNb2btag, NNb3btag,0, 10, 10, 'N b-tagged jets')
+        # hPlot(sbtag, bbtag, NNs1btag, NNb1btag,NNb2btag, NNb3btag,0, 10, 10, 'N b-tagged jets')
 
-        hPlot(ssrap, bsrap, NNs1srap, NNb1srap, NNb2srap,NNb3srap, 0, 10, 10, r'$ < \eta(b_{i},b_{j}) >$')
+        # hPlot(ssrap, bsrap, NNs1srap, NNb1srap, NNb2srap,NNb3srap, 0, 10, 10, r'$ < \eta(b_{i},b_{j}) >$')
 
-        hPlot(scent, bcent, NNs1cent, NNb1cent,NNb2cent, NNb3cent,0, 1, 10, 'Centrality')
+        # hPlot(scent, bcent, NNs1cent, NNb1cent,NNb2cent, NNb3cent,0, 1, 10, 'Centrality')
 
-        hPlot(sm_bb, bm_bb, NNs1m_bb, NNb1m_bb,NNb2m_bb,NNb3m_bb, 0, 250, 10, r'${M}_{bb}$ [GeV]')
+        # hPlot(sm_bb, bm_bb, NNs1m_bb, NNb1m_bb,NNb2m_bb,NNb3m_bb, 0, 250, 10, r'${M}_{bb}$ [GeV]')
 
-        hPlot(sh_b, bh_b, NNs1h_b, NNb1h_b,NNb2h_b,NNb3h_b, 0, 1500, 10, r'${H}_{B}$ [GeV]')
+        # hPlot(sh_b, bh_b, NNs1h_b, NNb1h_b,NNb2h_b,NNb3h_b, 0, 1500, 10, r'${H}_{B}$ [GeV]')
  
-        hPlot(smt1, bmt1, NNs1mt1, NNb1mt1,NNb2mt1,NNb3mt1, 0, 300, 100, r'${m}_{T}1$ [GeV]')
+        # hPlot(smt1, bmt1, NNs1mt1, NNb1mt1,NNb2mt1,NNb3mt1, 0, 300, 100, r'${m}_{T}1$ [GeV]')
 
-        hPlot(smt2, bmt2, NNs1mt2, NNb1mt2,NNb2mt2,NNb3mt2, 0, 300, 100, r'${m}_{T}2$ [GeV]')
+        # hPlot(smt2, bmt2, NNs1mt2, NNb1mt2,NNb2mt2,NNb3mt2, 0, 300, 100, r'${m}_{T}2$ [GeV]')
 
-        hPlot(smt3, bmt3, NNs1mt3, NNb1mt3,NNb2mt3,NNb3mt3, 0, 300, 100, r'${m}_{T}3$ [GeV]')
+        # hPlot(smt3, bmt3, NNs1mt3, NNb1mt3,NNb2mt3,NNb3mt3, 0, 300, 100, r'${m}_{T}3$ [GeV]')
 
-        hPlot(sdr1, bdr1, NNs1dr1, NNb1dr1,NNb2dr1,NNb3dr1, 0, 7, 100, r'$\Delta$R1')
+        # hPlot(sdr1, bdr1, NNs1dr1, NNb1dr1,NNb2dr1,NNb3dr1, 0, 7, 100, r'$\Delta$R1')
 
-        hPlot(sdr2, bdr2, NNs1dr2, NNb1dr2,NNb2dr2,NNb3dr2, 0, 7, 100, r'$\Delta$R2')
+        # hPlot(sdr2, bdr2, NNs1dr2, NNb1dr2,NNb2dr2,NNb3dr2, 0, 7, 100, r'$\Delta$R2')
 
-        hPlot(sdr3, bdr3, NNs1dr3, NNb1dr3,NNb2dr3,NNb3dr3, 0, 7, 100, r'$\Delta$R3')
+        # hPlot(sdr3, bdr3, NNs1dr3, NNb1dr3,NNb2dr3,NNb3dr3, 0, 7, 100, r'$\Delta$R3')
 
-        hPlot(sjetpt1, bjetpt1, NNs1jetpt1, NNb1jetpt1,NNb2jetpt1,NNb3jetpt1, 0, 1e6, 100, r'Jet1 pT')
+        # hPlot(sjetpt1, bjetpt1, NNs1jetpt1, NNb1jetpt1,NNb2jetpt1,NNb3jetpt1, 0, 1e6, 100, r'Jet1 pT')
 
-        hPlot(sjetpt2, bjetpt2, NNs1jetpt2, NNb1jetpt2,NNb2jetpt2,NNb3jetpt2, 0, 1e6, 100, r'Jet2 pT')
+        # hPlot(sjetpt2, bjetpt2, NNs1jetpt2, NNb1jetpt2,NNb2jetpt2,NNb3jetpt2, 0, 1e6, 100, r'Jet2 pT')
 
-        hPlot(sjetpt3, bjetpt3, NNs1jetpt3, NNb1jetpt3,NNb2jetpt3,NNb3jetpt3, 0, 1e6, 100, r'Jet3 pT')
+        # hPlot(sjetpt3, bjetpt3, NNs1jetpt3, NNb1jetpt3,NNb2jetpt3,NNb3jetpt3, 0, 1e6, 100, r'Jet3 pT')
   
-        hPlot(sjetpt4, bjetpt4, NNs1jetpt4, NNb1jetpt4,NNb2jetpt4,NNb3jetpt4, 0, 1e6, 100, r'Jet4 pT')
+        # hPlot(sjetpt4, bjetpt4, NNs1jetpt4, NNb1jetpt4,NNb2jetpt4,NNb3jetpt4, 0, 1e6, 100, r'Jet4 pT')
 
-        hPlot(sjetpt5, bjetpt5, NNs1jetpt5, NNb1jetpt5,NNb2jetpt4,NNb3jetpt4, 0, 1e6, 100, r'Jet5 pT')
+        # hPlot(sjetpt5, bjetpt5, NNs1jetpt5, NNb1jetpt5,NNb2jetpt4,NNb3jetpt4, 0, 1e6, 100, r'Jet5 pT')
 
-        hPlot(sjetpt6, bjetpt6, NNs1jetpt6, NNb1jetpt6,NNb2jetpt4,NNb3jetpt4, 0, 1e6, 100, r'Jet6 pT')
+        # hPlot(sjetpt6, bjetpt6, NNs1jetpt6, NNb1jetpt6,NNb2jetpt4,NNb3jetpt4, 0, 1e6, 100, r'Jet6 pT')
 
-        hPlot(sjetpt7, bjetpt7, NNs1jetpt7, NNb1jetpt7,NNb2jetpt4,NNb3jetpt4, 0, 1e6, 100, r'Jet7 pT')
+        # hPlot(sjetpt7, bjetpt7, NNs1jetpt7, NNb1jetpt7,NNb2jetpt4,NNb3jetpt4, 0, 1e6, 100, r'Jet7 pT')
 
-        hPlot(sjetpt8, bjetpt8, NNs1jetpt8, NNb1jetpt8,NNb2jetpt4,NNb3jetpt4, 0, 1e6, 100, r'Jet8 pT')
+        # hPlot(sjetpt8, bjetpt8, NNs1jetpt8, NNb1jetpt8,NNb2jetpt4,NNb3jetpt4, 0, 1e6, 100, r'Jet8 pT')
 
-        hPlot(sjetpt9, bjetpt9, NNs1jetpt9, NNb1jetpt9,NNb2jetpt4,NNb3jetpt4, 0, 1e6, 100, r'Jet9 pT')
+        # hPlot(sjetpt9, bjetpt9, NNs1jetpt9, NNb1jetpt9,NNb2jetpt4,NNb3jetpt4, 0, 1e6, 100, r'Jet9 pT')
 
-        hPlot(sjetpt10, bjetpt10, NNs1jetpt10, NNb1jetpt10,NNb2jetpt10,NNb3jetpt10, 0, 1e6, 100, r'Jet10 pT')
+        # hPlot(sjetpt10, bjetpt10, NNs1jetpt10, NNb1jetpt10,NNb2jetpt10,NNb3jetpt10, 0, 1e6, 100, r'Jet10 pT')
 
-        hPlot(sjeteta1, bjeteta1, NNs1jeteta1, NNb1jeteta1,NNb2jeteta1,NNb3jeteta1, -6, 6, 12, r'Jet1 $\eta$')
+        # hPlot(sjeteta1, bjeteta1, NNs1jeteta1, NNb1jeteta1,NNb2jeteta1,NNb3jeteta1, -6, 6, 12, r'Jet1 $\eta$')
 
-        hPlot(sjeteta2, bjeteta2, NNs1jeteta2, NNb1jeteta2,NNb2jeteta2,NNb3jeteta2, -6, 6, 12, r'Jet2 $\eta$')
+        # hPlot(sjeteta2, bjeteta2, NNs1jeteta2, NNb1jeteta2,NNb2jeteta2,NNb3jeteta2, -6, 6, 12, r'Jet2 $\eta$')
 
-        hPlot(sjeteta3, bjeteta3, NNs1jeteta3, NNb1jeteta3,NNb2jeteta3,NNb3jeteta3, -6, 6, 12, r'Jet3 $\eta$')
+        # hPlot(sjeteta3, bjeteta3, NNs1jeteta3, NNb1jeteta3,NNb2jeteta3,NNb3jeteta3, -6, 6, 12, r'Jet3 $\eta$')
  
-        hPlot(sjeteta4, bjeteta4, NNs1jeteta4, NNb1jeteta4,NNb2jeteta4,NNb3jeteta4, -6, 6, 12, r'Jet4 $\eta$')
+        # hPlot(sjeteta4, bjeteta4, NNs1jeteta4, NNb1jeteta4,NNb2jeteta4,NNb3jeteta4, -6, 6, 12, r'Jet4 $\eta$')
 
-        hPlot(sjeteta5, bjeteta5, NNs1jeteta5, NNb1jeteta5,NNb2jeteta5,NNb3jeteta5, -6, 6, 12, r'Jet5 $\eta$')
+        # hPlot(sjeteta5, bjeteta5, NNs1jeteta5, NNb1jeteta5,NNb2jeteta5,NNb3jeteta5, -6, 6, 12, r'Jet5 $\eta$')
    
-        hPlot(sjeteta6, bjeteta6, NNs1jeteta6, NNb1jeteta6,NNb2jeteta6,NNb3jeteta6, -6, 6, 12, r'Jet6 $\eta$')
+        # hPlot(sjeteta6, bjeteta6, NNs1jeteta6, NNb1jeteta6,NNb2jeteta6,NNb3jeteta6, -6, 6, 12, r'Jet6 $\eta$')
 
-        hPlot(sjeteta7, bjeteta7, NNs1jeteta7, NNb1jeteta7,NNb2jeteta7,NNb3jeteta7, -6, 6, 12, r'Jet7 $\eta$')
+        # hPlot(sjeteta7, bjeteta7, NNs1jeteta7, NNb1jeteta7,NNb2jeteta7,NNb3jeteta7, -6, 6, 12, r'Jet7 $\eta$')
 
-        hPlot(sjeteta8, bjeteta8, NNs1jeteta8, NNb1jeteta8,NNb2jeteta8,NNb3jeteta8, -6, 6, 12, r'Jet8 $\eta$')
+        # hPlot(sjeteta8, bjeteta8, NNs1jeteta8, NNb1jeteta8,NNb2jeteta8,NNb3jeteta8, -6, 6, 12, r'Jet8 $\eta$')
  
-        hPlot(sjeteta9, bjeteta9, NNs1jeteta9, NNb1jeteta9,NNb2jeteta9,NNb3jeteta9, -6, 6, 12, r'Jet9 $\eta$')
+        # hPlot(sjeteta9, bjeteta9, NNs1jeteta9, NNb1jeteta9,NNb2jeteta9,NNb3jeteta9, -6, 6, 12, r'Jet9 $\eta$')
 
-        hPlot(sjeteta10, bjeteta10, NNs1jeteta10, NNb1jeteta10,NNb2jeteta10,NNb3jeteta10, -6, 6, 12, r'Jet10 $\eta$')
+        # hPlot(sjeteta10, bjeteta10, NNs1jeteta10, NNb1jeteta10,NNb2jeteta10,NNb3jeteta10, -6, 6, 12, r'Jet10 $\eta$')
       
-        hPlot(sjetphi1, bjetphi1, NNs1jetphi1, NNb1jetphi1,NNb2jetphi1,NNb3jetphi1, -4, 4, 8, r'Jet1 $\phi$')
+        # hPlot(sjetphi1, bjetphi1, NNs1jetphi1, NNb1jetphi1,NNb2jetphi1,NNb3jetphi1, -4, 4, 8, r'Jet1 $\phi$')
         
-        hPlot(sjetphi2, bjetphi2, NNs1jetphi2, NNb1jetphi2,NNb2jetphi1,NNb3jetphi2, -4, 4, 8, r'Jet2 $\phi$')
+        # hPlot(sjetphi2, bjetphi2, NNs1jetphi2, NNb1jetphi2,NNb2jetphi1,NNb3jetphi2, -4, 4, 8, r'Jet2 $\phi$')
         
-        hPlot(sjetphi3, bjetphi3, NNs1jetphi3, NNb1jetphi3,NNb2jetphi1,NNb3jetphi3, -4, 4, 8, r'Jet3 $\phi$')
+        # hPlot(sjetphi3, bjetphi3, NNs1jetphi3, NNb1jetphi3,NNb2jetphi1,NNb3jetphi3, -4, 4, 8, r'Jet3 $\phi$')
 
-        hPlot(sjetphi4, bjetphi4, NNs1jetphi4, NNb1jetphi4,NNb2jetphi1,NNb3jetphi4, -4, 4, 8, r'Jet4 $\phi$')
+        # hPlot(sjetphi4, bjetphi4, NNs1jetphi4, NNb1jetphi4,NNb2jetphi1,NNb3jetphi4, -4, 4, 8, r'Jet4 $\phi$')
        
-        hPlot(sjetphi5, bjetphi5, NNs1jetphi5, NNb1jetphi5,NNb2jetphi1,NNb3jetphi5, -4, 4, 8, r'Jet5 $\phi$')
+        # hPlot(sjetphi5, bjetphi5, NNs1jetphi5, NNb1jetphi5,NNb2jetphi1,NNb3jetphi5, -4, 4, 8, r'Jet5 $\phi$')
       
-        hPlot(sjetphi6, bjetphi6, NNs1jetphi6, NNb1jetphi6,NNb2jetphi1,NNb3jetphi6, -4, 4, 8, r'Jet6 $\phi$')
+        # hPlot(sjetphi6, bjetphi6, NNs1jetphi6, NNb1jetphi6,NNb2jetphi1,NNb3jetphi6, -4, 4, 8, r'Jet6 $\phi$')
       
-        hPlot(sjetphi7, bjetphi7, NNs1jetphi7, NNb1jetphi7,NNb2jetphi1,NNb3jetphi7, -4, 4, 8, r'Jet7 $\phi$')
+        # hPlot(sjetphi7, bjetphi7, NNs1jetphi7, NNb1jetphi7,NNb2jetphi1,NNb3jetphi7, -4, 4, 8, r'Jet7 $\phi$')
     
-        hPlot(sjetphi8, bjetphi8, NNs1jetphi8, NNb1jetphi8,NNb2jetphi1,NNb3jetphi8, -4, 4, 8, r'Jet8 $\phi$')
+        # hPlot(sjetphi8, bjetphi8, NNs1jetphi8, NNb1jetphi8,NNb2jetphi1,NNb3jetphi8, -4, 4, 8, r'Jet8 $\phi$')
        
-        hPlot(sjetphi9, bjetphi9, NNs1jetphi9, NNb1jetphi9,NNb2jetphi1,NNb3jetphi9, -4, 4, 8, r'Jet9 $\phi$')
+        # hPlot(sjetphi9, bjetphi9, NNs1jetphi9, NNb1jetphi9,NNb2jetphi1,NNb3jetphi9, -4, 4, 8, r'Jet9 $\phi$')
     
-        hPlot(sjetphi10, bjetphi10, NNs1jetphi10, NNb1jetphi10,NNb2jetphi1,NNb3jetphi10, -4, 4, 8, r'Jet10 $\phi$')
+        # hPlot(sjetphi10, bjetphi10, NNs1jetphi10, NNb1jetphi10,NNb2jetphi1,NNb3jetphi10, -4, 4, 8, r'Jet10 $\phi$')
         
 
-        d = pdf.infodict()
-        d['Title'] = 'LoadNN'
-        d['Author'] = u'Jonathan O. Tellechea\xe4nen'
-        d['Subject'] = '1D plots that apply NN score for a cut.'
-        d['Keywords'] = 'ttHH'
-        # d['CreationDate'] = datetime.datetime(2009, 11, 13)
-        d['CreationDate'] = datetime.datetime.today()
-        d['ModDate'] = datetime.datetime.today()
+        # d = pdf.infodict()
+        # d['Title'] = 'LoadNN'
+        # d['Author'] = u'Jonathan O. Tellechea\xe4nen'
+        # d['Subject'] = '1D plots that apply NN score for a cut.'
+        # d['Keywords'] = 'ttHH'
+        # # d['CreationDate'] = datetime.datetime(2009, 11, 13)
+        # d['CreationDate'] = datetime.datetime.today()
+        # d['ModDate'] = datetime.datetime.today()
 
-        print(pdfname)
+        # print(pdfname)
