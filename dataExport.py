@@ -54,7 +54,7 @@ numBranches = len(branches) - 2
 signal = uproot.open("/home/jtellece/neural_networks/data/new_TTHH.root")[tree] 
 
 # The [:5] is reading in the first 5 events. 
-df_signal = signal.np.arrays(branches, library="pd")[:5] # Using Uproot4 which is installed in slugpu 
+df_signal = signal.arrays(branches, library="pd")[:5] # Using Uproot4 which is installed in slugpu 
 # df_signal = signal.pandas.df(branches)[:5] # Using Uproot3
 # df_signal.head() # This will print out the first few events in table form. 
 
