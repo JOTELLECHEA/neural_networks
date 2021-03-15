@@ -148,7 +148,7 @@ def main(LAYER, BATCH, RATE):
     is half of the neurons being randomly turned off.
     """
     network = []
-    numEpochs = 150  # Number of times the NN gets trained.
+    numEpochs = 5#150  # Number of times the NN gets trained.
     batchSize = BATCH
     numLayers = LAYER
     neurons = numBranches
@@ -185,9 +185,6 @@ def main(LAYER, BATCH, RATE):
     )
     modelName = "data/" + pre + h5name + sufix + ".h5"
 
-    # Filename for plots to be identified by saved model.
-    figname = "data/" + pre + ".plots"
-
     # NN model defined as a function.
     def build_model():
 
@@ -196,6 +193,7 @@ def main(LAYER, BATCH, RATE):
 
         # Best option for most NN.
         opt = keras.optimizers.Nadam()
+        # opt = keras.optimizers.Adam()
 
         # Activation function other options possible.
         act = "relu"  # Relu is 0 for negative values, linear for nonzero values.
@@ -246,7 +244,7 @@ def main(LAYER, BATCH, RATE):
             range=low_high,
             bins=bins,
             histtype="stepfilled",
-            density=True,
+            density=False,
             label="S (train)",
         )
         plt.hist(
@@ -256,7 +254,7 @@ def main(LAYER, BATCH, RATE):
             range=low_high,
             bins=bins,
             histtype="stepfilled",
-            density=True,
+            density=False,
             label="B (train)",
         )
 
@@ -273,6 +271,7 @@ def main(LAYER, BATCH, RATE):
         err = np.sqrt(hist * scale) / scale
 
         plt.errorbar(center, hist, yerr=err, fmt="o", c="b", label="B (test)")
+        plt.show()
 
     # Using model and setting parameters.
     model = build_model()
@@ -323,14 +322,15 @@ def main(LAYER, BATCH, RATE):
     plt.legend(loc="lower right")
     plt.grid()
 
+
     # AUC
     
     # plot1 = plt.figure(1)
     # slug.plotROC(fpr, tpr, aucroc)
     # slug.plotPR(precision,recall,thresRecall)
-    compare_train_test(kModel, X_train, y_train, X_test, y_test)
+    # compare_train_test(kModel, X_train, y_train, X_test, y_test)
 
-    if 0:
+    if False:
         # This plots the important features.
         plot2 = plt.figure(2)
         backgrounds = X_train[np.random.choice(X_train.shape[0], 100, replace=False)]
@@ -400,8 +400,9 @@ def main(LAYER, BATCH, RATE):
     score = "{0:6.3f}".format(score)
     maxs = "%10d" % (maxs)
     maxb = "%10d" % (maxb)
-    cm = confusion_matrix(y_test, y_predicted_round)
-    CM = [cm[0][0], cm[0][1]], [cm[1, 0], cm[1, 1]]
+    # cm = confusion_matrix(y_test, y_predicted_round)
+    tn, fp, fn, tp = confusion_matrix(y_test, y_predicted_round,normalize='all').ravel()
+    CM = [tp, fp,fn,tn]
     modelParam = [
         "FileName",
         "ConfusionMatrix [TP FP] [FN TN]",
@@ -434,6 +435,5 @@ def main(LAYER, BATCH, RATE):
     df.to_csv("csv/testelep2.csv", mode="a", header=False, index=False)
     print(df.to_string(justify="left", columns=modelParam, header=True, index=False))
     print("Saving model.....")
-    print("old auc: \n", aucroc, "\n new auc", areaUnderCurve)
     model.save(modelName)  # Save Model as a HDF5 filein Data folder
     print("Model Saved")
