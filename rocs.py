@@ -65,7 +65,7 @@ for i in range(1, 6):
         JetVAR.append("jet" + str(j + 1) + type[i])
 
 # Auto select feature set.
-phase = input("Enter 1 for High, 2 for Low, or 3 for both:")
+phase = int(input("Enter 1 for High, 2 for Low, or 3 for both:"))
 
 if phase == 1:
     branches = sorted(HighLevel) + ["weights", "truth"]

@@ -31,6 +31,7 @@ t_hlv = hlv["tpr"]
 bkgR_hlv = hlv["bkgR"]
 
 # Plots of the three ROC.
+fig1 = plt.figure(1)
 plt.plot(t_hlv, bkgR_hlv, "r-", label="High lvl, AUC = %0.3f" % (auc(f_hlv, t_hlv)))
 plt.plot(t_llv, bkgR_llv, "b-", label="Low lvl, AUC = %0.3f" % (auc(f_llv, t_llv)))
 plt.plot(t_hnlv, bkgR_hnlv, "k-", label="All, AUC = %0.3f" % (auc(f_hnlv, t_hnlv)))
@@ -40,7 +41,19 @@ plt.yscale("log")
 plt.xscale("log")
 plt.xlabel("Signal efficiency")
 plt.ylabel("Background rejection")
-plt.title("Receiver operating characteristic")
+plt.title("Modified Receiver operating characteristic")
 plt.legend(loc="upper right")
 plt.grid()
+
+
+fig2 = plt.figure(2)
+plt.plot(f_hlv, t_hlv, "r-", label="High lvl, AUC = %0.3f" % (auc(f_hlv, t_hlv)))
+plt.plot(f_llv, t_llv, "b-", label="Low lvl, AUC = %0.3f" % (auc(f_llv, t_llv)))
+plt.plot(f_hnlv, t_hnlv, "k-", label="All, AUC = %0.3f" % (auc(f_hnlv, t_hnlv)))
+plt.plot([0, 1], [0, 1], "--", color=(0.6, 0.6, 0.6), label="Luck, AUC = 0.500")
+plt.ylabel("Signal rejection")
+plt.xlabel("Background rejection")
+plt.grid()
+plt.title("Receiver operating characteristic")
+plt.legend(loc="lower right")
 plt.show()
