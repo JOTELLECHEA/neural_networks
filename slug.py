@@ -14,8 +14,7 @@ import seaborn as sn
 #matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
-# from sklearn.externals import joblib
-sc = StandardScaler()
+import joblib
 # Fixed values.
 tree = "OutputTree"
 seed = 42
@@ -58,10 +57,19 @@ def dataCol(phase):
         branches = sorted(HighLevel + JetVAR + LeptonVAR) + ["weights", "truth"]
     return branches
 
-def scaleData(data):
+def scaleData(data,phase):
+    scaler = StandardScaler()
+    scaler.fit(data)
+    sData = scaler.transform(data)
+    joblib.dump(scaler,'phase' + str(phase) + '-Scaler.pxl')
+    print('Saved scaler!')
+    return sData
 
-    # Normalized the data with a Gaussian distrubuition with 0 mean and unit variance.
-    X = sc.fit_transform(X)
+def loadScaledData(data,phase):
+    scaler = joblib.load('phase' + str(phase) + '-Scaler.pxl')
+    sData = scaler.transform(data)
+    print('Loaded scaler and transformed data')
+    return sData
 
 
 def plotPR(x, y, t):
