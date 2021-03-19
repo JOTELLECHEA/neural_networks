@@ -30,11 +30,11 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from sklearn.preprocessing import StandardScaler
+from sklearn.externals import joblib
+sc = StandardScaler()
 
 status = len(tf.config.experimental.list_physical_devices("GPU"))
 
-# Normalized data to range from (0,1)
-sc = StandardScaler()
 from sklearn.metrics import (
     precision_recall_curve,
     plot_precision_recall_curve,
@@ -51,46 +51,8 @@ import slug  # Library with common functions used in multiple scripts.
 # Fixed values.
 tree = "OutputTree"
 seed = 42
-phase = 3
 
-# Branches names of high/low level variables aka: features.
-HighLevel = [
-    "numjet",
-    "numlep",
-    "btag",
-    "srap",
-    "cent",
-    "m_bb",
-    "h_b",
-    "mt1",
-    "mt2",
-    "mt3",
-    "dr1",
-    "dr2",
-    "dr3",
-]
-
-### Low Level START -
-type = ["flav", "pT", "eta", "phi", "b", "c"]
-LeptonVAR = []
-JetVAR = []
-for i in range(4):
-    for j in range(3):
-        LeptonVAR.append("lepton" + str(j + 1) + type[i])
-for i in range(1, 6):
-    for j in range(10):
-        JetVAR.append("jet" + str(j + 1) + type[i])
-###                                               -END
-
-# Auto select feature set.
-if phase == 1:
-    branches = sorted(HighLevel) + ["weights", "truth"]
-elif phase == 2:
-    branches = sorted(LeptonVAR + JetVAR) + ["weights", "truth"]
-elif phase == 3:
-    branches = sorted(HighLevel + JetVAR + LeptonVAR) + ["weights", "truth"]
-
-
+branches = slug.dataCol(phase=3)
 # Number of features.
 numBranches = len(branches) - 2
 
