@@ -29,9 +29,8 @@ from tensorflow.keras.layers import Dense, Dropout, Activation
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
-from sklearn.preprocessing import StandardScaler
-from sklearn.externals import joblib
-sc = StandardScaler()
+# from sklearn.preprocessing import StandardScaler
+# sc = StandardScaler()
 
 status = len(tf.config.experimental.list_physical_devices("GPU"))
 
@@ -47,7 +46,7 @@ from sklearn.metrics import (
 from sklearn.metrics import confusion_matrix
 from datetime import datetime
 import slug  # Library with common functions used in multiple scripts.
-
+# import joblib
 # Fixed values.
 tree = "OutputTree"
 seed = 42
@@ -79,8 +78,8 @@ rawdata = pd.concat([df_signal, shuffleBackground])
 
 X = rawdata.drop(["weights", "truth"], axis=1)
 
-# Normalized the data with a Gaussian distrubuition with 0 mean and unit variance.
-X = sc.fit_transform(X)
+# # Normalized the data with a Gaussian distrubuition with 0 mean and unit variance.
+# X = sc.fit_transform(X)
 
 # Signal
 scalefactor = 0.00232 * 0.608791
