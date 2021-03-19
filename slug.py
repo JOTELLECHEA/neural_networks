@@ -5,14 +5,63 @@
 # Reference  :http://cdsweb.cern.ch/record/2220969/files/ATL-PHYS-PUB-2016-023.pdf
 ###########################################################################################################################
 # Imported packages.
-import tkinter as tk
+#import tkinter as tk
 import math
 import matplotlib
-import numpy as np 
+import numpy as np
 import pandas as pd
 import seaborn as sn
-matplotlib.use("TkAgg")
+#matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+# from sklearn.externals import joblib
+sc = StandardScaler()
+# Fixed values.
+tree = "OutputTree"
+seed = 42
+
+# Branches names of high/low level variables aka: features.
+HighLevel = [
+    "numjet",
+    "numlep",
+    "btag",
+    "srap",
+    "cent",
+    "m_bb",
+    "h_b",
+    "mt1",
+    "mt2",
+    "mt3",
+    "dr1",
+    "dr2",
+    "dr3",
+]
+
+### Low Level START -
+types = ["flav", "pT", "eta", "phi", "b", "c"]
+LeptonVAR = []
+JetVAR = []
+for i in range(4):
+    for j in range(3):
+        LeptonVAR.append("lepton" + str(j + 1) + types[i])
+for i in range(1, 6):
+    for j in range(10):
+        JetVAR.append("jet" + str(j + 1) + types[i])
+###                                               -END
+def dataCol(phase):
+    # Auto select feature set.
+    if phase == 1:
+        branches = sorted(HighLevel) + ["weights", "truth"]
+    elif phase == 2:
+        branches = sorted(LeptonVAR + JetVAR) + ["weights", "truth"]
+    elif phase == 3:
+        branches = sorted(HighLevel + JetVAR + LeptonVAR) + ["weights", "truth"]
+    return branches
+
+def scaleData(data):
+
+    # Normalized the data with a Gaussian distrubuition with 0 mean and unit variance.
+    X = sc.fit_transform(X)
 
 
 def plotPR(x, y, t):
@@ -47,7 +96,7 @@ def confusedMatrix(Matrix):
     plt.xlabel('Predicted label')
     plt.tight_layout()
     plt.show()
-    
+
 
 def getZPoisson(s, b, stat, syst):
     """
