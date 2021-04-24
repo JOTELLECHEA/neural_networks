@@ -16,6 +16,7 @@ import itertools
 seed = 42
 random.seed(seed)
 import ROOT
+rand = random.random()
 
 
 def augment_rootfile(filepath):
@@ -103,8 +104,8 @@ def augment_rootfile(filepath):
     jetpT = {}
     jeteta = {}
     jetphi = {}
-    jetb = {}
-    jetc = {}
+    jetbtag = {}
+    # jetc = {}
 
     # Defining branches from jet dictionaries.
     maxjets = 22
@@ -112,23 +113,23 @@ def augment_rootfile(filepath):
         jetpT[i] = array("f", [0])
         jeteta[i] = array("f", [0])
         jetphi[i] = array("f", [0])
-        jetb[i] = array("f", [0])
-        jetc[i] = array("f", [0])
+        jetbtag[i] = array("f", [0])
+        # jetc[i] = array("f", [0])
 
     # Create branches to be added to ROOT tree object for jet features.
     br_jetpT = {}
     br_jeteta = {}
     br_jetphi = {}
-    br_jetc = {}
-    br_jetb = {}
+    # br_jetc = {}
+    br_jetbtag = {}
 
     # Assign branches to tree object for jet features.
     for i in range(1, maxjets):
         br_jetpT[i] = tree.Branch("jet%dpT" % i, jetpT[i], "jet%dpT/F" % i)
         br_jeteta[i] = tree.Branch("jet%deta" % i, jeteta[i], "jet%deta/F" % i)
         br_jetphi[i] = tree.Branch("jet%dphi" % i, jetphi[i], "jet%dphi/F" % i)
-        br_jetb[i] = tree.Branch("jet%db" % i, jetb[i], "jet%db/F" % i)
-        br_jetc[i] = tree.Branch("jet%dc" % i, jetc[i], "jet%dc/F" % i)
+        br_jetbtag[i] = tree.Branch("jet%dbtag" % i, jetbtag[i], "jet%dbtag/F" % i)
+        # br_jetc[i] = tree.Branch("jet%dc" % i, jetc[i], "jet%dc/F" % i)
 
     # Assign branches to tree object for High level features.
     br_numlep = tree.Branch("numlep", numlep, "numlep/F")
@@ -171,6 +172,23 @@ def augment_rootfile(filepath):
             sum = (jetvec[tracker_btj[x]] + jetvec[tracker_btj[y]]).M()
         return sum
 
+    def btaggedjet(truebhadron,truechadron):
+        # 70% of truth-b-jets are labeled as b-tagged
+        if truebhadron == 1 and rand <= 0.7:
+            return 1
+
+        # 20% mistag rate for c-jets.
+        elif truechadron[x] == 1 and rand <= 0.2:
+            return 1
+
+        # 0.2% mistag rate for light-jets.
+        elif rand <= 0.002:
+            return 1
+
+        # Remaining Jets must be tagged c-jets.
+        else:
+            return 0
+
     ### Fucnctions END ###
 
     # Number of events.
@@ -194,7 +212,7 @@ def augment_rootfile(filepath):
         jetvec = {}  # Jet ROOT Four Vector.
         neutrino = {}  # Neutrino ROOT Fpur Vector.
         HB_sum_Pt = 0.0  # Initialize sum of Pt for all b-tag jets.
-        rand = 0.0  # Initialize rand value.
+        # rand = 0.0  # Initialize rand value.
         cen_sum_Pt = 0.0  # Initialize sum of Pt for all jets.
         cen_sum_E = 0.0  # Initialize sum of E for all jets.
         etasum = 0.0  # Initialize sum for eta seperation.
@@ -267,9 +285,6 @@ def augment_rootfile(filepath):
 
                 # Scalar sum of Pt.
                 cen_sum_Pt += jetvec[x].Pt()
-
-                # Random value for ATLAS MV1 b-jet tagger algorithm.
-                rand = random.random()
 
                 # 70% of truth-b-jets are labeled as b-tagged
                 if event.jetbhadron[x] == 1 and rand <= 0.7:
@@ -428,8 +443,9 @@ def augment_rootfile(filepath):
                 jetpT[n][0] = event.jetpT[n - 1]
                 jeteta[n][0] = event.jeteta[n - 1]
                 jetphi[n][0] = event.jetphi[n - 1]
-                jetb[n][0] = event.jetbhadron[n - 1]
-                jetc[n][0] = event.jetchadron[n - 1]
+                # jetbtag[n][0] = event.jetbhadron[n - 1]
+                jetbtag[n][0] = btaggedjet(event.jetbhadron[n - 1],event.jetchadron[n-1])
+                # jetc[n][0] = event.jetchadron[n - 1]
 
             else:
 
@@ -437,8 +453,8 @@ def augment_rootfile(filepath):
                 jetpT[n][0] = -999
                 jeteta[n][0] = -9
                 jetphi[n][0] = -9
-                jetb[n][0] = -9
-                jetc[n][0] = -9
+                jetbtag[n][0] = -9
+                # jetc[n][0] = -9
 
         ### Setting values End ###
 
@@ -455,8 +471,8 @@ def augment_rootfile(filepath):
             br_jetpT[n].Fill()
             br_jeteta[n].Fill()
             br_jetphi[n].Fill()
-            br_jetb[n].Fill()
-            br_jetc[n].Fill()
+            br_jetbtag[n].Fill()
+            # br_jetc[n].Fill()
 
         br_numjet.Fill()
         br_numlep.Fill()
