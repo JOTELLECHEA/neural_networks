@@ -178,7 +178,7 @@ def augment_rootfile(filepath):
             return 1
 
         # 20% mistag rate for c-jets.
-        elif truechadron[x] == 1 and rand <= 0.2:
+        elif truechadron == 1 and rand <= 0.2:
             return 1
 
         # 0.2% mistag rate for light-jets.
