@@ -20,7 +20,7 @@ tree = "OutputTree"
 treesherpa ='allev/hftree'
 phase = 3
 
-branches = [
+High = [
     "numjet",
     "numlep",
     "btag",
@@ -34,13 +34,28 @@ branches = [
     "dr1",
     "dr2",
     "dr3",
+    'weights'
 ]
+types = ["pT", "eta", "phi", "btag"]
+LeptonVAR = []
+JetVAR = []
+for i in range(3):
+    for j in range(3):
+        LeptonVAR.append("lepton" + str(j + 1) + types[i])
+for i in range(len(types)):
+    for j in range(10):
+        JetVAR.append("jet" + str(j + 1) + types[i])
+###                                               -END
 
-bkgTTBB = uproot.open("data/new_TTBB.root")[tree]
-df_bkgTTBB = bkgTTBB.pandas.df(branches+['weights'])
+branches = High + LeptonVAR + JetVAR
+
+# bkgTTBB = uproot.open("data/new_TTBB.root")[tree]
+# df_bkgTTBB = bkgTTBB.pandas.df(branches+['weights'])
+bkgTTBB = uproot.open("/data/users/mhance/tthh/ttbbjj_histograms.root")[treesherpa]
+df_bkgTTBB = bkgTTBB.pandas.df(branches)
 
 bkgsherpa = uproot.open("/data/users/mhance/tthh/ttbbjj_histograms.root")[treesherpa]
-df_bkgsherpa = bkgsherpa.pandas.df(branches+['weight'])
+df_bkgsherpa = bkgsherpa.pandas.df(branches)
 
 def hPlot(x, y, a, b, c, Name):
         bins = np.linspace(a, b, c)
@@ -93,7 +108,7 @@ for i in range(1, 10 + 1):
 for i in range(len(df_bkgsherpa)):
     numjetSHERPA.append(df_bkgsherpa['numjet'].values[i])
     numlepSHERPA.append(df_bkgsherpa['numlep'].values[i])
-    weightsSHERPA.append(df_bkgsherpa['weight'].values[i]/1000)
+    weightsSHERPA.append(df_bkgsherpa['weights'].values[i]/1000)
     btagSHERPA.append(df_bkgsherpa["btag"].values[i])
     srapSHERPA.append(df_bkgsherpa["srap"].values[i])
     centSHERPA.append(df_bkgsherpa["cent"].values[i])
@@ -105,36 +120,36 @@ for i in range(len(df_bkgsherpa)):
     dr1SHERPA.append(df_bkgsherpa["dr1"].values[i])
     dr2SHERPA.append(df_bkgsherpa["dr2"].values[i])
     dr3SHERPA.append(df_bkgsherpa["dr3"].values[i])
-    # jetpt1SHERPA.append(df_bkgsherpa["jet1pT"].values[i])
-    # jetpt2SHERPA.append(df_bkgsherpa["jet2pT"].values[i])
-    # jetpt3SHERPA.append(df_bkgsherpa["jet3pT"].values[i])
-    # jetpt4SHERPA.append(df_bkgsherpa["jet4pT"].values[i])
-    # jetpt5SHERPA.append(df_bkgsherpa["jet5pT"].values[i])
-    # jetpt6SHERPA.append(df_bkgsherpa["jet6pT"].values[i])
-    # jetpt7SHERPA.append(df_bkgsherpa["jet7pT"].values[i])
-    # jetpt8SHERPA.append(df_bkgsherpa["jet8pT"].values[i])
-    # jetpt9SHERPA.append(df_bkgsherpa["jet9pT"].values[i])
-    # jetpt10SHERPA.append(df_bkgsherpa["jet10pT"].values[i])
-    # jeteta1SHERPA.append(df_bkgsherpa["jet1eta"].values[i])
-    # jeteta2SHERPA.append(df_bkgsherpa["jet2eta"].values[i])
-    # jeteta3SHERPA.append(df_bkgsherpa["jet3eta"].values[i])
-    # jeteta4SHERPA.append(df_bkgsherpa["jet4eta"].values[i])
-    # jeteta5SHERPA.append(df_bkgsherpa["jet5eta"].values[i])
-    # jeteta6SHERPA.append(df_bkgsherpa["jet6eta"].values[i])
-    # jeteta7SHERPA.append(df_bkgsherpa["jet7eta"].values[i])
-    # jeteta8SHERPA.append(df_bkgsherpa["jet8eta"].values[i])
-    # jeteta9SHERPA.append(df_bkgsherpa["jet9eta"].values[i])
-    # jeteta10SHERPA.append(df_bkgsherpa["jet10eta"].values[i])
-    # jetphi1SHERPA.append(df_bkgsherpa["jet1phi"].values[i])
-    # jetphi2SHERPA.append(df_bkgsherpa["jet2phi"].values[i])
-    # jetphi3SHERPA.append(df_bkgsherpa["jet3phi"].values[i])
-    # jetphi4SHERPA.append(df_bkgsherpa["jet4phi"].values[i])
-    # jetphi5SHERPA.append(df_bkgsherpa["jet5phi"].values[i])
-    # jetphi6SHERPA.append(df_bkgsherpa["jet6phi"].values[i])
-    # jetphi7SHERPA.append(df_bkgsherpa["jet7phi"].values[i])
-    # jetphi8SHERPA.append(df_bkgsherpa["jet8phi"].values[i])
-    # jetphi9SHERPA.append(df_bkgsherpa["jet9phi"].values[i])
-    # jetphi10SHERPA.append(df_bkgsherpa["jet10phi"].values[i])
+    jetpt1SHERPA.append(df_bkgsherpa["jet1pT"].values[i])
+    jetpt2SHERPA.append(df_bkgsherpa["jet2pT"].values[i])
+    jetpt3SHERPA.append(df_bkgsherpa["jet3pT"].values[i])
+    jetpt4SHERPA.append(df_bkgsherpa["jet4pT"].values[i])
+    jetpt5SHERPA.append(df_bkgsherpa["jet5pT"].values[i])
+    jetpt6SHERPA.append(df_bkgsherpa["jet6pT"].values[i])
+    jetpt7SHERPA.append(df_bkgsherpa["jet7pT"].values[i])
+    jetpt8SHERPA.append(df_bkgsherpa["jet8pT"].values[i])
+    jetpt9SHERPA.append(df_bkgsherpa["jet9pT"].values[i])
+    jetpt10SHERPA.append(df_bkgsherpa["jet10pT"].values[i])
+    jeteta1SHERPA.append(df_bkgsherpa["jet1eta"].values[i])
+    jeteta2SHERPA.append(df_bkgsherpa["jet2eta"].values[i])
+    jeteta3SHERPA.append(df_bkgsherpa["jet3eta"].values[i])
+    jeteta4SHERPA.append(df_bkgsherpa["jet4eta"].values[i])
+    jeteta5SHERPA.append(df_bkgsherpa["jet5eta"].values[i])
+    jeteta6SHERPA.append(df_bkgsherpa["jet6eta"].values[i])
+    jeteta7SHERPA.append(df_bkgsherpa["jet7eta"].values[i])
+    jeteta8SHERPA.append(df_bkgsherpa["jet8eta"].values[i])
+    jeteta9SHERPA.append(df_bkgsherpa["jet9eta"].values[i])
+    jeteta10SHERPA.append(df_bkgsherpa["jet10eta"].values[i])
+    jetphi1SHERPA.append(df_bkgsherpa["jet1phi"].values[i])
+    jetphi2SHERPA.append(df_bkgsherpa["jet2phi"].values[i])
+    jetphi3SHERPA.append(df_bkgsherpa["jet3phi"].values[i])
+    jetphi4SHERPA.append(df_bkgsherpa["jet4phi"].values[i])
+    jetphi5SHERPA.append(df_bkgsherpa["jet5phi"].values[i])
+    jetphi6SHERPA.append(df_bkgsherpa["jet6phi"].values[i])
+    jetphi7SHERPA.append(df_bkgsherpa["jet7phi"].values[i])
+    jetphi8SHERPA.append(df_bkgsherpa["jet8phi"].values[i])
+    jetphi9SHERPA.append(df_bkgsherpa["jet9phi"].values[i])
+    jetphi10SHERPA.append(df_bkgsherpa["jet10phi"].values[i])
 
 for i in range(len(df_bkgTTBB)):
     numjetATLAS.append(df_bkgTTBB['numjet'].values[i])
@@ -151,36 +166,36 @@ for i in range(len(df_bkgTTBB)):
     dr1ATLAS.append(df_bkgTTBB["dr1"].values[i])
     dr2ATLAS.append(df_bkgTTBB["dr2"].values[i])
     dr3ATLAS.append(df_bkgTTBB["dr3"].values[i])
-    # jetpt1ATLAS.append(df_bkgTTBB["jet1pT"].values[i])
-    # jetpt2ATLAS.append(df_bkgTTBB["jet2pT"].values[i])
-    # jetpt3ATLAS.append(df_bkgTTBB["jet3pT"].values[i])
-    # jetpt4ATLAS.append(df_bkgTTBB["jet4pT"].values[i])
-    # jetpt5ATLAS.append(df_bkgTTBB["jet5pT"].values[i])
-    # jetpt6ATLAS.append(df_bkgTTBB["jet6pT"].values[i])
-    # jetpt7ATLAS.append(df_bkgTTBB["jet7pT"].values[i])
-    # jetpt8ATLAS.append(df_bkgTTBB["jet8pT"].values[i])
-    # jetpt9ATLAS.append(df_bkgTTBB["jet9pT"].values[i])
-    # jetpt10ATLAS.append(df_bkgTTBB["jet10pT"].values[i])
-    # jeteta1ATLAS.append(df_bkgTTBB["jet1eta"].values[i])
-    # jeteta2ATLAS.append(df_bkgTTBB["jet2eta"].values[i])
-    # jeteta3ATLAS.append(df_bkgTTBB["jet3eta"].values[i])
-    # jeteta4ATLAS.append(df_bkgTTBB["jet4eta"].values[i])
-    # jeteta5ATLAS.append(df_bkgTTBB["jet5eta"].values[i])
-    # jeteta6ATLAS.append(df_bkgTTBB["jet6eta"].values[i])
-    # jeteta7ATLAS.append(df_bkgTTBB["jet7eta"].values[i])
-    # jeteta8ATLAS.append(df_bkgTTBB["jet8eta"].values[i])
-    # jeteta9ATLAS.append(df_bkgTTBB["jet9eta"].values[i])
-    # jeteta10ATLAS.append(df_bkgTTBB["jet10eta"].values[i])
-    # jetphi1ATLAS.append(df_bkgTTBB["jet1phi"].values[i])
-    # jetphi2ATLAS.append(df_bkgTTBB["jet2phi"].values[i])
-    # jetphi3ATLAS.append(df_bkgTTBB["jet3phi"].values[i])
-    # jetphi4ATLAS.append(df_bkgTTBB["jet4phi"].values[i])
-    # jetphi5ATLAS.append(df_bkgTTBB["jet5phi"].values[i])
-    # jetphi6ATLAS.append(df_bkgTTBB["jet6phi"].values[i])
-    # jetphi7ATLAS.append(df_bkgTTBB["jet7phi"].values[i])
-    # jetphi8ATLAS.append(df_bkgTTBB["jet8phi"].values[i])
-    # jetphi9ATLAS.append(df_bkgTTBB["jet9phi"].values[i])
-    # jetphi10ATLAS.append(df_bkgTTBB["jet10phi"].values[i])
+    jetpt1ATLAS.append(df_bkgTTBB["jet1pT"].values[i])
+    jetpt2ATLAS.append(df_bkgTTBB["jet2pT"].values[i])
+    jetpt3ATLAS.append(df_bkgTTBB["jet3pT"].values[i])
+    jetpt4ATLAS.append(df_bkgTTBB["jet4pT"].values[i])
+    jetpt5ATLAS.append(df_bkgTTBB["jet5pT"].values[i])
+    jetpt6ATLAS.append(df_bkgTTBB["jet6pT"].values[i])
+    jetpt7ATLAS.append(df_bkgTTBB["jet7pT"].values[i])
+    jetpt8ATLAS.append(df_bkgTTBB["jet8pT"].values[i])
+    jetpt9ATLAS.append(df_bkgTTBB["jet9pT"].values[i])
+    jetpt10ATLAS.append(df_bkgTTBB["jet10pT"].values[i])
+    jeteta1ATLAS.append(df_bkgTTBB["jet1eta"].values[i])
+    jeteta2ATLAS.append(df_bkgTTBB["jet2eta"].values[i])
+    jeteta3ATLAS.append(df_bkgTTBB["jet3eta"].values[i])
+    jeteta4ATLAS.append(df_bkgTTBB["jet4eta"].values[i])
+    jeteta5ATLAS.append(df_bkgTTBB["jet5eta"].values[i])
+    jeteta6ATLAS.append(df_bkgTTBB["jet6eta"].values[i])
+    jeteta7ATLAS.append(df_bkgTTBB["jet7eta"].values[i])
+    jeteta8ATLAS.append(df_bkgTTBB["jet8eta"].values[i])
+    jeteta9ATLAS.append(df_bkgTTBB["jet9eta"].values[i])
+    jeteta10ATLAS.append(df_bkgTTBB["jet10eta"].values[i])
+    jetphi1ATLAS.append(df_bkgTTBB["jet1phi"].values[i])
+    jetphi2ATLAS.append(df_bkgTTBB["jet2phi"].values[i])
+    jetphi3ATLAS.append(df_bkgTTBB["jet3phi"].values[i])
+    jetphi4ATLAS.append(df_bkgTTBB["jet4phi"].values[i])
+    jetphi5ATLAS.append(df_bkgTTBB["jet5phi"].values[i])
+    jetphi6ATLAS.append(df_bkgTTBB["jet6phi"].values[i])
+    jetphi7ATLAS.append(df_bkgTTBB["jet7phi"].values[i])
+    jetphi8ATLAS.append(df_bkgTTBB["jet8phi"].values[i])
+    jetphi9ATLAS.append(df_bkgTTBB["jet9phi"].values[i])
+    jetphi10ATLAS.append(df_bkgTTBB["jet10phi"].values[i])
 
 
 pdfname = 'sherpa-atlas.pdf'
@@ -211,65 +226,65 @@ with PdfPages(pdfname) as pdf:
 
     hPlot(dr3SHERPA, dr3ATLAS,  0, 7, 100, r'$\Delta$R3')
 
-    # hPlot(jetpt1SHERPA, jetpt1ATLAS,  0, 1e6, 100, r'Jet1 pT')
+    hPlot(jetpt1SHERPA, jetpt1ATLAS,  0, 1e6, 100, r'Jet1 pT')
 
-    # hPlot(jetpt2SHERPA, jetpt2ATLAS,  0, 1e6, 100, r'Jet2 pT')
+    hPlot(jetpt2SHERPA, jetpt2ATLAS,  0, 1e6, 100, r'Jet2 pT')
 
-    # hPlot(jetpt3SHERPA, jetpt3ATLAS,  0, 1e6, 100, r'Jet3 pT')
+    hPlot(jetpt3SHERPA, jetpt3ATLAS,  0, 1e6, 100, r'Jet3 pT')
 
-    # hPlot(jetpt4SHERPA, jetpt4ATLAS,  0, 1e6, 100, r'Jet4 pT')
+    hPlot(jetpt4SHERPA, jetpt4ATLAS,  0, 1e6, 100, r'Jet4 pT')
 
-    # hPlot(jetpt5SHERPA, jetpt5ATLAS,  0, 1e6, 100, r'Jet5 pT')
+    hPlot(jetpt5SHERPA, jetpt5ATLAS,  0, 1e6, 100, r'Jet5 pT')
 
-    # hPlot(jetpt6SHERPA, jetpt6ATLAS,  0, 1e6, 100, r'Jet6 pT')
+    hPlot(jetpt6SHERPA, jetpt6ATLAS,  0, 1e6, 100, r'Jet6 pT')
 
-    # hPlot(jetpt7SHERPA, jetpt7ATLAS,  0, 1e6, 100, r'Jet7 pT')
+    hPlot(jetpt7SHERPA, jetpt7ATLAS,  0, 1e6, 100, r'Jet7 pT')
 
-    # hPlot(jetpt8SHERPA, jetpt8ATLAS,   0, 1e6, 100, r'Jet8 pT')
+    hPlot(jetpt8SHERPA, jetpt8ATLAS,   0, 1e6, 100, r'Jet8 pT')
 
-    # hPlot(jetpt9SHERPA, jetpt9ATLAS,  0, 1e6, 100, r'Jet9 pT')
+    hPlot(jetpt9SHERPA, jetpt9ATLAS,  0, 1e6, 100, r'Jet9 pT')
 
-    # hPlot(jetpt10SHERPA, jetpt10ATLAS,  0, 1e6, 100, r'Jet10 pT')
+    hPlot(jetpt10SHERPA, jetpt10ATLAS,  0, 1e6, 100, r'Jet10 pT')
 
-    # hPlot(jeteta1SHERPA, jeteta1ATLAS,   -6, 6, 12, r'Jet1 $\eta$')
+    hPlot(jeteta1SHERPA, jeteta1ATLAS,   -6, 6, 12, r'Jet1 $\eta$')
 
-    # hPlot(jeteta2SHERPA, jeteta2ATLAS,   -6, 6, 12, r'Jet2 $\eta$')
+    hPlot(jeteta2SHERPA, jeteta2ATLAS,   -6, 6, 12, r'Jet2 $\eta$')
 
-    # hPlot(jeteta3SHERPA, jeteta3ATLAS,   -6, 6, 12, r'Jet3 $\eta$')
+    hPlot(jeteta3SHERPA, jeteta3ATLAS,   -6, 6, 12, r'Jet3 $\eta$')
 
-    # hPlot(jeteta4SHERPA, jeteta4ATLAS,  -6, 6, 12, r'Jet4 $\eta$')
+    hPlot(jeteta4SHERPA, jeteta4ATLAS,  -6, 6, 12, r'Jet4 $\eta$')
 
-    # hPlot(jeteta5SHERPA, jeteta5ATLAS,  -6, 6, 12, r'Jet5 $\eta$')
+    hPlot(jeteta5SHERPA, jeteta5ATLAS,  -6, 6, 12, r'Jet5 $\eta$')
 
-    # hPlot(jeteta6SHERPA, jeteta6ATLAS,   -6, 6, 12, r'Jet6 $\eta$')
+    hPlot(jeteta6SHERPA, jeteta6ATLAS,   -6, 6, 12, r'Jet6 $\eta$')
 
-    # hPlot(jeteta7SHERPA, jeteta7ATLAS,   -6, 6, 12, r'Jet7 $\eta$')
+    hPlot(jeteta7SHERPA, jeteta7ATLAS,   -6, 6, 12, r'Jet7 $\eta$')
 
-    # hPlot(jeteta8SHERPA, jeteta8ATLAS,   -6, 6, 12, r'Jet8 $\eta$')
+    hPlot(jeteta8SHERPA, jeteta8ATLAS,   -6, 6, 12, r'Jet8 $\eta$')
 
-    # hPlot(jeteta9SHERPA, jeteta9ATLAS,  -6, 6, 12, r'Jet9 $\eta$')
+    hPlot(jeteta9SHERPA, jeteta9ATLAS,  -6, 6, 12, r'Jet9 $\eta$')
 
-    # hPlot(jeteta10SHERPA, jeteta10ATLAS,   -6, 6, 12, r'Jet10 $\eta$')
+    hPlot(jeteta10SHERPA, jeteta10ATLAS,   -6, 6, 12, r'Jet10 $\eta$')
   
-    # hPlot(jetphi1SHERPA, jetphi1ATLAS,  -4, 4, 8, r'Jet1 $\phi$')
+    hPlot(jetphi1SHERPA, jetphi1ATLAS,  -4, 4, 8, r'Jet1 $\phi$')
     
-    # hPlot(jetphi2SHERPA, jetphi2ATLAS, -4, 4, 8, r'Jet2 $\phi$')
+    hPlot(jetphi2SHERPA, jetphi2ATLAS, -4, 4, 8, r'Jet2 $\phi$')
     
-    # hPlot(jetphi3SHERPA, jetphi3ATLAS,  -4, 4, 8, r'Jet3 $\phi$')
+    hPlot(jetphi3SHERPA, jetphi3ATLAS,  -4, 4, 8, r'Jet3 $\phi$')
 
-    # hPlot(jetphi4SHERPA, jetphi4ATLAS,   -4, 4, 8, r'Jet4 $\phi$')
+    hPlot(jetphi4SHERPA, jetphi4ATLAS,   -4, 4, 8, r'Jet4 $\phi$')
    
-    # hPlot(jetphi5SHERPA, jetphi5ATLAS,   -4, 4, 8, r'Jet5 $\phi$')
+    hPlot(jetphi5SHERPA, jetphi5ATLAS,   -4, 4, 8, r'Jet5 $\phi$')
   
-    # hPlot(jetphi6SHERPA, jetphi6ATLAS,  -4, 4, 8, r'Jet6 $\phi$')
+    hPlot(jetphi6SHERPA, jetphi6ATLAS,  -4, 4, 8, r'Jet6 $\phi$')
   
-    # hPlot(jetphi7SHERPA, jetphi7ATLAS,   -4, 4, 8, r'Jet7 $\phi$')
+    hPlot(jetphi7SHERPA, jetphi7ATLAS,   -4, 4, 8, r'Jet7 $\phi$')
 
-    # hPlot(jetphi8SHERPA, jetphi8ATLAS,  -4, 4, 8, r'Jet8 $\phi$')
+    hPlot(jetphi8SHERPA, jetphi8ATLAS,  -4, 4, 8, r'Jet8 $\phi$')
    
-    # hPlot(jetphi9SHERPA, jetphi9ATLAS, -4, 4, 8, r'Jet9 $\phi$')
+    hPlot(jetphi9SHERPA, jetphi9ATLAS, -4, 4, 8, r'Jet9 $\phi$')
 
-    # hPlot(jetphi10SHERPA, jetphi10ATLAS,  -4, 4, 8, r'Jet10 $\phi$')
+    hPlot(jetphi10SHERPA, jetphi10ATLAS,  -4, 4, 8, r'Jet10 $\phi$')
     
 
     d = pdf.infodict()
