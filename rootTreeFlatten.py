@@ -58,6 +58,8 @@ def augment_rootfile(filepath):
     h_b = array("f", [0])
     chi = array("f", [0])
     truth = array("f", [0])
+    Met = array('f',[0])
+    MetPhi = array('f',[0])
 
     # Create dictionary to automate filling lepton features.
     leptonpT = {}
@@ -105,7 +107,6 @@ def augment_rootfile(filepath):
     jeteta = {}
     jetphi = {}
     jetbtag = {}
-    # jetc = {}
 
     # Defining branches from jet dictionaries.
     maxjets = 22
@@ -114,13 +115,12 @@ def augment_rootfile(filepath):
         jeteta[i] = array("f", [0])
         jetphi[i] = array("f", [0])
         jetbtag[i] = array("f", [0])
-        # jetc[i] = array("f", [0])
+
 
     # Create branches to be added to ROOT tree object for jet features.
     br_jetpT = {}
     br_jeteta = {}
     br_jetphi = {}
-    # br_jetc = {}
     br_jetbtag = {}
 
     # Assign branches to tree object for jet features.
@@ -129,7 +129,7 @@ def augment_rootfile(filepath):
         br_jeteta[i] = tree.Branch("jet%deta" % i, jeteta[i], "jet%deta/F" % i)
         br_jetphi[i] = tree.Branch("jet%dphi" % i, jetphi[i], "jet%dphi/F" % i)
         br_jetbtag[i] = tree.Branch("jet%dbtag" % i, jetbtag[i], "jet%dbtag/F" % i)
-        # br_jetc[i] = tree.Branch("jet%dc" % i, jetc[i], "jet%dc/F" % i)
+
 
     # Assign branches to tree object for High level features.
     br_numlep = tree.Branch("numlep", numlep, "numlep/F")
@@ -142,6 +142,8 @@ def augment_rootfile(filepath):
     br_m_bb = tree.Branch("m_bb", m_bb, "m_bb/F")
     br_h_b = tree.Branch("h_b", h_b, "h_b/F")
     br_chi = tree.Branch("chi", chi, "chi/F")
+    br_Met = tree.Branch('met',Met,'met/F')
+    br_MetPhi =tree.Branch('metPhi',MetPhi,'metPhi')
 
     # Start time for progress bar.
     start_time = time.clock()
@@ -237,6 +239,8 @@ def augment_rootfile(filepath):
         numjet[0] = jet = event.njet[0]  # Number of Jets.
         weights[0] = event.mcweight[0]  # Weights of event.
         truth[0] = truthLabel  # Label to identify data sample.
+        Met[0] = event.met[0]
+        MetPhi[0]=event.met_phi[0]
 
         # 1 Lepton minimum requirment.
         if lep > 0:
@@ -419,6 +423,7 @@ def augment_rootfile(filepath):
                 leptonphi[n][0] = event.lepphi[n - 1]
                 leptonflav[n][0] = event.lepflav[n - 1]
                 mt[n][0] = missingPT(n - 1)
+
                 if len(delta_r[n - 1]) == 0:
                     dr[n][0] = -999
                 else:
@@ -443,9 +448,7 @@ def augment_rootfile(filepath):
                 jetpT[n][0] = event.jetpT[n - 1]
                 jeteta[n][0] = event.jeteta[n - 1]
                 jetphi[n][0] = event.jetphi[n - 1]
-                # jetbtag[n][0] = event.jetbhadron[n - 1]
                 jetbtag[n][0] = btaggedjet(event.jetbhadron[n - 1],event.jetchadron[n-1])
-                # jetc[n][0] = event.jetchadron[n - 1]
 
             else:
 
@@ -454,7 +457,6 @@ def augment_rootfile(filepath):
                 jeteta[n][0] = -9
                 jetphi[n][0] = -9
                 jetbtag[n][0] = -9
-                # jetc[n][0] = -9
 
         ### Setting values End ###
 
@@ -472,7 +474,7 @@ def augment_rootfile(filepath):
             br_jeteta[n].Fill()
             br_jetphi[n].Fill()
             br_jetbtag[n].Fill()
-            # br_jetc[n].Fill()
+
 
         br_numjet.Fill()
         br_numlep.Fill()
@@ -484,6 +486,8 @@ def augment_rootfile(filepath):
         br_h_b.Fill()
         br_chi.Fill()
         br_truth.Fill()
+        br_Met.Fill()
+        br_MetPhi.Fill()
 
         i += 1
 
